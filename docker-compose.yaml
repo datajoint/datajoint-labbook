@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/src
+    image: node:lts-buster-slim
+    working_dir: /src/
+    command: "npm start"
