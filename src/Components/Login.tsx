@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import DatabaseConnectionInfo from './DatabaseConnectionInfo'
+//import DatabaseConnectionInfo from './DatabaseConnectionInfo'
 
 import './Login.css'
 
