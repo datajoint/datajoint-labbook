@@ -7,5 +7,12 @@ services:
     volumes:
       - ./:/src
     image: node:lts-buster-slim
+    networks:
+      - dj-gui-react
     working_dir: /src/
     command: "npm start"
+
+networks:
+  dj-gui-react:
+    external: 
+      name: dj-gui-api
