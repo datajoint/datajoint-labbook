@@ -64,7 +64,7 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
         // Parse the result to see if there is a jwt property, if so then login credientials worked
         if (result.hasOwnProperty('jwt')) {
           // Set the JWT for the current session
-          this.props.setCurrentDatabaseConnectionJWT(result.jwt);
+          this.props.setCurrentDatabaseConnectionJWT(result.jwt, this.state.databaseAddress);
 
           // Set loginSucessful for redirect back to /
           this.setState({loginSucessful: true});

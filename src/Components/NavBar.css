@@ -1,10 +1,10 @@
 .top-nav {
     display: flex;
     align-items: center;
-    height: 4vh;
+    height: 6vh;
     width: 100vw;
-    background-color: #222222;
-    box-shadow: 0px 3px 3px rgb(24, 24, 24);
+    background-color: #fff;
+    box-shadow: 0px 3px 3px rgb(190, 190, 190);
 }
 
 .nav-logo {
@@ -20,7 +20,7 @@
 }
 
 .nav-logo img {
-    height: 60%;
+    height: 70%;
 }
 
 .left-nav {
@@ -73,6 +73,30 @@ li .active{
     display: flex;
     align-items: center;
     height: 100%;
-    padding-left: 0.5vw;
-    padding-right: 0.5vw;
+    padding-left: 1.5vw;
+    padding-right: 1.5vw;
+    list-style-type: none;
+}
+
+.right-nav-li.hostname {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.right-nav-li.hostname h5 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.right-nav-li.hostname label {
+    margin: 0;
+    font-size: 0.7rem;
+    color: #4A9F5A;
+}
+
+.right-nav-li a {
+    text-decoration: none;
+    color: #4A9F5A;
 }
