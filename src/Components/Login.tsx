@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {Redirect} from 'react-router-dom';
 
 import './Login.css'
+// Assets
+import logo from '../images/logo_default.svg'
 
 interface loginInFormProps {
   setCurrentDatabaseConnectionJWT: any;
@@ -88,17 +90,20 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     else {
       return (
         <div className='login-div'>
-          <h1 className='login-title'>Login</h1>
-          <form className='login-form' onSubmit={this.onSubmit}>
-            <label className='login-input-label'>Database Address</label>
-            <input className='login-input' type='text' value={this.state.databaseAddress} onChange={this.onDatabaseAddressChange}></input>
-            <label className='login-input-label'>Username</label>
-            <input className='login-input' type='text' value={this.state.username} onChange={this.onUsernameChange}></input>
-            <label className='login-input-label'>Password</label>
-            <input className='login-input' type='password' value={this.state.password} onChange={this.onPasswordChange}></input>
-            <input className='login-input-button' type='submit'></input>
-            <p>{this.state.returnMessage}</p>
-          </form>
+          {/* <h1 className='login-title'>Login</h1> */}
+          <div className="login-container">
+            <img className="login-top-logo" src={logo} alt="datajoint gui logo"/>
+            <form className='login-form' onSubmit={this.onSubmit}>
+              <label className='login-input-label'>Host/Database Address</label>
+              <input className='login-input' type='text' value={this.state.databaseAddress} onChange={this.onDatabaseAddressChange}></input>
+              <label className='login-input-label'>Username</label>
+              <input className='login-input' type='text' value={this.state.username} onChange={this.onUsernameChange}></input>
+              <label className='login-input-label'>Password</label>
+              <input className='login-input' type='password' value={this.state.password} onChange={this.onPasswordChange}></input>
+              <button className={ this.state.databaseAddress && this.state.username && this.state.password ? 'login-input-button ready': 'login-input-button'} type='submit'>Connect</button>
+              <p className="form-message">{this.state.returnMessage}</p>
+            </form>
+          </div>
         </div>
       )
     }
