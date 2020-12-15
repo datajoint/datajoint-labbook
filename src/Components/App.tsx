@@ -25,9 +25,7 @@ class App extends React.Component<{}, DJGUIAppState> {
 
   // Set the current database jwt token to use for future queries and etc.
   setCurrentDatabaseConnectionJWT(jwt: string, hostname: string) {
-    this.setState({currentDatabaseConnectionJWT: jwt,
-                    hostname: hostname
-                  });
+    this.setState({currentDatabaseConnectionJWT: jwt, hostname: hostname});
   }
 
 
