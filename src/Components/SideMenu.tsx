@@ -8,7 +8,7 @@ class SideMenu extends React.Component {
     return (
       <div className="side-full-menu">
           <ListSchemas />
-          <ListTables />
+          <ListTables focusSchema=''/>
       </div>
 
     )
@@ -63,9 +63,22 @@ class ListSchemas extends React.Component {
     }
 }
 
-class ListTables extends React.Component {
+type DJGUITableMenuState = {
+    viewAllPartTables: boolean;
+}
+class ListTables extends React.Component<{focusSchema: string}, DJGUITableMenuState> {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            viewAllPartTables: true
+        }
+    }
     handleSortTable(value: string) {
         console.log('handling sort table: ', value);
+    }
+    toggleAllPartTableView() {
+        console.log('current view all part table state', this.state.viewAllPartTables)
+        this.setState({viewAllPartTables : !this.state.viewAllPartTables})
     }
     render() {
         return (
@@ -85,8 +98,15 @@ class ListTables extends React.Component {
                         </select>
                     </div>
                     <div className="view-all-part-tables">
-                        <div className="sort-field-head"><label>Showing All Part Tables</label></div>
-                        <div className="icon-container"><FontAwesomeIcon className="eye-icon" icon={faEyeSlash} /></div>
+                        <div className="sort-field-head">
+                            <label>{this.state.viewAllPartTables ? 'Showing': 'Hiding'} All Part Tables</label>
+                        </div>
+                        <div className="icon-container" onClick={()=>this.toggleAllPartTableView()}>
+                            {this.state.viewAllPartTables ? 
+                            <FontAwesomeIcon className="eye-icon" icon={faEyeSlash} />
+                            : <FontAwesomeIcon className="eye-icon" icon={faEye} />}
+                            
+                        </div>
                     </div>
                 </div>
                 <div className="table-listing">
