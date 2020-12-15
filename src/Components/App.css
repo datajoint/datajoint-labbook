@@ -1,5 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Mada:wght@200;300;400;500;600;700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 .content {
-  padding: 2%;
+  /* padding: 2%; */
+  font-family: 'Mada', sans-serif;
+  /* font-family: 'Ubuntu Mono', monospace; */
   display: flex;
   align-items: center;
   justify-content: center;

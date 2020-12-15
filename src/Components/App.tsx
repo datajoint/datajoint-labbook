@@ -9,27 +9,30 @@ import Home from './Home'
 
 type DJGUIAppState = {
   currentDatabaseConnectionJWT: string;
+  hostname: string;
 }
 
 class App extends React.Component<{}, DJGUIAppState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      currentDatabaseConnectionJWT: ''
+      currentDatabaseConnectionJWT: '',
+      hostname: ''
     };
 
     this.setCurrentDatabaseConnectionJWT = this.setCurrentDatabaseConnectionJWT.bind(this);
   }
 
   // Set the current database jwt token to use for future queries and etc.
-  setCurrentDatabaseConnectionJWT(jwt: string) {
-    this.setState({currentDatabaseConnectionJWT: jwt});
+  setCurrentDatabaseConnectionJWT(jwt: string, hostname: string) {
+    this.setState({currentDatabaseConnectionJWT: jwt, hostname: hostname});
   }
+
 
   render() {
     return (
       <HashRouter>
-        <NavBar></NavBar>
+        <NavBar hostname={this.state.hostname} isLoggedIn={this.state.currentDatabaseConnectionJWT !== '' ? true: false}></NavBar>
         <div className='content'>
           <Switch>
             <Route exact path='/'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Redirect to='/login'/>}</Route>

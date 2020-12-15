@@ -4,9 +4,18 @@ import {NavLink} from 'react-router-dom';
 import './NavBar.css'
 
 // Assets
-import logo from '../images/datajoint-logo.png'
+import logo from '../images/logo_default.svg'
 
-class NavBar extends React.Component {
+type DJGUINavBarState = {
+}
+
+class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJGUINavBarState> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+    }
+
+  }
   render() {
     return (
       <nav className='top-nav'>
@@ -14,8 +23,20 @@ class NavBar extends React.Component {
           <NavLink to='/'><img src={logo} alt='Logo'/></NavLink>
         </div>
         <ul className='right-nav'>
-          <li className='right-nav-li'>
-          </li>
+          {this.props.isLoggedIn ? 
+          (
+            <li className='right-nav-li hostname'>
+              <label>Currently connected</label>
+              <h5>{this.props.hostname}</h5>
+            </li>
+          ) : '' }
+          {this.props.isLoggedIn ? 
+          (
+            <li className='right-nav-li'>
+              <li><a href="/login">Log Out</a></li>
+            </li>
+          ) : <li className='right-nav-li'><a href="/login">Log In</a></li>
+          }
         </ul>
       </nav>
     );
