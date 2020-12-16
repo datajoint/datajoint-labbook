@@ -1,5 +1,6 @@
 .login-div {
-    background-color: rgba(0, 0, 0, 0.8);
+    /* background-color: rgba(0, 0, 0, 0.8); */
+    background-color: #C8C9C7;
     width: 100vw;
     height: 94vh;
     display: flex;
@@ -16,8 +17,9 @@
     min-width: 600px;
     max-width: 900px;
     margin: 0 auto;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
-    background-color: white;
+    /* box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9); */
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+    background-color: rgb(245, 245, 245);
     padding-top: 24px;
     padding-bottom: 12px;
 }
@@ -62,7 +64,7 @@ button.login-input-button {
 
 button.login-input-button.ready {
     background-color: #4A9F5A;
-    color: white;
+    color: rgb(245, 245, 245);
     box-shadow: 1px 1px 3px rgb(124, 123, 123);
 }
 

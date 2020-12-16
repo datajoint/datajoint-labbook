@@ -34,14 +34,14 @@
 
 .left-nav li {
     height: 100%;
-    color: white;
+    color: rgb(245, 245, 245);
 }
 
 .nav-link {
     display: flex;
     align-items: center;
     height: 100%;
-    color: #ffffff;
+    color: rgb(245, 245, 245);
     text-decoration: none;
     font-size: 1.5vh;
     text-align: center;
@@ -52,12 +52,12 @@
 
 .nav-link:hover {
     color: #000000;
-    background-color: #ffffff;
+    background-color: rgb(245, 245, 245);
 }
 
 li .active{
     color: #000000;
-    background-color: #ffffff;
+    background-color: rgb(245, 245, 245);
 }
 
 .right-nav {
