@@ -37,7 +37,7 @@ class App extends React.Component<{}, DJGUIAppState> {
           <Switch>
             <Route exact path='/'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Redirect to='/login'/>}</Route>
             <Route path='/login'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Login setCurrentDatabaseConnectionJWT={this.setCurrentDatabaseConnectionJWT}></Login>}</Route>
-            <Route path='/home'>{this.state.currentDatabaseConnectionJWT !== '' ? <Home></Home> : <Redirect to='/login'/>}</Route>
+            <Route path='/home'>{this.state.currentDatabaseConnectionJWT !== '' ? <Home token={this.state.currentDatabaseConnectionJWT}></Home> : <Redirect to='/login'/>}</Route>
           </Switch>
         </div>
         </HashRouter>

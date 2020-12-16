@@ -1,31 +1,68 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faSortAmountDown, faEye, faEyeSlash, faSortAmountUp, faSortAlphaDown, faSortAlphaUp } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faSortAmountDown, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import './SideMenu.css';
 
-class SideMenu extends React.Component {
+class SideMenu extends React.Component<{token: string}> {
+  constructor(props: any) {
+      super(props);
+      this.handleOnSchemaSelection = this.handleOnSchemaSelection.bind(this);
+      this.state = {
+          tableDict: {}
+      }
+  }
+  handleOnSchemaSelection(schema: string) {
+    console.log('pushing up the selected schema')
+    console.log('selected schema: ', schema)
+    fetch('/api/list_tables', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+        body: JSON.stringify({schemaName: schema})
+    })
+        .then(result => result.json())
+        .then(result => {
+            console.log('fetched tables: ', result.tableTypeAndNames);
+            this.setState({tableDict: result.tableTypeAndNames});
+        })
+        .catch((error) => {
+            console.log('Problem fetching table list');
+            console.error('Error: ', error);
+        })
+  }
   render() {
     return (
       <div className="side-full-menu">
-          <ListSchemas />
-          <ListTables focusSchema=''/>
+          <ListSchemas token={this.props.token} onSchemaSelection={(val: string)=>this.handleOnSchemaSelection(val)}/>
+          <ListTables token={this.props.token} focusSchema=''/>
       </div>
 
     )
   }
 }
 
+type ListSchemaState = {
+    schemaList: Array<string>,
+    selectedSchema: string
 
-class ListSchemas extends React.Component {
+}
+class ListSchemas extends React.Component<{token: string, onSchemaSelection: any}, ListSchemaState> {
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            schemaList: [],
+            selectedSchema: ''
+        }
+    }
     componentDidMount() {
         fetch('/api/list_schemas', {
             method: 'GET',
-            headers: {'Content-Type': 'application/json'}
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token}
         })
             .then(result => result.json())
             .then(result => {
-                console.log('schema: ', result)
-
+                console.log('schema: ', result.schemaNames);
+                this.setState({schemaList: result.schemaNames});
+                this.handleSchemaSelection(result.schemaNames[0]);
             })
             .catch((error) => {
                 console.log('Problem fetching schema list');
@@ -36,6 +73,14 @@ class ListSchemas extends React.Component {
     handleSortSchema(value: string) {
         console.log('handling sort schema. Sort by: ', value)
         
+    }
+
+    handleSchemaSelection(value: string) {
+        console.log('schema selected: ', value);
+        if (value !== this.state.selectedSchema) {
+            this.setState({selectedSchema: value});
+            this.props.onSchemaSelection(value);
+        }
     }
 
     
@@ -56,7 +101,12 @@ class ListSchemas extends React.Component {
                     </select>
                 </div>
                 <div className="schema-listing">
-
+                    {/* <div>{this.state.schemaList[0]}</div> */}
+                    {this.state.schemaList.map((schema:string) => {
+                        return (
+                            <div onClick={()=>this.handleSchemaSelection(schema)} className={this.state.selectedSchema === schema? 'schema-name selected': 'schema-name'}>{schema}</div>
+                        )
+                    })}
                 </div>
             </div>
         )
@@ -66,7 +116,7 @@ class ListSchemas extends React.Component {
 type DJGUITableMenuState = {
     viewAllPartTables: boolean;
 }
-class ListTables extends React.Component<{focusSchema: string}, DJGUITableMenuState> {
+class ListTables extends React.Component<{focusSchema: string, token: string}, DJGUITableMenuState> {
     constructor(props: any) {
         super(props);
         this.state = {

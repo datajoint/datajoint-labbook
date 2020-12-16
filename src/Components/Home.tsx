@@ -5,12 +5,15 @@ import './Home.css';
 import SideMenu from './SideMenu';
 import TableView from './TableView';
 
-class Home extends React.Component {
+class Home extends React.Component<{token: string}> {
+  constructor(props: any) {
+    super(props);
+  }
   render() {
     return (
       <div className="home-container">
         <div className="side-menu-container">
-          <SideMenu/>
+          <SideMenu token={this.props.token}/>
         </div>
         <div className="table-view-container">
           <TableView/>
