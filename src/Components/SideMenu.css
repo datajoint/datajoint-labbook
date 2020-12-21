@@ -167,5 +167,53 @@ select.sort-schema-options {
     width: 100%;
     margin-bottom: 4%;
     border: 1px solid lightgray;
+    overflow: auto;
     /* box-shadow: 1px 2px 3px gray; */
+}
+
+.table-entry {
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid gray;
+    position: relative;
+    padding: 20px 4px 4px;
+}
+
+.table-name {
+    position: relative;
+    margin: 0;
+    margin-left: 4px;
+}
+
+span.tier-label {
+    box-sizing: border-box;
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    border: 1px solid white;
+    padding: 1.5px 6px;
+    color: white;
+}
+
+.tier-label.computed {
+    background-color: #BC3B68;
+}
+.tier-label.manual {
+    background-color: #399E5A;
+}
+.tier-label.lookup {
+    background-color: #000000;
+}
+.tier-label.imported {
+    background-color: #3C57C7;
+}
+.tier-label.part {
+    background-color: inherit;
+    color: black;
+}
+
+.show-part-table {
+    border: 1px solid red;
 }
