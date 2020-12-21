@@ -58,7 +58,7 @@
     font-size: 0.5rem;
     line-height: 0.5rem;
     font-weight: 600;
-    margin-left: 2px;
+    margin: 0 0 0 2px;
 }
 
 .sort-field-head .sort-icon {
@@ -79,8 +79,11 @@ select.sort-schema-options {
     margin-bottom: 4%;
     box-shadow: 3px 3px 6px gray;
     border-left: 1px solid lightgray;
-    overflow: auto;
+    overflow: hidden;
     /* border: 1px solid lightcoral; */
+}
+.schema-listing:hover {
+    overflow: auto;
 }
 
 .schema-name {
@@ -147,7 +150,8 @@ select.sort-schema-options {
 }
 
 .view-all-part-tables .sort-field-head label {
-    line-height: 0.65rem;
+    line-height: 0.5rem;
+    padding-top: 1px;
 }
 
 .view-all-part-tables .icon-container {
@@ -167,22 +171,33 @@ select.sort-schema-options {
     width: 100%;
     margin-bottom: 4%;
     border: 1px solid lightgray;
-    overflow: auto;
+    overflow: hidden;
     /* box-shadow: 1px 2px 3px gray; */
 }
-
+.table-listing:hover {
+    overflow: auto;
+}
 .table-entry {
     box-sizing: border-box;
-    width: 100%;
-    border: 1px solid gray;
+    min-width: 100%;
+    border: 1px solid rgba(128, 128, 128, 0.5);
     position: relative;
-    padding: 20px 4px 4px;
+    display: flex;
+    overflow-x: hidden;
+}
+.table-entry:hover,
+.part-table-entry:hover,
+.table-entry.selected,
+.part-table-entry.selected {
+    overflow-x: auto;
+    color: white;
+    background-color: #399E5A;
+    cursor: pointer;
 }
 
 .table-name {
     position: relative;
-    margin: 0;
-    margin-left: 4px;
+    margin: 22px 4px 4px 4px;
 }
 
 span.tier-label {
@@ -209,11 +224,129 @@ span.tier-label {
 .tier-label.imported {
     background-color: #3C57C7;
 }
-.tier-label.part {
-    background-color: inherit;
-    color: black;
+
+.part-table-entry {
+    box-sizing: border-box;
+    width: 90%;
+    margin-left: 10%;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    position: relative;
+    /* padding: 20px 4px 4px; */
 }
 
+.part-table-entry.hide {
+    display: none;
+}
+
+.part-label {
+    display: flex;
+    font-size: 0.7rem;
+    box-sizing: border-box;
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    border-radius: 2px;
+}
+
+.part-table-entry.selected .part-label, 
+.part-table-entry:hover .part-label {
+    border: 1px solid #fff;
+}
+.part-label.computed-part {
+    border: 1px solid #BC3B68;
+}
+.part-label.imported-part {
+    border: 1px solid #3C57C7;
+}
+.part-label.lookup-part {
+    border: 1px solid #000;
+}
+.part-label.manual-part {
+    border: 1px solid #399E5A;
+}
+
+.part-label .MT-type {
+    color: white;
+    padding: 1px 3px 1px 2px;
+}
+.part-label.computed-part .MT-type {
+    background-color: #BC3B68;
+}
+.part-label.imported-part .MT-type {
+    background-color: #3C57C7;
+}
+.part-label.lookup-part .MT-type {
+    background-color: #000;
+}
+.part-label.manual-part .MT-type {
+    background-color: #399E5A;
+}
+
+.part-label .part-table-tag {
+    font-weight: 600;
+    padding: 1px 2px 1px 3px;
+    background-color: white;
+}
+.part-label.computed-part .part-table-tag {
+    color: #BC3B68;
+}
+.part-label.imported-part .part-table-tag {
+    color: #3C57C7;
+}
+.part-label.lookup-part .part-table-tag {
+    color: #000;
+}
+.part-label.manual-part .part-table-tag {
+    color: #399E5A;
+}
+
+
 .show-part-table {
-    border: 1px solid red;
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: space-between;
+}
+.show-part-table.computed {
+    border-color: #BC3B68;
+}
+.show-part-table.imported {
+    border-color: #3C57C7;
+}
+.show-part-table.lookup {
+    border-color: #000;
+}
+.show-part-table.manual {
+    border-color: #399E5A;
+}
+
+.show-part-table .icon {
+    color: gray;
+    background-color: rgba(255, 255, 255, 0.8);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.show-part-table label.head {
+    font-size: 0.6rem;
+    line-height: 0.5em;
+    box-sizing: border-box;
+    white-space: nowrap;
+    color: white;
+    padding: 4px 2px;
+    margin-top: 0;
+}
+.show-part-table.computed label.head {
+    background-color: #BC3B68;
+}
+.show-part-table.imported label.head {
+    background-color: #3C57C7;
+}
+.show-part-table.lookup label.head {
+    background-color: #000;
+}
+.show-part-table.manual label.head {
+    background-color: #399E5A;
 }
