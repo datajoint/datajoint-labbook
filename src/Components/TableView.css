@@ -1,0 +1,41 @@
+.table-view {
+    width: 96%;
+    margin: 12px 2% auto 1%;
+}
+
+.table-view .nav-tabs {
+    display: flex;
+    margin-bottom: 0;
+}
+
+.table-view .nav-tabs .tab {
+    box-sizing: border-box;
+    padding: 8px 24px;
+    text-align: center;
+    color: #F1f1f1;
+    background-color: #399E5A;
+    font-weight: 600;
+    margin-right: 8px;
+    border-radius: 2px 2px 0 0;
+    cursor: pointer;
+    box-shadow: -1px -1px 2px rgb(160, 160, 160);
+}
+
+.table-view .nav-tabs .tab:hover {
+    box-shadow: -1px -2px 3px rgb(160, 160, 160);
+    background-color: #82D088; /* light alternative green */
+}
+
+.table-view .nav-tabs .tab.inView {
+    color: #262A22;
+    background-color: #F1f1f1;
+    box-shadow: -1px -2px 3px rgb(160, 160, 160);
+}
+
+.view-area {
+    margin: 0 0 auto;
+    background-color: #F1f1f1;
+    width: 100%;
+    height: 85vh;
+    box-shadow: -1px 0px 3px rgb(160, 160, 160);
+}

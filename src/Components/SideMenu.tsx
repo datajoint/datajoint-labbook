@@ -2,21 +2,24 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSortAmountDown, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import './SideMenu.css';
-import { table } from 'console';
 
 
 type HomeSideMenuState = {
     tableDict: any,
+    selectedSchema: string
 }
-class SideMenu extends React.Component<{token: string}, HomeSideMenuState> {
+class SideMenu extends React.Component<{token:string, onReqTableData:any}, HomeSideMenuState> {
   constructor(props: any) {
       super(props);
       this.handleOnSchemaSelection = this.handleOnSchemaSelection.bind(this);
+      this.handleOnTableSelection = this.handleOnTableSelection.bind(this);
       this.state = {
-          tableDict: {}
+          tableDict: {},
+          selectedSchema: ''
       }
   }
   handleOnSchemaSelection(schema: string) {
+    this.setState({selectedSchema: schema})
     console.log('pushing up the selected schema')
     console.log('selected schema: ', schema)
     fetch('/api/list_tables', {
@@ -34,11 +37,17 @@ class SideMenu extends React.Component<{token: string}, HomeSideMenuState> {
             console.error('Error: ', error);
         })
   }
+
+  handleOnTableSelection(tableName:string, tableType:string) {
+    console.log('pushing up table selection: ', tableName, ' - type: ', tableType);
+    this.props.onReqTableData(tableName, tableType, this.state.selectedSchema);
+  }
+
   render() {
     return (
       <div className="side-full-menu">
           <ListSchemas token={this.props.token} onSchemaSelection={(val: string)=>this.handleOnSchemaSelection(val)}/>
-          <ListTables token={this.props.token} tableListDict={this.state.tableDict}/>
+          <ListTables token={this.props.token} tableListDict={this.state.tableDict} onTableSelection={(tableName:string, tableType:string)=>{console.log('tableselection prop emitting: ', tableName);this.handleOnTableSelection(tableName, tableType)}}/>
       </div>
 
     )
@@ -124,9 +133,10 @@ type DJGUITableMenuState = {
     sortedTables: Array<any>,
     tablesToSort: any,
     showPT: any,
-    selectedTable: Array<string>
+    selectedTableName: string,
+    selectedTableType: string
 }
-class ListTables extends React.Component<{tableListDict: any, token: string}, DJGUITableMenuState> {
+class ListTables extends React.Component<{tableListDict: any, token: string, onTableSelection: any}, DJGUITableMenuState> {
     
     constructor(props: any) {
         super(props);
@@ -136,7 +146,8 @@ class ListTables extends React.Component<{tableListDict: any, token: string}, DJ
             sortedTables: [],
             tablesToSort: this.props.tableListDict,
             showPT: {},
-            selectedTable: []
+            selectedTableName: '',
+            selectedTableType: ''
         }
     }
 
@@ -151,6 +162,9 @@ class ListTables extends React.Component<{tableListDict: any, token: string}, DJ
         if (this.props.tableListDict !== prevState.tablesToSort) {
             this.setState({tablesToSort: this.props.tableListDict});
             this.sortTables(this.state.currentSort, this.state.tablesToSort);
+            if (this.state.selectedTableName === '') {
+                this.tableSelected(this.state.sortedTables[0]?.['name'], this.state.sortedTables[0]?.['type']) 
+            }
         }
         
     }
@@ -287,7 +301,9 @@ class ListTables extends React.Component<{tableListDict: any, token: string}, DJ
     tableSelected(tablename: string, tabletype: string) {
         console.log('table selected: ', tablename);
         console.log('selected table type: ', tabletype);
-        this.setState({selectedTable: [tablename, tabletype]})
+        this.setState({selectedTableName: tablename, selectedTableType: tabletype});
+        // this.props.onTableSelection(this.state.selectedTable);
+        this.props.onTableSelection(tablename, tabletype);
     }
 
     render() {
@@ -324,7 +340,7 @@ class ListTables extends React.Component<{tableListDict: any, token: string}, DJ
                     {this.state.sortedTables.map((eachTable:any) => {
                         return (
                             !eachTable['type'].endsWith('.part') ? 
-                            (<div className={this.state.selectedTable[0] === eachTable['name'] ? 'table-entry selected': 'table-entry'} onClick={()=>{this.tableSelected(eachTable['name'], eachTable['type'])}}>
+                            (<div className={this.state.selectedTableName === eachTable['name'] ? 'table-entry selected': 'table-entry'} onClick={()=>{this.tableSelected(eachTable['name'], eachTable['type'])}}>
                                 <p className="table-name">{eachTable['name']}</p>
                                 <span className={eachTable['type'] === 'computed' ? 'computed tier-label' : (eachTable['type'] === 'lookup' ? 'lookup tier-label' : (eachTable['type'] === 'manual' ? 'manual tier-label' : 'unknown tier-label'))}>{eachTable['type']}</span>
                                 {eachTable['hasPartTable'] ? 
@@ -338,7 +354,7 @@ class ListTables extends React.Component<{tableListDict: any, token: string}, DJ
                             </div>)
                             : 
                             (
-                            <div onClick={()=>{this.tableSelected(eachTable['name'], 'part')}} className={this.state.viewAllPartTables && this.state.selectedTable[0] === eachTable['name'] ? "part-table-entry selected" : this.state.viewAllPartTables && this.state.selectedTable[0] !== eachTable['name'] ? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide": ""}>
+                            <div onClick={()=>{this.tableSelected(eachTable['name'], 'part')}} className={this.state.viewAllPartTables && this.state.selectedTableName === eachTable['name'] ? "part-table-entry selected" : this.state.viewAllPartTables && this.state.selectedTableName !== eachTable['name'] ? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide": ""}>
                                 <p className="table-name">{eachTable['name'].split('.')[1]}</p>
                                 <span className={eachTable['type'].split('.')[0] === 'computed' ? "part-label computed-part": eachTable['type'].split('.')[0] === 'lookup' ? "part-label lookup-part": eachTable['type'].split('.')[0] === 'imported' ? "part-label imported-part" : "part-label manual-part"}>
                                     <div className="MT-type">{eachTable['type'].split('.')[0]}</div>
