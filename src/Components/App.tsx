@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, HashRouter, Switch, Redirect} from 'react-router-dom';
+import {Route, BrowserRouter as Router, Switch, Redirect} from 'react-router-dom';
 import './App.css';
 
 // Component imports
@@ -28,19 +28,18 @@ class App extends React.Component<{}, DJGUIAppState> {
     this.setState({currentDatabaseConnectionJWT: jwt, hostname: hostname});
   }
 
-
   render() {
     return (
-      <HashRouter>
+      <Router>
         <NavBar hostname={this.state.hostname} isLoggedIn={this.state.currentDatabaseConnectionJWT !== '' ? true: false}></NavBar>
         <div className='content'>
           <Switch>
             <Route exact path='/'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Redirect to='/login'/>}</Route>
-            <Route path='/login'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Login setCurrentDatabaseConnectionJWT={this.setCurrentDatabaseConnectionJWT}></Login>}</Route>
-            <Route path='/home'>{this.state.currentDatabaseConnectionJWT !== '' ? <Home></Home> : <Redirect to='/login'/>}</Route>
+            <Route exact path='/login'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Login setCurrentDatabaseConnectionJWT={this.setCurrentDatabaseConnectionJWT}></Login>}</Route>
+            <Route exact path='/home'>{this.state.currentDatabaseConnectionJWT !== '' ? <Home></Home> : <Redirect to='/login'/>}</Route>
           </Switch>
         </div>
-        </HashRouter>
+      </Router>
     );
   }
 }
