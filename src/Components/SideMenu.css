@@ -126,10 +126,6 @@ select.sort-schema-options {
     height: 100%;
 }
 
-.sort-table-field .sort-field-head {
-    /* width: 15%; */
-
-}
 
 .sort-table-field select.sort-table-options {
     width: 100%;

@@ -54,8 +54,9 @@
     color: #399E5A
 }
 
-.content-controllers button.selected {
+.content-controllers button.selectedButton {
     background-color: #399E5A;
+    border-color: #399E5A;
     color: white;
 }
 
@@ -99,4 +100,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+
+.content-view-area .table .headerRow {
+    display: flex;
+    font-weight: 600;
+}
+
+.content-view-area .table .tableRow {
+    display: flex;
 }
