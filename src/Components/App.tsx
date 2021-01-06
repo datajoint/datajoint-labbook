@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, HashRouter, Switch, Redirect} from 'react-router-dom';
+import {Route, BrowserRouter as Router, Switch, Redirect} from 'react-router-dom';
 import './App.css';
 
 // Component imports
@@ -28,10 +28,9 @@ class App extends React.Component<{}, DJGUIAppState> {
     this.setState({currentDatabaseConnectionJWT: jwt, hostname: hostname});
   }
 
-
   render() {
     return (
-      <HashRouter>
+      <Router>
         <NavBar hostname={this.state.hostname} isLoggedIn={this.state.currentDatabaseConnectionJWT !== '' ? true: false}></NavBar>
         <div className='content'>
           <Switch>
@@ -40,7 +39,7 @@ class App extends React.Component<{}, DJGUIAppState> {
             <Route path='/home'>{this.state.currentDatabaseConnectionJWT !== '' ? <Home token={this.state.currentDatabaseConnectionJWT}></Home> : <Redirect to='/login'/>}</Route>
           </Switch>
         </div>
-        </HashRouter>
+      </Router>
     );
   }
 }

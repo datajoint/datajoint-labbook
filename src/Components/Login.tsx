@@ -82,14 +82,14 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
       <div className='login-div'>
         <div className="login-container">
           <img className="login-top-logo" src={logo} alt="datajoint gui logo"/>
-          <form className='login-form' onSubmit={this.onSubmit}>
+          <form className='login-form'>
             <label className='login-input-label'>Host/Database Address</label>
             <input className='login-input' type='text' value={this.state.databaseAddress} onChange={this.onDatabaseAddressChange}></input>
             <label className='login-input-label'>Username</label>
             <input className='login-input' type='text' value={this.state.username} onChange={this.onUsernameChange}></input>
             <label className='login-input-label'>Password</label>
             <input className='login-input' type='password' value={this.state.password} onChange={this.onPasswordChange}></input>
-            <button className={ this.state.databaseAddress && this.state.username && this.state.password ? 'login-input-button ready': 'login-input-button'} type='submit'>Connect</button>
+            <button className={this.state.databaseAddress && this.state.username && this.state.password ? 'login-input-button ready' : 'login-input-button'} onClick={this.onSubmit} type='button'>Connect</button>
             <p className="form-message">{this.state.returnMessage}</p>
           </form>
         </div>
