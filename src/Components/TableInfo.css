@@ -1,21 +1,21 @@
 .table-info-viewer {
-    box-sizing: border-box;
-    position: relative;
-    width: 94%;
-    margin: 0 auto;
+  box-sizing: border-box;
+  position: relative;
+  width: 94%;
+  margin: 0 auto;
 }
 .info-content {
-    padding-top: 24px;
+  padding-top: 24px;
 }
 h4.info-title {
-    margin: 0 0 4px 0;
+  margin: 0 0 4px 0;
 }
 .description-info {
-    position: relative;
-    font-family: 'Ubuntu Mono', monospace;
-    padding: 24px;
-    background-color: #262A22;
-    color: white;
-    overflow-x: auto;
-    white-space: pre-wrap;
+  position: relative;
+  font-family: 'Ubuntu Mono', monospace;
+  padding: 24px;
+  background-color: #262A22;
+  color: white;
+  overflow-x: auto;
+  white-space: pre-wrap;
 }

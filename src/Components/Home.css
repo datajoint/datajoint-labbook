@@ -1,13 +1,13 @@
 .home-container {
-    display: flex;
-    width: 100vw;
-    height: 94vh;
+  display: flex;
+  width: 100vw;
+  height: 94vh;
 }
 
 .side-menu-container {
-    width: 30%;
+  width: 30%;
 }
 
 .table-view-container {
-    width: 70%;
+  width: 70%;
 }

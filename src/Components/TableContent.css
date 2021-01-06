@@ -1,113 +1,113 @@
 .table-content-viewer {
-    position: relative;
-    box-sizing: border-box;
-    padding: 12px;
-    width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  padding: 12px;
+  width: 100%;
 }
 .content-view-header {
-    box-sizing: border-box;
-    position: relative;
-    display: flex;
-    border: 2px solid transparent;
-    height: 48px;
-    align-items: center;
-    z-index: 500;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  border: 2px solid transparent;
+  height: 48px;
+  align-items: center;
+  z-index: 500;
 }
 
 .table-type-tag {
-    position: relative;
-    display: flex;
-    align-items: center;
-    height: 100%;
-    justify-content: center;
-    width: 48px;
-    font-weight: 700;
-    color: white;
-    font-size: 67%;
-    box-sizing: border-box;
-    padding-right: 2px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
+  width: 48px;
+  font-weight: 700;
+  color: white;
+  font-size: 67%;
+  box-sizing: border-box;
+  padding-right: 2px;
 }
 
 .content-view-header .table-name {
-    margin: 0 0 0 12px;
+  margin: 0 0 0 12px;
 }
 
 .content-view-header .content-controllers {
-    width: 66%;
-    display: flex;
-    justify-content: flex-end;
-    right: 12px;
-    position: absolute;
+  width: 66%;
+  display: flex;
+  justify-content: flex-end;
+  right: 12px;
+  position: absolute;
 }
 .content-controllers button {
-    padding: 4px 32px;
-    margin-left: 12px;
-    border: 2px solid #262A22;
-    background-color: #F1f1f1;
-    border-radius: 4px;
-    color: #262A22;
-    font-weight: 600;
+  padding: 4px 32px;
+  margin-left: 12px;
+  border: 2px solid #262A22;
+  background-color: #F1f1f1;
+  border-radius: 4px;
+  color: #262A22;
+  font-weight: 600;
 }
 .content-controllers button:hover {
-    /* background-color: #82D088; */
-    border-color: #399E5A;
-    color: #399E5A
+  /* background-color: #82D088; */
+  border-color: #399E5A;
+  color: #399E5A
 }
 
 .content-controllers button.selectedButton {
-    background-color: #399E5A;
-    border-color: #399E5A;
-    color: white;
+  background-color: #399E5A;
+  border-color: #399E5A;
+  color: white;
 }
 
 .table-content-viewer .content-view-header.computed {
-    border-color: #BC3B68;
+  border-color: #BC3B68;
 }
 .table-content-viewer .content-view-header.imported {
-    border-color: #3C57C7;
+  border-color: #3C57C7;
 }
 .table-content-viewer .content-view-header.lookup {
-    border-color: #000;
+  border-color: #000;
 }
 .table-content-viewer .content-view-header.manual {
-    border-color: #399E5A;
+  border-color: #399E5A;
 }
 .table-content-viewer .content-view-header.part {
-    border-color: #8a8a8a
+  border-color: #8a8a8a
 }
 
 .table-content-viewer .table-type-tag.computed {
-    background-color: #BC3B68;
+  background-color: #BC3B68;
 }
 .table-content-viewer .table-type-tag.imported {
-    background-color: #3C57C7;
+  background-color: #3C57C7;
 }
 .table-content-viewer .table-type-tag.lookup {
-    background-color: #000;
+  background-color: #000;
 }
 .table-content-viewer .table-type-tag.manual {
-    background-color: #399E5A;
+  background-color: #399E5A;
 }
 .table-content-viewer .table-type-tag.part {
-    background-color: #8a8a8a
+  background-color: #8a8a8a
 }
 
 .edit-zone {
-    height: 320px;
-    box-sizing: border-box;
-    border: 1px solid gray;
-    border-top: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  height: 320px;
+  box-sizing: border-box;
+  border: 1px solid gray;
+  border-top: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
 .content-view-area .table .headerRow {
-    display: flex;
-    font-weight: 600;
+  display: flex;
+  font-weight: 600;
 }
 
 .content-view-area .table .tableRow {
-    display: flex;
+  display: flex;
 }
