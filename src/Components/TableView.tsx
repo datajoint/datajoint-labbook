@@ -30,8 +30,6 @@ class TableView extends React.Component<{ tableName: string, schemaName: string,
 
 
     if (this.props.tableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
-      console.log('incoming tablename prop: ', this.props.tableName)
-      console.log('current state: ', this.state.selectedTable)
       this.setState({ selectedTable: this.props.tableName });
 
       if (this.state.currentView === 'tableContent') {
@@ -42,7 +40,6 @@ class TableView extends React.Component<{ tableName: string, schemaName: string,
         })
           .then(result => result.json())
           .then(result => {
-            console.log('fetched table content data: ', result, ' [length: ', result.tuples.length, ']');
             this.setState({ tableContentData: result.tuples })
           })
       }
@@ -55,7 +52,6 @@ class TableView extends React.Component<{ tableName: string, schemaName: string,
         })
           .then(result => result.json())
           .then(result => {
-            console.log('info result: ', result)
             this.setState({ tableInfoData: result.definition })
           })
       }

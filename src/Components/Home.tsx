@@ -22,7 +22,6 @@ class Home extends React.Component<{token: string}, DJGUIHomeState> {
   }
   handleTableDataReq(tablename:string, tabletype:string, schema:string) {
     this.setState({reqTableName: tablename, reqSchemaName: schema, reqTableType: tabletype})
-    console.log('home - new table request - setting data')
   }
 
   render() {

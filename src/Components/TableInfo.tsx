@@ -13,14 +13,8 @@ class TableInfo extends React.Component<{ infoDefData: string }, TableInfoState>
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    console.log('component updated')
-    console.log('this.props: ', this.props.infoDefData)
-    console.log('prev props: ', prevProps.infoDefData)
-    console.log('prev state: ', prevState.tableDefinition)
     if (this.props.infoDefData !== prevState.tableDefinition) {
       // if (this.props.infoDefData !== prevProps.infoDefData) {
-      console.log('non matching props (new): ', this.props.infoDefData);
-      console.log('non matching props (prev): ', prevProps.infoDefData)
       this.setState({ tableDefinition: this.props.infoDefData });
 
     }

@@ -59,7 +59,6 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     })
       .then(result => result.json())
       .then(result => {
-        console.log(result)
         // Parse the result to see if there is a jwt property, if so then login credientials worked
         if (result.hasOwnProperty('jwt')) {
           // Set the JWT for the current session

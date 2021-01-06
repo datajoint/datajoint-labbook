@@ -20,8 +20,6 @@ class SideMenu extends React.Component<{ token: string, onReqTableData: any }, H
   }
   handleOnSchemaSelection(schema: string) {
     this.setState({ selectedSchema: schema })
-    console.log('pushing up the selected schema')
-    console.log('selected schema: ', schema)
     fetch('/api/list_tables', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
@@ -29,17 +27,14 @@ class SideMenu extends React.Component<{ token: string, onReqTableData: any }, H
     })
       .then(result => result.json())
       .then(result => {
-        console.log('fetched tables: ', result.tableTypeAndNames);
         this.setState({ tableDict: result.tableTypeAndNames });
       })
       .catch((error) => {
-        console.log('Problem fetching table list');
         console.error('Error: ', error);
       })
   }
 
   handleOnTableSelection(tableName: string, tableType: string) {
-    console.log('pushing up table selection: ', tableName, ' - type: ', tableType);
     this.props.onReqTableData(tableName, tableType, this.state.selectedSchema);
   }
 
@@ -47,7 +42,7 @@ class SideMenu extends React.Component<{ token: string, onReqTableData: any }, H
     return (
       <div className="side-full-menu">
         <ListSchemas token={this.props.token} onSchemaSelection={(val: string) => this.handleOnSchemaSelection(val)} />
-        <ListTables token={this.props.token} tableListDict={this.state.tableDict} onTableSelection={(tableName: string, tableType: string) => { console.log('tableselection prop emitting: ', tableName); this.handleOnTableSelection(tableName, tableType) }} />
+        <ListTables token={this.props.token} tableListDict={this.state.tableDict} onTableSelection={(tableName: string, tableType: string) => { this.handleOnTableSelection(tableName, tableType) }} />
       </div>
 
     )
@@ -74,23 +69,19 @@ class ListSchemas extends React.Component<{ token: string, onSchemaSelection: an
     })
       .then(result => result.json())
       .then(result => {
-        console.log('schema: ', result.schemaNames);
         this.setState({ schemaList: result.schemaNames });
         this.handleSchemaSelection(result.schemaNames[0]);
       })
       .catch((error) => {
-        console.log('Problem fetching schema list');
         console.error('Error: ', error);
       })
   }
 
   handleSortSchema(value: string) {
-    console.log('handling sort schema. Sort by: ', value);
     this.setState({ schemaList: this.state.schemaList.reverse() });
   }
 
   handleSchemaSelection(value: string) {
-    console.log('schema selected: ', value);
     if (value !== this.state.selectedSchema) {
       this.setState({ selectedSchema: value });
       this.props.onSchemaSelection(value);
@@ -115,7 +106,6 @@ class ListSchemas extends React.Component<{ token: string, onSchemaSelection: an
           </select>
         </div>
         <div className="schema-listing">
-          {/* <div>{this.state.schemaList[0]}</div> */}
           {this.state.schemaList.map((schema: string) => {
             return (
               <div onClick={() => this.handleSchemaSelection(schema)} className={this.state.selectedSchema === schema ? 'schema-name selected' : 'schema-name'}>{schema}</div>
@@ -152,13 +142,10 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
   }
 
   toggleAllPartTableView() {
-    console.log('current view all part table state', this.state.viewAllPartTables)
     this.setState({ viewAllPartTables: !this.state.viewAllPartTables })
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    // console.log('component updated with: ', this.props.tableListDict);
-    // console.log('component updated state for table: ', this.state.tablesToSort);
     if (this.props.tableListDict !== prevState.tablesToSort) {
       this.setState({ tablesToSort: this.props.tableListDict });
       this.sortTables(this.state.currentSort, this.state.tablesToSort);
@@ -199,8 +186,6 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
     let hasPartTableList: string[] = [];
     switch (sortType) {
       case 'tier':
-        console.log('sorting by tier');
-        // console.log('before sort: ', copyTableList);
         let byTierList: any = [];
         // let partTableNames: string[] = [];
         let partTableNames: any = {}
@@ -211,10 +196,8 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
             partTableNames[PTname] = partTable
             hasPartTableList.push(MTname);
             Object.entries(copyTableList).forEach((tableNameList: any) => {
-              // console.log('table name list here: ', tableNameList[1], 'table type: ', tableNameList[0].split('_')[0])
               if (tableNameList[1].includes(MTname)) {
                 let PTposition = tableNameList[1].indexOf(MTname) + 1
-                // console.log('inserting PT(', PTname + '.' +tableNameList[0].split('_')[0], ') at position ', PTposition)
                 tableNameList[1].splice(PTposition, 0, PTname + '.' + tableNameList[0].split('_')[0])
               }
             });
@@ -241,11 +224,9 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
             }
           });
         });
-        console.log('by TierList: ', byTierList);
         this.setState({ sortedTables: byTierList });
         break;
       case 'az':
-        console.log('sorting with alphabet A-Z');
         let byAlphDownList: any = [];
         if (copyTableList['part_tables'] && copyTableList['part_tables'].length > 0) {
           let newPartTableList: string[] = [];
@@ -256,9 +237,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
             Object.entries(copyTableList).forEach((byTierEntry: any) => {
 
               if (byTierEntry[1].includes(MTname)) {
-                // console.log('this tierentry: ', byTierEntry[1], ' includes ', MTname)
                 partTable = `${partTable}.${byTierEntry[0].split('_')[0]}`
-                // console.log('parttablename after: ', partTable) // expecting 'MasterTableName.PartTableName.MasterTableType'
                 newPartTableList.push(partTable);
               }
             })
@@ -266,7 +245,6 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
           copyTableList['new_part_tables'] = newPartTableList;
         }
         Object.entries(copyTableList).forEach((byTierEntry: any) => {
-          // console.log('byTierEntry for AZ sorting: ', byTierEntry);
           byTierEntry[1].forEach((tableName: string) => {
             if (byTierEntry[0] !== 'part_tables') {
               let tableEntry: any = {
@@ -288,19 +266,15 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
           })
         })
         byAlphDownList.sort((a: any, b: any) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-        console.log('byAlphDownList: ', byAlphDownList);
         this.setState({ sortedTables: byAlphDownList });
         break;
       case 'za':
-        console.log('sorting with alphabet Z-A');
         break;
     }
 
   }
 
   tableSelected(tablename: string, tabletype: string) {
-    console.log('table selected: ', tablename);
-    console.log('selected table type: ', tabletype);
     this.setState({ selectedTableName: tablename, selectedTableType: tabletype });
     // this.props.onTableSelection(this.state.selectedTable);
     this.props.onTableSelection(tablename, tabletype);
@@ -335,7 +309,6 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
             </div>
           </div>
         </div>
-        {/* <button onClick={()=>this.sortTables('tier', this.state.tablesToSort)}>test sort</button> */}
         <div className="table-listing">
           {this.state.sortedTables.map((eachTable: any) => {
             return (
