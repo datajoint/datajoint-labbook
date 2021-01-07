@@ -79,7 +79,7 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
   render() {
     return (
       <div className='login-div'>
-        <div className="login-container">
+        <div className='login-container'>
           <img className="login-top-logo" src={logo} alt="datajoint gui logo"/>
           <form className='login-form'>
             <label className='login-input-label'>Host/Database Address</label>
@@ -88,7 +88,13 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
             <input className='login-input' type='text' value={this.state.username} onChange={this.onUsernameChange}></input>
             <label className='login-input-label'>Password</label>
             <input className='login-input' type='password' value={this.state.password} onChange={this.onPasswordChange}></input>
-            <button className={this.state.databaseAddress && this.state.username && this.state.password ? 'login-input-button ready' : 'login-input-button'} onClick={this.onSubmit} type='button'>Connect</button>
+            <div className='login-interaction-div'>
+              <div>
+                <input className='remember-me-checkbox' type='checkbox' id='remember-me-checkbox'></input>
+                <label className='remember-me-checkbox-label' htmlFor='remember-me-checkbox'>Remember Me</label>
+              </div>
+              <button className={this.state.databaseAddress && this.state.username && this.state.password ? 'login-input-button ready' : 'login-input-button'} onClick={this.onSubmit} type='button'>Connect</button>
+            </div>
             <p className="form-message">{this.state.returnMessage}</p>
           </form>
         </div>

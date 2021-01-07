@@ -50,10 +50,21 @@ img.login-top-logo {
   height: 1.4rem;
 }
 
+.login-interaction-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.remember-me-checkbox-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 button.login-input-button {
   padding: 8px 32px;
   width: fit-content;
-  margin-top: 24px;
   align-self: flex-end;
   color: rgb(156, 156, 156);
   background-color: rgb(124, 123, 123);
