@@ -76,6 +76,11 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
       });
   }
 
+  isFormReady() {
+    console.log(this.state.databaseAddress && this.state.username && this.state.password ? true : false)
+    return this.state.databaseAddress && this.state.username && this.state.password ? true : false
+  }
+
   render() {
     return (
       <div className='login-div'>
@@ -93,7 +98,7 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
                 <input className='remember-me-checkbox' type='checkbox' id='remember-me-checkbox'></input>
                 <label className='remember-me-checkbox-label' htmlFor='remember-me-checkbox'>Remember Me</label>
               </div>
-              <button className={this.state.databaseAddress && this.state.username && this.state.password ? 'login-input-button ready' : 'login-input-button'} onClick={this.onSubmit} type='button'>Connect</button>
+              <button className={this.isFormReady() ? 'login-input-button ready' : 'login-input-button'} disabled={!this.isFormReady()} onClick={this.onSubmit} type='button'>Connect</button>
             </div>
             <p className="form-message">{this.state.returnMessage}</p>
           </form>
