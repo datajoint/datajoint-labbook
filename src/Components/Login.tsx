@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-
+import Cookies from 'js-cookie'
 import './Login.css'
+
 // Assets
 import logo from '../images/logo_default.svg'
 
@@ -12,6 +13,7 @@ interface loginInFormBuffer {
   databaseAddress: string;
   username: string;
   password: string;
+  rememberMe: boolean;
   returnMessage: string;
 }
 
@@ -24,6 +26,7 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
       databaseAddress: '',
       username: '',
       password: '',
+      rememberMe: false,
       returnMessage: ''
     }
 
@@ -31,7 +34,19 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     this.onUsernameChange = this.onUsernameChange.bind(this);
     this.onPasswordChange = this.onPasswordChange.bind(this);
     this.onDatabaseAddressChange = this.onDatabaseAddressChange.bind(this);
+    this.onRememberMeChange = this.onRememberMeChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    // Load databaseAddress and usernameCookie from cookies
+    var databaseAddressCookie = Cookies.get('databaseAddress');
+    var usernameCookie = Cookies.get('username')
+
+    this.setState({
+      databaseAddress: databaseAddressCookie === undefined ? '' : databaseAddressCookie,
+      username: usernameCookie === undefined ? '' : usernameCookie
+    })
   }
 
   onDatabaseAddressChange(event: any) {
@@ -44,6 +59,10 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
 
   onPasswordChange(event: any) {
     this.setState({password: event.target.value});
+  }
+
+  onRememberMeChange(event: any) {
+    this.setState({rememberMe: event.target.checked})
   }
 
   onSubmit(event: any) {
@@ -61,6 +80,12 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
       .then(result => {
         // Parse the result to see if there is a jwt property, if so then login credientials worked
         if (result.hasOwnProperty('jwt')) {
+          // If remember is checked then record the databaseAddress and username
+          if (this.state.rememberMe) {
+            Cookies.set('databaseAddress', this.state.databaseAddress);
+            Cookies.set('username', this.state.username);
+          }
+
           // Set the JWT for the current session
           this.props.setCurrentDatabaseConnectionJWT(result.jwt, this.state.databaseAddress);
         }
@@ -77,7 +102,6 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
   }
 
   isFormReady() {
-    console.log(this.state.databaseAddress && this.state.username && this.state.password ? true : false)
     return this.state.databaseAddress && this.state.username && this.state.password ? true : false
   }
 
@@ -95,7 +119,7 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
             <input className='login-input' type='password' value={this.state.password} onChange={this.onPasswordChange}></input>
             <div className='login-interaction-div'>
               <div>
-                <input className='remember-me-checkbox' type='checkbox' id='remember-me-checkbox'></input>
+                <input className='remember-me-checkbox' type='checkbox' id='remember-me-checkbox' checked={this.state.rememberMe} onChange={this.onRememberMeChange}></input>
                 <label className='remember-me-checkbox-label' htmlFor='remember-me-checkbox'>Remember Me</label>
               </div>
               <button className={this.isFormReady() ? 'login-input-button ready' : 'login-input-button'} disabled={!this.isFormReady()} onClick={this.onSubmit} type='button'>Connect</button>
