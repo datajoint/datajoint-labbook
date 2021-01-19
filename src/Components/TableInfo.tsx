@@ -4,7 +4,7 @@ import './TableInfo.css';
 type TableInfoState = {
   tableDefinition: string
 }
-class TableInfo extends React.Component<{ infoDefData: string }, TableInfoState> {
+class TableInfo extends React.Component<{infoDefData: string}, TableInfoState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -14,8 +14,7 @@ class TableInfo extends React.Component<{ infoDefData: string }, TableInfoState>
 
   componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props.infoDefData !== prevState.tableDefinition) {
-      // if (this.props.infoDefData !== prevProps.infoDefData) {
-      this.setState({ tableDefinition: this.props.infoDefData });
+      this.setState({tableDefinition: this.props.infoDefData});
 
     }
   }

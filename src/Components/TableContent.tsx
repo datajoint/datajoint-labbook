@@ -6,7 +6,7 @@ type TableContentStatus = {
   ctrlIsOpen: boolean,
   tableHeadings: Array<string>
 }
-class TableContent extends React.Component<{ contentData: Array<any>, tableName: string, tableType: string }, TableContentStatus> {
+class TableContent extends React.Component<{contentData: Array<any>, tableName: string, tableType: string}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -17,18 +17,17 @@ class TableContent extends React.Component<{ contentData: Array<any>, tableName:
   }
 
   openControl(ctrlType: string) {
-    console.log('opening controller: ', ctrlType)
     if (this.state.currentlyOpenCtrl === ctrlType) {
-      this.setState({ ctrlIsOpen: false, currentlyOpenCtrl: '' });
+      this.setState({ctrlIsOpen: false, currentlyOpenCtrl: ''});
     } else {
-      this.setState({ ctrlIsOpen: true, currentlyOpenCtrl: ctrlType })
+      this.setState({ctrlIsOpen: true, currentlyOpenCtrl: ctrlType})
     }
 
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props.contentData !== prevProps.contentData) {
-      this.setState({ tableHeadings: Object.keys(this.props.contentData[0]) });
+      this.setState({tableHeadings: Object.keys(this.props.contentData[0])});
     }
   }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 
 import './NavBar.css'
 
@@ -9,7 +9,7 @@ import logo from '../images/logo_default.svg'
 type DJGUINavBarState = {
 }
 
-class NavBar extends React.Component<{ hostname: string, isLoggedIn: boolean }, DJGUINavBarState> {
+class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJGUINavBarState> {
   constructor(props: any) {
     super(props);
     this.state = {

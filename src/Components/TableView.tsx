@@ -11,7 +11,7 @@ type TableViewState = {
   tableInfoData: string,
   selectedTable: string
 }
-class TableView extends React.Component<{ tableName: string, schemaName: string, tableType: string, token: string }, TableViewState> {
+class TableView extends React.Component<{tableName: string, schemaName: string, tableType: string, token: string}, TableViewState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -23,28 +23,27 @@ class TableView extends React.Component<{ tableName: string, schemaName: string,
   }
 
   switchCurrentView(viewChoice: string) {
-    this.setState({ currentView: viewChoice });
+    this.setState({currentView: viewChoice});
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
 
 
     if (this.props.tableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
-      this.setState({ selectedTable: this.props.tableName });
+      this.setState({selectedTable: this.props.tableName});
 
       if (this.state.currentView === 'tableContent') {
         fetch('/api/fetch_tuples', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-          body: JSON.stringify({ schemaName: this.props.schemaName, tableName: this.props.tableName })
+          headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+          body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName})
         })
           .then(result => result.json())
           .then(result => {
-            this.setState({ tableContentData: result.tuples })
+            this.setState({tableContentData: result.tuples})
           })
       }
       if (this.state.currentView === 'tableInfo') {
-        // this.setState({selectedTable: this.props.tableName})
         fetch('/api/get_table_definition', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
@@ -52,7 +51,7 @@ class TableView extends React.Component<{ tableName: string, schemaName: string,
         })
           .then(result => result.json())
           .then(result => {
-            this.setState({ tableInfoData: result.definition })
+            this.setState({tableInfoData: result.definition})
           })
       }
     }

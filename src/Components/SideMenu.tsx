@@ -1,6 +1,6 @@
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faSortAmountDown, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faSearch, faSortAmountDown, faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons'
 import './SideMenu.css';
 
 
@@ -8,7 +8,7 @@ type HomeSideMenuState = {
   tableDict: any,
   selectedSchema: string
 }
-class SideMenu extends React.Component<{ token: string, onReqTableData: any }, HomeSideMenuState> {
+class SideMenu extends React.Component<{token: string, onReqTableData: any}, HomeSideMenuState> {
   constructor(props: any) {
     super(props);
     this.handleOnSchemaSelection = this.handleOnSchemaSelection.bind(this);
@@ -19,15 +19,15 @@ class SideMenu extends React.Component<{ token: string, onReqTableData: any }, H
     }
   }
   handleOnSchemaSelection(schema: string) {
-    this.setState({ selectedSchema: schema })
+    this.setState({selectedSchema: schema})
     fetch('/api/list_tables', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      body: JSON.stringify({ schemaName: schema })
+      body: JSON.stringify({schemaName: schema})
     })
       .then(result => result.json())
       .then(result => {
-        this.setState({ tableDict: result.tableTypeAndNames });
+        this.setState({tableDict: result.tableTypeAndNames});
       })
       .catch((error) => {
         console.error('Error: ', error);
@@ -54,7 +54,7 @@ type ListSchemaState = {
   selectedSchema: string
 
 }
-class ListSchemas extends React.Component<{ token: string, onSchemaSelection: any }, ListSchemaState> {
+class ListSchemas extends React.Component<{token: string, onSchemaSelection: any}, ListSchemaState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -69,7 +69,7 @@ class ListSchemas extends React.Component<{ token: string, onSchemaSelection: an
     })
       .then(result => result.json())
       .then(result => {
-        this.setState({ schemaList: result.schemaNames });
+        this.setState({schemaList: result.schemaNames});
         this.handleSchemaSelection(result.schemaNames[0]);
       })
       .catch((error) => {
@@ -78,12 +78,12 @@ class ListSchemas extends React.Component<{ token: string, onSchemaSelection: an
   }
 
   handleSortSchema(value: string) {
-    this.setState({ schemaList: this.state.schemaList.reverse() });
+    this.setState({schemaList: this.state.schemaList.reverse()});
   }
 
   handleSchemaSelection(value: string) {
     if (value !== this.state.selectedSchema) {
-      this.setState({ selectedSchema: value });
+      this.setState({selectedSchema: value});
       this.props.onSchemaSelection(value);
     }
   }
@@ -126,7 +126,7 @@ type DJGUITableMenuState = {
   selectedTableName: string,
   selectedTableType: string
 }
-class ListTables extends React.Component<{ tableListDict: any, token: string, onTableSelection: any }, DJGUITableMenuState> {
+class ListTables extends React.Component<{tableListDict: any, token: string, onTableSelection: any}, DJGUITableMenuState> {
 
   constructor(props: any) {
     super(props);
@@ -142,7 +142,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
   }
 
   toggleAllPartTableView() {
-    this.setState({ viewAllPartTables: !this.state.viewAllPartTables })
+    this.setState({viewAllPartTables: !this.state.viewAllPartTables})
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -157,37 +157,38 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
   }
 
   sortTables(sortType: string, tableList: any) {
+    /*
+    API fetched structure: 
+    { "computed_tables" : ["TableName1", "TableName2"],
+      "lookup_tables": [],
+      "manual_tables": ["TableName", "AnotherTableName"],
+      "part_tables": ["TableName1.PartTableName1", "TableName1.PartTableName2"]    
+    }
 
-    // API fetched structure: 
-    // { "computed_tables" : ["TableName1", "TableName2"],
-    //   "lookup_tables": [],
-    //   "manual_tables": ["TableName", "AnotherTableName"],
-    //   "part_tables": ["TableName1.PartTableName1", "TableName1.PartTableName2"]    
-    // }
+    Post-sort structure by tier example:
+    [ { "name" : "TableName1", "hasPartTable": true, "type": "computed"]},
+      { "name" : "PartTableName1", "hasPartTable": false, "type": "computed.part"]},
+      { "name" : "PartTableName2", "hasPartTable": false, "type": "computed.part"]},
+      { "name" : "TableName2", "hasPartTable": false, "type": "computed"]},
+      { "name" : "TableName", "hasPartTable": false, "type": "manual"]},
+      { "name" : "AnotherTableName", "hasPartTable": false, "type": "manual"]},
+    ]
+    Post-sort structure by alphabet example:
+    [ { "name" : "AnotherTableName", "hasPartTable": false, "type": "manual"]},
+      { "name" : "TableName", "hasPartTable": false, "type": "manual"]},
+      { "name" : "TableName1", "hasPartTable": true, "type": "computed"]},
+      { "name" : "PartTableName1", "hasPartTable": false, "type": "computed.part"]},
+      { "name" : "PartTableName2", "hasPartTable": false, "type": "computed.part"]},
+      { "name" : "TableName2", "hasPartTable": false, "type": "computed"]}
+    ]
+    */
 
-    // Post-sort structure by tier example:
-    // [ { "name" : "TableName1", "hasPartTable": true, "type": "computed"]},
-    //   { "name" : "PartTableName1", "hasPartTable": false, "type": "computed.part"]},
-    //   { "name" : "PartTableName2", "hasPartTable": false, "type": "computed.part"]},
-    //   { "name" : "TableName2", "hasPartTable": false, "type": "computed"]},
-    //   { "name" : "TableName", "hasPartTable": false, "type": "manual"]},
-    //   { "name" : "AnotherTableName", "hasPartTable": false, "type": "manual"]},
-    // ]
-    // Post-sort structure by alphabet example:
-    // [ { "name" : "AnotherTableName", "hasPartTable": false, "type": "manual"]},
-    //   { "name" : "TableName", "hasPartTable": false, "type": "manual"]},
-    //   { "name" : "TableName1", "hasPartTable": true, "type": "computed"]},
-    //   { "name" : "PartTableName1", "hasPartTable": false, "type": "computed.part"]},
-    //   { "name" : "PartTableName2", "hasPartTable": false, "type": "computed.part"]},
-    //   { "name" : "TableName2", "hasPartTable": false, "type": "computed"]}
-    // ]
     let copyTableList: any = {};
     copyTableList = { ...tableList };
     let hasPartTableList: string[] = [];
     switch (sortType) {
       case 'tier':
         let byTierList: any = [];
-        // let partTableNames: string[] = [];
         let partTableNames: any = {}
         if (copyTableList['part_tables'] && copyTableList['part_tables'].length > 0) {
           copyTableList['part_tables'].forEach((partTable: string) => {
@@ -224,7 +225,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
             }
           });
         });
-        this.setState({ sortedTables: byTierList });
+        this.setState({sortedTables: byTierList});
         break;
       case 'az':
         let byAlphDownList: any = [];
@@ -266,7 +267,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
           })
         })
         byAlphDownList.sort((a: any, b: any) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-        this.setState({ sortedTables: byAlphDownList });
+        this.setState({sortedTables: byAlphDownList});
         break;
       case 'za':
         break;
@@ -275,8 +276,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
   }
 
   tableSelected(tablename: string, tabletype: string) {
-    this.setState({ selectedTableName: tablename, selectedTableType: tabletype });
-    // this.props.onTableSelection(this.state.selectedTable);
+    this.setState({selectedTableName: tablename, selectedTableType: tabletype});
     this.props.onTableSelection(tablename, tabletype);
   }
 
@@ -289,7 +289,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
               <FontAwesomeIcon className="sort-icon" icon={faSortAmountDown} />
               <label>Sort<br />Table</label>
             </div>
-            <select className="sort-table-options" onChange={(e) => { this.setState({ currentSort: e.target.value }); this.sortTables(e.target.value, this.props.tableListDict) }}>
+            <select className="sort-table-options" onChange={(e) => {this.setState({ currentSort: e.target.value}); this.sortTables(e.target.value, this.props.tableListDict) }}>
               <option value="tier">Tier</option>
               <option value="az">Alphabetical (A-Z)</option>
               {/* <option value="za">Alphabetical (Z-A)</option> */}
@@ -313,7 +313,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
           {this.state.sortedTables.map((eachTable: any) => {
             return (
               !eachTable['type'].endsWith('.part') ?
-                (<div className={this.state.selectedTableName === eachTable['name'] ? 'table-entry selected' : 'table-entry'} onClick={() => { this.tableSelected(eachTable['name'], eachTable['type']) }}>
+                (<div className={this.state.selectedTableName === eachTable['name'] ? 'table-entry selected' : 'table-entry'} onClick={() => {this.tableSelected(eachTable['name'], eachTable['type'])}}>
                   <p className="table-name">{eachTable['name']}</p>
                   <span className={eachTable['type'] === 'computed' ? 'computed tier-label' : (eachTable['type'] === 'lookup' ? 'lookup tier-label' : (eachTable['type'] === 'manual' ? 'manual tier-label' : 'unknown tier-label'))}>{eachTable['type']}</span>
                   {eachTable['hasPartTable'] ?
@@ -327,7 +327,7 @@ class ListTables extends React.Component<{ tableListDict: any, token: string, on
                 </div>)
                 :
                 (
-                  <div onClick={() => { this.tableSelected(eachTable['name'], 'part') }} className={this.state.viewAllPartTables && this.state.selectedTableName === eachTable['name'] ? "part-table-entry selected" : this.state.viewAllPartTables && this.state.selectedTableName !== eachTable['name'] ? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide" : ""}>
+                  <div onClick={() => {this.tableSelected(eachTable['name'], 'part')}} className={this.state.viewAllPartTables && this.state.selectedTableName === eachTable['name'] ? "part-table-entry selected" : this.state.viewAllPartTables && this.state.selectedTableName !== eachTable['name'] ? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide" : ""}>
                     <p className="table-name">{eachTable['name'].split('.')[1]}</p>
                     <span className={eachTable['type'].split('.')[0] === 'computed' ? "part-label computed-part" : eachTable['type'].split('.')[0] === 'lookup' ? "part-label lookup-part" : eachTable['type'].split('.')[0] === 'imported' ? "part-label imported-part" : "part-label manual-part"}>
                       <div className="MT-type">{eachTable['type'].split('.')[0]}</div>
