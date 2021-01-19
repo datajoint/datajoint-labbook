@@ -76,16 +76,24 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
         password: this.state.password
       })
     })
-      .then(result => result.json())
+      .then(result => {
+        // If remember is checked then record the databaseAddress and username
+        if (this.state.rememberMe) {
+          Cookies.set('databaseAddress', this.state.databaseAddress);
+          Cookies.set('username', this.state.username);
+        }
+        
+        // Check for error mesage 500, if so throw and error
+        if (result.status === 500) {
+          throw new Error('Unable to connect to backend');
+        }
+
+        // Covert result to json if all checks passed
+        return result.json();
+      })
       .then(result => {
         // Parse the result to see if there is a jwt property, if so then login credientials worked
         if (result.hasOwnProperty('jwt')) {
-          // If remember is checked then record the databaseAddress and username
-          if (this.state.rememberMe) {
-            Cookies.set('databaseAddress', this.state.databaseAddress);
-            Cookies.set('username', this.state.username);
-          }
-
           // Set the JWT for the current session
           this.props.setCurrentDatabaseConnectionJWT(result.jwt, this.state.databaseAddress);
         }
@@ -97,7 +105,7 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
       .catch((error) => {
         // Something else blew up
         console.error('Error:', error);
-        this.setState({returnMessage: error});
+        this.setState({returnMessage: error.toString()});
       });
   }
 
