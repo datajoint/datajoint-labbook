@@ -17,7 +17,7 @@ type HomeSideMenuState = {
  * SideMenu component that handles listing schemas and tables
  * 
  */
-class SideMenu extends React.Component<{token: string, selectedSchema: string, handleTableSelection: any}, HomeSideMenuState> {
+class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, handleTableSelection: any}, HomeSideMenuState> {
   constructor(props: any) {
     super(props);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
@@ -48,8 +48,8 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, h
           result.text().then(errorMessage => {throw new Error(errorMessage)});
         }
         
-        return result.json()}
-        )
+        return result.json()
+      })
       .then(result => {
         this.setState({tableDict: result.tableTypeAndNames});
       })
@@ -66,7 +66,13 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, h
     return (
       <div className="side-full-menu">
         <SchemaList token={this.props.token} handleSchemaSelection={(val: string) => this.handleSchemaSelection(val)} />
-        <TableLists token={this.props.token} tableListDict={this.state.tableDict} onTableSelection={(tableName: string, tableType: string) => {this.handleTableSelection(tableName, tableType)}} />
+        <TableLists 
+          token={this.props.token} 
+          tableListDict={this.state.tableDict} 
+          selectedTableName={this.props.selectedTableName} 
+          selectedSchemaBuffer={this.state.selectedSchemaBuffer} 
+          onTableSelection={(tableName: string, tableType: string) => {this.handleTableSelection(tableName, tableType)}}
+        />
       </div>
     )
   }

@@ -2,6 +2,51 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
 
+/**
+ * Enum for each type of table supported by datajoint
+ */
+enum TableType {
+  MANUAL = 0,
+  COMPUTED = 1,
+  LOOKUP = 2,
+  IMPORTED = 3,
+  PART = 4
+}
+
+/**
+ * Parent Class for all table entry which mainly contains name and type of each table
+ */
+class TableListEntry {
+  tableName: string;
+  tableType: TableType;
+
+  constructor(tableName: string, tableType: TableType) {
+    this.tableName = tableName;
+    this.tableType = tableType;
+  }
+}
+
+/**
+ * Parent Table List Entry Class which inherits TableListEntry but adds partTables array as an attribute
+ */
+class ParentTableListEntry extends TableListEntry {
+  partTables: Array<TableListEntry>;
+
+  constructor(tableName: string, tableType:TableType = TableType.PART, partTables:Array<TableListEntry>) {
+    super(tableName, tableType);
+    this.partTables = partTables;
+  }
+}
+
+/**
+ * Part Table List Entry which inherits TableListEntry but set table type to PART by default
+ */
+class PartTableListEntry extends TableListEntry {
+  constructor(tableName: string) {
+    super(tableName, TableType.PART)
+  }
+}
+
 type TableListState = {
   currentSort: string,
   viewAllPartTables: boolean,
@@ -9,11 +54,11 @@ type TableListState = {
   tablesToSort: any,
   showPT: any,
   selectedTableName: string,
-  selectedTableType: string
+  selectedTableType: string,
+  tableList: Array<TableListEntry>
 }
 
-class TableList extends React.Component<{tableListDict: any, token: string, onTableSelection: any}, TableListState> {
-
+class TableList extends React.Component<{token: string, tableListDict: any, selectedSchemaBuffer: string, selectedTableName: string, onTableSelection: any}, TableListState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -23,7 +68,8 @@ class TableList extends React.Component<{tableListDict: any, token: string, onTa
       tablesToSort: this.props.tableListDict,
       showPT: {},
       selectedTableName: '',
-      selectedTableType: ''
+      selectedTableType: '',
+      tableList: [],
     }
   }
 
@@ -32,136 +78,78 @@ class TableList extends React.Component<{tableListDict: any, token: string, onTa
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    if (this.props.tableListDict !== prevState.tablesToSort) {
-      this.setState({ tablesToSort: this.props.tableListDict });
-      this.sortTables(this.state.currentSort, this.state.tablesToSort);
-      if (this.state.selectedTableName === '') {
-        this.tableSelected(this.state.sortedTables[0]?.['name'], this.state.sortedTables[0]?.['type'])
+    // Check if the selectedSchemaBuffer is different if so than update the tableList
+    if (prevProps.selectedSchemaBuffer === this.props.selectedSchemaBuffer) {
+      return;
+    }
+
+    // Parse the tableListDict and covert it to array form call tableList for rendering
+    // Check if this.props.tableListDict is valid
+    if (Object.keys(this.props.tableListDict).length === 0) {
+      return;
+    }
+
+    // Read through each part table, create the TableListEntry and store it cache it temporarly with the parent table as the key
+    let partTableDict: Record<string, Array<PartTableListEntry>> = {};
+
+    for (let partTableFullName of this.props.tableListDict['part_tables']) {
+      const partTableNameSplitResult = partTableFullName.split('.');
+
+      // Check if key already exist, if not initalize the array
+      if (!(partTableNameSplitResult[0] in partTableDict)) {
+        partTableDict[partTableNameSplitResult[0]] = [];
+      }
+
+      partTableDict[partTableNameSplitResult[0]].push(new PartTableListEntry(partTableNameSplitResult[1]));
+    }
+
+    // Parse through the rest of the table types of Computed, Manual, and Lookup and attach Part table accordingly. Ignore all other type
+    let tableListDictKeys: Array<string> = Object.keys(this.props.tableListDict);
+
+    // Create a new tableList to later use for setState
+    let tableList: Array<TableListEntry> = [];
+
+    // Remove part_tables entry from the key list
+    tableListDictKeys.splice(tableListDictKeys.indexOf('part_tables'));
+
+    // Looped through each type of table that is not part
+    for (let tableTypeName of tableListDictKeys) {
+      // Figure out what table type to be set
+      let tableType = null;
+
+      if (tableTypeName === 'computed_tables') {
+        tableType = TableType.COMPUTED;
+      }
+      else if (tableTypeName === 'manual_tables') {
+        tableType = TableType.MANUAL;
+      }
+      else if (tableTypeName === 'lookup_tables') {
+        tableType = TableType.LOOKUP;
+      }
+      else if (tableTypeName === 'imported_tables') {
+        tableType = TableType.IMPORTED;
+      }
+      else {
+        throw Error('Unsupported table type: ' + tableTypeName);
+      }
+
+      // Iterate through the table name list and append part tables if the parent table name match
+      for (let parentTableName of this.props.tableListDict[tableTypeName]) {
+        // Check if parent table has parts table if so inserted
+        if (parentTableName in partTableDict) {
+          tableList.push(new ParentTableListEntry(parentTableName, tableType, partTableDict[parentTableName]));
+        }
+        else {
+          tableList.push(new ParentTableListEntry(parentTableName, tableType, []));
+        }
       }
     }
 
-  }
-
-  sortTables(sortType: string, tableList: any) {
-    /*
-    API fetched structure: 
-    { "computed_tables" : ["TableName1", "TableName2"],
-      "lookup_tables": [],
-      "manual_tables": ["TableName", "AnotherTableName"],
-      "part_tables": ["TableName1.PartTableName1", "TableName1.PartTableName2"]    
-    }
-
-    Post-sort structure by tier example:
-    [ { "name" : "TableName1", "hasPartTable": true, "type": "computed"]},
-      { "name" : "PartTableName1", "hasPartTable": false, "type": "computed.part"]},
-      { "name" : "PartTableName2", "hasPartTable": false, "type": "computed.part"]},
-      { "name" : "TableName2", "hasPartTable": false, "type": "computed"]},
-      { "name" : "TableName", "hasPartTable": false, "type": "manual"]},
-      { "name" : "AnotherTableName", "hasPartTable": false, "type": "manual"]},
-    ]
-    Post-sort structure by alphabet example:
-    [ { "name" : "AnotherTableName", "hasPartTable": false, "type": "manual"]},
-      { "name" : "TableName", "hasPartTable": false, "type": "manual"]},
-      { "name" : "TableName1", "hasPartTable": true, "type": "computed"]},
-      { "name" : "PartTableName1", "hasPartTable": false, "type": "computed.part"]},
-      { "name" : "PartTableName2", "hasPartTable": false, "type": "computed.part"]},
-      { "name" : "TableName2", "hasPartTable": false, "type": "computed"]}
-    ]
-    */
-
-    let copyTableList: any = {};
-    copyTableList = { ...tableList };
-    let hasPartTableList: string[] = [];
-    switch (sortType) {
-      case 'tier':
-        let byTierList: any = [];
-        let partTableNames: any = {}
-        if (copyTableList['part_tables'] && copyTableList['part_tables'].length > 0) {
-          copyTableList['part_tables'].forEach((partTable: string) => {
-            let MTname = partTable.split('.')[0];
-            let PTname = partTable.split('.')[1];
-            partTableNames[PTname] = partTable
-            hasPartTableList.push(MTname);
-            Object.entries(copyTableList).forEach((tableNameList: any) => {
-              if (tableNameList[1].includes(MTname)) {
-                let PTposition = tableNameList[1].indexOf(MTname) + 1
-                tableNameList[1].splice(PTposition, 0, PTname + '.' + tableNameList[0].split('_')[0])
-              }
-            });
-          })
-        }
-        Object.entries(copyTableList).forEach((byTierEntry: any) => {
-          byTierEntry[1].forEach((tableName: any) => {
-            if (byTierEntry[0] !== 'part_tables') {
-              let tableEntry: any = {
-                name: tableName,
-              }
-              if (hasPartTableList.includes(tableName)) {
-                tableEntry['hasPartTable'] = true;
-                tableEntry['type'] = byTierEntry[0].split('_')[0];
-              } else if (Object.keys(partTableNames).includes(tableName.split('.')[0])) {
-                tableEntry['hasPartTable'] = false;
-                tableEntry['type'] = tableName.split('.')[1] ? tableName.split('.')[1] + '.part' : byTierEntry[0].split('_')[0]; // for cases where there's the same tablename as another master's part table in the same schema/table type
-                tableEntry['name'] = partTableNames[tableName.split('.')[0]];
-              } else {
-                tableEntry['hasPartTable'] = false;
-                tableEntry['type'] = byTierEntry[0].split('_')[0];
-              }
-              byTierList.push(tableEntry);
-            }
-          });
-        });
-        this.setState({sortedTables: byTierList});
-        break;
-      case 'az':
-        let byAlphDownList: any = [];
-        if (copyTableList['part_tables'] && copyTableList['part_tables'].length > 0) {
-          let newPartTableList: string[] = [];
-          copyTableList['part_tables'].forEach((partTable: string) => {
-            let MTname = partTable.split('.')[0];
-            hasPartTableList.push(MTname);
-
-            Object.entries(copyTableList).forEach((byTierEntry: any) => {
-
-              if (byTierEntry[1].includes(MTname)) {
-                partTable = `${partTable}.${byTierEntry[0].split('_')[0]}`
-                newPartTableList.push(partTable);
-              }
-            })
-          });
-          copyTableList['new_part_tables'] = newPartTableList;
-        }
-        Object.entries(copyTableList).forEach((byTierEntry: any) => {
-          byTierEntry[1].forEach((tableName: string) => {
-            if (byTierEntry[0] !== 'part_tables') {
-              let tableEntry: any = {
-                name: tableName,
-                type: byTierEntry[0].split('_')[0]
-              }
-              if (hasPartTableList.includes(tableName)) {
-                tableEntry['hasPartTable'] = true;
-                tableEntry['type'] = byTierEntry[0].split('_')[0]
-              } else if (byTierEntry[0] === 'new_part_tables') {
-                tableEntry['type'] = `${tableName.split('.')[2]}.part`;
-                tableEntry['name'] = tableName.split('.').slice(0, 2).join('.');
-              } else {
-                tableEntry['hasPartTable'] = false;
-                tableEntry['type'] = byTierEntry[0].split('_')[0]
-              }
-              byAlphDownList.push(tableEntry); // not alphabetized yet - just dumping for now
-            }
-          })
-        })
-        byAlphDownList.sort((a: any, b: any) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-        this.setState({sortedTables: byAlphDownList});
-        break;
-      case 'za':
-        break;
-    }
+     // Update the state
+     this.setState({tableList: tableList});
   }
 
   tableSelected(tablename: string, tabletype: string) {
-    this.setState({selectedTableName: tablename, selectedTableType: tabletype});
     this.props.onTableSelection(tablename, tabletype);
   }
 
@@ -174,7 +162,7 @@ class TableList extends React.Component<{tableListDict: any, token: string, onTa
               <FontAwesomeIcon className="sort-icon" icon={faSortAmountDown} />
               <label>Sort<br />Table</label>
             </div>
-            <select className="sort-table-options" onChange={(e) => {this.setState({ currentSort: e.target.value}); this.sortTables(e.target.value, this.props.tableListDict) }}>
+            <select className="sort-table-options">
               <option value="tier">Tier</option>
               <option value="az">Alphabetical (A-Z)</option>
               {/* <option value="za">Alphabetical (Z-A)</option> */}
@@ -192,7 +180,16 @@ class TableList extends React.Component<{tableListDict: any, token: string, onTa
           </div>
         </div>
         <div className="table-listing">
-          {this.state.sortedTables.map((eachTable: any) => {
+
+          {
+            this.state.tableList.map((table: TableListEntry) => {
+              return(
+                <div>{table.tableName}</div>
+              )
+            })
+          
+          
+          /*this.state.sortedTables.map((eachTable: any) => {
             return (
               !eachTable['type'].endsWith('.part') ?
                 (<div className={this.state.selectedTableName === eachTable['name'] ? 'table-entry selected' : 'table-entry'} key={eachTable['name']} onClick={() => {this.tableSelected(eachTable['name'], eachTable['type'])}}>
@@ -218,7 +215,7 @@ class TableList extends React.Component<{tableListDict: any, token: string, onTa
                   </div>
                 )
             )
-          })}
+          })*/}
         </div>
       </div>
     )
