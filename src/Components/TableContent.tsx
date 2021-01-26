@@ -6,7 +6,7 @@ type TableContentStatus = {
   ctrlIsOpen: boolean,
   tableHeadings: Array<string>
 }
-class TableContent extends React.Component<{contentData: Array<any>, tableName: string, tableType: string}, TableContentStatus> {
+class TableContent extends React.Component<{contentData: Array<any>, attributeData: Array<any>, tableName: string, tableType: string}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {

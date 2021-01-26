@@ -8,6 +8,7 @@ import TableInfo from './TableInfo';
 type TableViewState = {
   currentView: string,
   tableContentData: Array<any>,
+  tableAttributeData: Array<any>,
   tableInfoData: string,
   selectedTable: string
 }
@@ -17,6 +18,7 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
     this.state = {
       currentView: 'tableContent', //'tableContent' or 'tableInfo'
       tableContentData: [],
+      tableAttributeData: [],
       tableInfoData: '',
       selectedTable: ''
     }
@@ -33,6 +35,19 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
       this.setState({selectedTable: this.props.tableName});
 
       if (this.state.currentView === 'tableContent') {
+        // retrieve table headers
+        fetch('/api/get_table_attributes', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+          body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName})
+        })
+          .then(result => result.json())
+          .then(result => {
+            console.log('fetched table attributes:');
+            console.log(result);
+            this.setState({tableAttributeData: result})
+          })
+        // retrieve table content
         fetch('/api/fetch_tuples', {
           method: 'POST',
           headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
@@ -40,6 +55,8 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
         })
           .then(result => result.json())
           .then(result => {
+            console.log('fetched table content:');
+            console.log(result);
             this.setState({tableContentData: result.tuples})
           })
       }
@@ -67,7 +84,7 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
         </div>
         <div className="view-area">
           {this.state.currentView === 'tableContent' ?
-            <TableContent contentData={this.state.tableContentData} tableName={this.state.selectedTable} tableType={this.props.tableType} />
+            <TableContent contentData={this.state.tableContentData} attributeData={this.state.tableAttributeData} tableName={this.state.selectedTable} tableType={this.props.tableType} />
             : this.state.currentView === 'tableInfo' ?
               <TableInfo infoDefData={this.state.tableInfoData} /> : ''
           }
