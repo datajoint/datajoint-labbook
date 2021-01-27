@@ -30,8 +30,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-
-
     if (this.props.tableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
       this.setState({selectedTable: this.props.tableName});
 
@@ -83,13 +81,12 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           <div className={this.state.currentView === "tableContent" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableContent')}>View Content</div>
           <div className={this.state.currentView === "tableInfo" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableInfo')}>Table Information</div>
         </div>
-        <div className="view-area">
-          {this.state.currentView === 'tableContent' ?
+        <div className="view-area"> {
+            this.state.currentView === 'tableContent' ?
             <TableContent contentData={this.state.tableContentData} attributeData={this.state.tableAttributeData} tableName={this.state.selectedTable} tableType={this.props.tableType} />
             : this.state.currentView === 'tableInfo' ?
               <TableInfo infoDefData={this.state.tableInfoData} /> : ''
           }
-
         </div>
       </div>
     )

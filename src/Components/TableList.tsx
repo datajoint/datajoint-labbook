@@ -162,7 +162,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
   }
 
   render() {
-    return (
+    return(
       <div className="table-menu">
         <div className="table-view-controls">
           <div className="sort-table-field">
@@ -191,12 +191,11 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
           {
             this.state.tableList.map((table: ParentTableListEntry) => {
               return(
-                // <div key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>{table.tableName}</div>
                 <div>
                   <div className={this.props.selectedTableName === table.tableName ? 'table-entry selected' : 'table-entry'} key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
                     <p className="table-name">{table.tableName}</p>
-                    <span className={table.tableType === TableType.COMPUTED ? 'computed tier-label' : (table.tableType === TableType.LOOKUP ? 'lookup tier-label' : (table.tableType === TableType.MANUAL ? 'manual tier-label' : 'unknown tier-label'))}>{TableType[table.tableType].toLowerCase()}</span>
-                    {table.partTables.length ?
+                    <span className={table.tableType === TableType.COMPUTED ? 'computed tier-label' : (table.tableType === TableType.LOOKUP ? 'lookup tier-label' : (table.tableType === TableType.MANUAL ? 'manual tier-label' : 'unknown tier-label'))}>{TableType[table.tableType].toLowerCase()}</span> {
+                      table.partTables.length ?
                       (<div onClick={() => {this.toggleEachPartTableView(table)}} className={table.tableType === TableType.COMPUTED ? "computed show-part-table" : table.tableType === TableType.IMPORTED ? "imported show-part-table" : table.tableType === TableType.LOOKUP  ? "lookup show-part-table" : "manual show-part-table"}>
                         <label className="head">part table</label>
                         <div className="icon">{!this.state.viewAllPartTables || this.state.hidePartTable.includes(table.tableName) ?
@@ -217,14 +216,11 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
                       </div>
                       )
                     })
-                    
                   ) : ''
                   }
                 </div>
               )
             })
-          
-          
           }
         </div>
       </div>
