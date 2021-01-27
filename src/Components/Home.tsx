@@ -6,32 +6,37 @@ import SideMenu from './SideMenu';
 import TableView from './TableView';
 
 type DJGUIHomeState = {
-  reqTableName: string,
-  reqSchemaName: string,
-  reqTableType: string
+  selectedSchema: string,
+  selectedTableName: string,
+  selectedTableType: string
 }
+
 class Home extends React.Component<{token: string}, DJGUIHomeState> {
   constructor(props: any) {
     super(props);
-    this.handleTableDataReq = this.handleTableDataReq.bind(this);
     this.state = {
-      reqTableName: '',
-      reqSchemaName: '',
-      reqTableType: ''
+      selectedSchema: '',
+      selectedTableName: '',
+      selectedTableType: ''
     }
+    this.handleTableSelection = this.handleTableSelection.bind(this);
   }
-  handleTableDataReq(tablename:string, tabletype:string, schema:string) {
-    this.setState({reqTableName: tablename, reqSchemaName: schema, reqTableType: tabletype})
+
+  handleTableSelection(schemaName:string, tableName:string, tableType:string) {
+    this.setState({selectedSchema: schemaName, selectedTableName: tableName, selectedTableType: tableType})
   }
 
   render() {
     return (
       <div className="home-container">
         <div className="side-menu-container">
-          <SideMenu token={this.props.token} onReqTableData={(tablename:string, tabletype:string, schema:string)=>{this.handleTableDataReq(tablename, tabletype, schema)}}/>
+          <SideMenu token={this.props.token}
+            selectedSchema={this.state.selectedSchema}
+            selectedTableName={this.state.selectedTableName}
+            handleTableSelection={(schema:string, tablename:string, tabletype:string)=>{this.handleTableSelection(schema, tablename, tabletype)}}/>
         </div>
         <div className="table-view-container">
-          <TableView token={this.props.token} tableName={this.state.reqTableName} schemaName={this.state.reqSchemaName} tableType={this.state.reqTableType}/>
+          <TableView token={this.props.token} schemaName={this.state.selectedSchema} tableName={this.state.selectedTableName}  tableType={this.state.selectedTableType}/>
         </div>
       </div>
     )
