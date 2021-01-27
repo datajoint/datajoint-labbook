@@ -46,8 +46,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
         })
           .then(result => result.json())
           .then(result => {
-            console.log('fetched table attributes:');
-            console.log(result);
             this.setState({tableAttributeData: result})
           })
         // retrieve table content
@@ -58,8 +56,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
         })
           .then(result => result.json())
           .then(result => {
-            console.log('fetched table content:');
-            console.log(result);
             this.setState({tableContentData: result.tuples})
           })
       }
