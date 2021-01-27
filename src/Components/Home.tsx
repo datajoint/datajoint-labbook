@@ -1,6 +1,6 @@
 import React from 'react';
 import './Home.css';
-import { TableType }  from '../utilities/enums';
+import {TableType} from './TableList'
 
 
 // Component imports

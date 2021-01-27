@@ -1,8 +1,7 @@
 import React from 'react';
 import SchemaList from './SchemaList'
-import TableList from './TableList'
+import {TableList, TableType} from './TableList'
 import './SideMenu.css';
-import { TableType }  from '../utilities/enums'
 
 /**
  * selectedSchemaBuffer: Buffer to temporarly stored the selected schema and wait until the user select a table to update the parent state which will update other views
