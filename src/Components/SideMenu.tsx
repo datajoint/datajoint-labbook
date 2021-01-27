@@ -16,7 +16,7 @@ type HomeSideMenuState = {
  * SideMenu component that handles listing schemas and tables
  * 
  */
-class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, handleTableSelection: any}, HomeSideMenuState> {
+class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, selectedTableType: TableType, handleTableSelection: any}, HomeSideMenuState> {
   constructor(props: any) {
     super(props);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
@@ -75,6 +75,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
           token={this.props.token} 
           tableListDict={this.state.tableDict} 
           selectedTableName={this.props.selectedTableName}
+          selectedTableType = {this.props.selectedTableType}
           onTableSelection={(tableName: string, tableType: TableType) => {this.handleTableSelection(tableName, tableType)}}
         />
       </div>
