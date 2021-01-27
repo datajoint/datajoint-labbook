@@ -30,9 +30,9 @@ class TableListEntry {
  * Parent Table List Entry Class which inherits TableListEntry but adds partTables array as an attribute
  */
 class ParentTableListEntry extends TableListEntry {
-  partTables: Array<TableListEntry>;
+  partTables: Array<PartTableListEntry>;
 
-  constructor(tableName: string, tableType:TableType = TableType.PART, partTables:Array<TableListEntry>) {
+  constructor(tableName: string, tableType: TableType, partTables: Array<PartTableListEntry>) {
     super(tableName, tableType);
     this.partTables = partTables;
   }
@@ -43,26 +43,24 @@ class ParentTableListEntry extends TableListEntry {
  */
 class PartTableListEntry extends TableListEntry {
   constructor(tableName: string) {
-    super(tableName, TableType.PART)
+    super(tableName, TableType.PART);
   }
 }
 
 type TableListState = {
   currentSort: string,
   viewAllPartTables: boolean,
-  sortedTables: Array<any>,
   tablesToSort: any,
   showPT: any,
-  tableList: Array<TableListEntry>
+  tableList: Array<ParentTableListEntry>
 }
 
-class TableList extends React.Component<{token: string, tableListDict: any, selectedSchemaBuffer: string, selectedTableName: string, onTableSelection: any}, TableListState> {
+class TableList extends React.Component<{token: string, tableListDict: any, selectedTableName: string, onTableSelection: any}, TableListState> {
   constructor(props: any) {
     super(props);
     this.state = {
       currentSort: 'tier',
       viewAllPartTables: true,
-      sortedTables: [],
       tablesToSort: this.props.tableListDict,
       showPT: {},
       tableList: [],
@@ -78,13 +76,13 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     if (prevProps.tableListDict === this.props.tableListDict) {
       return;
     }
-
-    // Parse the tableListDict and covert it to array form call tableList for rendering
+  
     // Check if this.props.tableListDict is valid
     if (Object.keys(this.props.tableListDict).length === 0) {
       return;
     }
 
+    // Parse the tableListDict and covert it to array form call tableList for rendering
     // Read through each part table, create the TableListEntry and store it cache it temporarly with the parent table as the key
     let partTableDict: Record<string, Array<PartTableListEntry>> = {};
 
@@ -99,11 +97,11 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
       partTableDict[partTableNameSplitResult[0]].push(new PartTableListEntry(partTableNameSplitResult[1]));
     }
 
-    // Parse through the rest of the table types of Computed, Manual, and Lookup and attach Part table accordingly. Ignore all other type
+    // Parse through the rest of the table types of Computed, Manual, Imported and Lookup and attach Part table accordingly. Ignore all other type
     let tableListDictKeys: Array<string> = Object.keys(this.props.tableListDict);
 
     // Create a new tableList to later use for setState
-    let tableList: Array<TableListEntry> = [];
+    let tableList: Array<ParentTableListEntry> = [];
 
     // Remove part_tables entry from the key list
     tableListDictKeys.splice(tableListDictKeys.indexOf('part_tables'));
@@ -172,11 +170,10 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
           </div>
         </div>
         <div className="table-listing">
-
           {
-            this.state.tableList.map((table: TableListEntry) => {
+            this.state.tableList.map((table: ParentTableListEntry) => {
               return(
-                <div onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>{table.tableName}</div>
+                <div key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>{table.tableName}</div>
               )
             })
           

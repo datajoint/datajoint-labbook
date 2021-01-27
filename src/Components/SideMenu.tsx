@@ -37,6 +37,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
     // Update selectedSchemaBuffer
     this.setState({selectedSchemaBuffer: schema})
     
+    // Run api fetch for list tables and deal with result
     fetch('/api/list_tables', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
@@ -48,7 +49,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
           result.text().then(errorMessage => {throw new Error(errorMessage)});
         }
         
-        return result.json()
+        return result.json();
       })
       .then(result => {
         this.setState({tableDict: result.tableTypeAndNames});
@@ -58,6 +59,11 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
       })
   }
 
+  /**
+   * Function to handle table selection by including schema info from this.state.selectedSchemaBuffer
+   * @param tableName
+   * @param tableType Enums from TableList
+   */
   handleTableSelection(tableName: string, tableType: string) {
     this.props.handleTableSelection(this.state.selectedSchemaBuffer, tableName, tableType);
   }
@@ -69,8 +75,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
         <TableLists 
           token={this.props.token} 
           tableListDict={this.state.tableDict} 
-          selectedTableName={this.props.selectedTableName} 
-          selectedSchemaBuffer={this.state.selectedSchemaBuffer} 
+          selectedTableName={this.props.selectedTableName}
           onTableSelection={(tableName: string, tableType: string) => {this.handleTableSelection(tableName, tableType)}}
         />
       </div>

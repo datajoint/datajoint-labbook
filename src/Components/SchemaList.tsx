@@ -59,7 +59,7 @@ class SchemaList extends React.Component<{token: string, handleSchemaSelection: 
    */
   handleSchemaSelection(schemaIndex: number) {
     // Check if the schema is already selected, if so do nothing
-    if (schemaIndex !== this.state.selectedSchemaIndex && schemaIndex !== -1) {
+    if (schemaIndex !== this.state.selectedSchemaIndex) {
       // Schema selected was different thus we need to udpate the selected schema index and call the parent handleSchemaSelection with the name
       this.setState({selectedSchemaIndex: schemaIndex});
       this.props.handleSchemaSelection(this.state.schemaList[schemaIndex]);
