@@ -41,6 +41,7 @@
   right: 12px;
   position: absolute;
 }
+
 .content-controllers button {
   padding: 4px 32px;
   margin-left: 12px;
@@ -50,6 +51,7 @@
   color: #262A22;
   font-weight: 600;
 }
+
 .content-controllers button:hover {
   /* background-color: #82D088; */
   border-color: #399E5A;

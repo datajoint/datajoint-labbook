@@ -1,18 +1,17 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons';
-import { TableType }  from '../utilities/enums';
+import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
 
 /**
  * Enum for each type of table supported by datajoint
  */
-// enum TableType {
-//   MANUAL = 0,
-//   COMPUTED = 1,
-//   LOOKUP = 2,
-//   IMPORTED = 3,
-//   PART = 4
-// }
+enum TableType {
+  MANUAL = 0,
+  COMPUTED = 1,
+  LOOKUP = 2,
+  IMPORTED = 3,
+  PART = 4
+}
 
 /**
  * Parent Class for all table entry which mainly contains name and type of each table
@@ -163,7 +162,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
   }
 
   render() {
-    return (
+    return(
       <div className="table-menu">
         <div className="table-view-controls">
           <div className="sort-table-field">
@@ -192,7 +191,6 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
           {
             this.state.tableList.map((table: ParentTableListEntry) => {
               return(
-                // <div key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>{table.tableName}</div>
                 <div>
                   <div className={this.props.selectedTableName === table.tableName ? 'table-entry selected' : 'table-entry'} key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
                     <p className="table-name">{table.tableName}</p>
@@ -218,14 +216,11 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
                       </div>
                       )
                     })
-                    
                   ) : ''
                   }
                 </div>
               )
             })
-          
-          
           }
         </div>
       </div>
@@ -233,4 +228,4 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
   }
 }
 
-export default TableList
+export {TableList, TableType}

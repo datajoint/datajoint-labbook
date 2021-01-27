@@ -1,12 +1,10 @@
 import React from 'react';
 import './Home.css';
-import { TableType }  from '../utilities/enums';
-
 
 // Component imports
 import SideMenu from './SideMenu';
 import TableView from './TableView';
-
+import {TableType} from './TableList'
 
 type DJGUIHomeState = {
   selectedSchema: string,
@@ -15,7 +13,6 @@ type DJGUIHomeState = {
 }
 
 class Home extends React.Component<{token: string}, DJGUIHomeState> {
-
   constructor(props: any) {
     super(props);
     this.state = {

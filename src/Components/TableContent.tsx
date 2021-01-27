@@ -2,9 +2,7 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
-import { TableType }  from '../utilities/enums'
-
-
+import {TableType}  from './TableList'
 
 type TableContentStatus = {
   currentlyOpenCtrl: string,
@@ -37,7 +35,8 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
   openControl(ctrlType: string) {
     if (this.state.currentlyOpenCtrl === ctrlType) {
       this.setState({ctrlIsOpen: false, currentlyOpenCtrl: ''});
-    } else {
+    } 
+    else {
       this.setState({ctrlIsOpen: true, currentlyOpenCtrl: ctrlType})
     }
 
@@ -66,26 +65,30 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
   handlePagination(cmd: PaginationCommand) {
     if (cmd === PaginationCommand.start) {
       this.setState({paginatorState: [0, this.state.pageIncrement]})
-    } else if (cmd === PaginationCommand.end) {
+    } 
+    else if (cmd === PaginationCommand.end) {
       this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
-    } else if (cmd === PaginationCommand.forward) {
+    } 
+    else if (cmd === PaginationCommand.forward) {
       if (this.state.paginatorState[1] + this.state.pageIncrement < this.props.contentData.length) {
         this.setState({paginatorState: [this.state.paginatorState[0] + this.state.pageIncrement, this.state.paginatorState[1] + this.state.pageIncrement]})
-      } else {
+      } 
+      else {
         this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
       }
-    } else if (cmd === PaginationCommand.backward) {
+    } 
+    else if (cmd === PaginationCommand.backward) {
       if (this.state.paginatorState[0] - this.state.pageIncrement > 0 || this.state.paginatorState[0] - this.state.pageIncrement === 0) {
         this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]]})
-      } else {
+      } 
+      else {
         this.setState({paginatorState: [0, this.state.pageIncrement]})
       }
     }
   }
-
   
   render() { 
-    return (
+    return(
       <div className="table-content-viewer">
         <div className={this.props.tableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.tableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.tableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.tableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
           <div className={this.props.tableType === TableType.COMPUTED ? 'computed table-type-tag' : this.props.tableType === TableType.IMPORTED  ? 'imported table-type-tag' : this.props.tableType === TableType.LOOKUP ? 'lookup table-type-tag' : this.props.tableType === TableType.MANUAL ? 'manual table-type-tag' : 'part table-type-tag'}>{TableType[this.props.tableType]}</div>

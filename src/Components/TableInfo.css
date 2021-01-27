@@ -4,12 +4,15 @@
   width: 94%;
   margin: 0 auto;
 }
+
 .info-content {
   padding-top: 24px;
 }
+
 h4.info-title {
   margin: 0 0 4px 0;
 }
+
 .description-info {
   position: relative;
   font-family: 'Ubuntu Mono', monospace;
