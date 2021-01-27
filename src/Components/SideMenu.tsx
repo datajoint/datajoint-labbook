@@ -2,14 +2,8 @@ import React from 'react';
 import SchemaList from './SchemaList'
 import TableList from './TableList'
 import './SideMenu.css';
+import { TableType }  from '../utilities/enums'
 
-enum TableType {
-  MANUAL = 0,
-  COMPUTED = 1,
-  LOOKUP = 2,
-  IMPORTED = 3,
-  PART = 4
-}
 /**
  * selectedSchemaBuffer: Buffer to temporarly stored the selected schema and wait until the user select a table to update the parent state which will update other views
  * tableDict: Dictonary containing all the tables type and name, please refer the API call to see what it returns.

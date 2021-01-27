@@ -1,17 +1,12 @@
 import React from 'react';
 import "./TableView.css";
+import { TableType }  from '../utilities/enums';
+
 
 // Component imports
 import TableContent from './TableContent';
 import TableInfo from './TableInfo';
 
-enum TableType {
-  MANUAL = 0,
-  COMPUTED = 1,
-  LOOKUP = 2,
-  IMPORTED = 3,
-  PART = 4
-}
 
 type TableViewState = {
   currentView: string,

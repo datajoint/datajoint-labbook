@@ -2,15 +2,9 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
+import { TableType }  from '../utilities/enums'
 
 
-enum TableType {
-  MANUAL = 0,
-  COMPUTED = 1,
-  LOOKUP = 2,
-  IMPORTED = 3,
-  PART = 4
-}
 
 type TableContentStatus = {
   currentlyOpenCtrl: string,

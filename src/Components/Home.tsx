@@ -1,18 +1,12 @@
-import { ENGINE_METHOD_NONE } from 'constants';
 import React from 'react';
 import './Home.css';
+import { TableType }  from '../utilities/enums';
+
 
 // Component imports
 import SideMenu from './SideMenu';
 import TableView from './TableView';
 
-enum TableType {
-  MANUAL = 0,
-  COMPUTED = 1,
-  LOOKUP = 2,
-  IMPORTED = 3,
-  PART = 4
-} 
 
 type DJGUIHomeState = {
   selectedSchema: string,
