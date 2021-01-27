@@ -3,14 +3,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
 import {TableType}  from './TableList'
-
-type TableContentStatus = {
-  currentlyOpenCtrl: string,
-  ctrlIsOpen: boolean,
-  tableHeadings: Array<string>,
-  pageIncrement: number,
-  paginatorState: Array<number>
-}
+import InsertTuple from './InsertTuple'
 
 enum PaginationCommand {
   forward,
@@ -19,25 +12,43 @@ enum PaginationCommand {
   end
 }
 
+enum TableActionType {
+  FILTER = 0,
+  INSERT = 1,
+  UPDATE = 2,
+  DELETE = 3
+}
+
+type TableContentStatus = {
+  currentSelectedTableActionMenu: TableActionType,
+  hideTableActionMenu: boolean,
+  tableHeadings: Array<string>,
+  pageIncrement: number,
+  paginatorState: Array<number>
+}
+
 class TableContent extends React.Component<{contentData: Array<any>, attributeData: any, tableName: string, tableType: TableType}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
-      currentlyOpenCtrl: '',
-      ctrlIsOpen: false,
+      currentSelectedTableActionMenu: TableActionType.FILTER,
+      hideTableActionMenu: true,
       tableHeadings: [],
       pageIncrement: 25,
-      paginatorState: [0, 25],
-
+      paginatorState: [0, 25]
     }
+
+    this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
   }
 
-  openControl(ctrlType: string) {
-    if (this.state.currentlyOpenCtrl === ctrlType) {
-      this.setState({ctrlIsOpen: false, currentlyOpenCtrl: ''});
+  setCurrentTableActionMenu(tableActionMenu: TableActionType) {
+    if (this.state.currentSelectedTableActionMenu === tableActionMenu) {
+      // Toggle hiding and showing
+      this.setState({hideTableActionMenu: !this.state.hideTableActionMenu});
     } 
     else {
-      this.setState({ctrlIsOpen: true, currentlyOpenCtrl: ctrlType})
+      // Switch to the new tableActionMenu
+      this.setState({hideTableActionMenu: false, currentSelectedTableActionMenu: tableActionMenu});
     }
 
   }
@@ -86,6 +97,24 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
       }
     }
   }
+
+  getCurrentTableActionMenuComponent() {
+    if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
+      return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
+    }
+    else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
+      return <div><h3>Insert</h3><p>Replace with Insert Component</p></div>;
+    }
+    else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
+      return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
+    }
+    else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
+      return <div><h3>Delete</h3><p>Replace with Delete Component</p></div>
+    }
+
+    // Raise and error if none of the other conditions above trigger
+    throw Error('Unsupported TableActionType');
+  }
   
   render() { 
     return(
@@ -94,23 +123,13 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
           <div className={this.props.tableType === TableType.COMPUTED ? 'computed table-type-tag' : this.props.tableType === TableType.IMPORTED  ? 'imported table-type-tag' : this.props.tableType === TableType.LOOKUP ? 'lookup table-type-tag' : this.props.tableType === TableType.MANUAL ? 'manual table-type-tag' : 'part table-type-tag'}>{TableType[this.props.tableType]}</div>
           <h4 className="table-name">{this.props.tableName}</h4>
           <div className="content-controllers">
-            <button onClick={() => this.openControl('filter')} className={this.state.currentlyOpenCtrl === 'filter' ? 'selectedButton' : ''}>Filter</button>
-            <button onClick={() => this.openControl('insert')} className={this.state.currentlyOpenCtrl === 'insert' ? 'selectedButton' : ''}>Insert</button>
-            <button onClick={() => this.openControl('update')} className={this.state.currentlyOpenCtrl === 'update' ? 'selectedButton' : ''}>Update</button>
-            <button onClick={() => this.openControl('delete')} className={this.state.currentlyOpenCtrl === 'delete' ? 'selectedButton' : ''}>Delete</button>
+            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.FILTER)} className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER ? 'selectedButton' : ''}>Filter</button>
+            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.INSERT)} className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT ? 'selectedButton' : ''}>Insert</button>
+            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.UPDATE)} className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE ? 'selectedButton' : ''}>Update</button>
+            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE ? 'selectedButton' : ''}>Delete</button>
           </div>
         </div>
-        {this.state.ctrlIsOpen ?
-          <div className="edit-zone">
-            {this.state.currentlyOpenCtrl === 'filter' ?
-              <div><h3>Filter</h3><p>Replace with Filter Component</p></div> :
-              this.state.currentlyOpenCtrl === 'insert' ?
-                <div><h3>Insert</h3><p>Replace with Insert Component</p></div> :
-                this.state.currentlyOpenCtrl === 'update' ?
-                  <div><h3>Update</h3><p>Replace with Update Component</p></div> :
-                  <div><h3>Delete</h3><p>Replace with Delete Component</p></div>}
-
-          </div> : ''}
+        {this.state.hideTableActionMenu ? '' : <this.getCurrentTableActionMenuComponent/>}
         <div className="content-view-area">
           <div className="table-container">
           <table className="table">
