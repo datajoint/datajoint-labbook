@@ -1,8 +1,9 @@
 import React from 'react';
 import "./TableView.css";
-import {TableType}  from './TableList';
+
 
 // Component imports
+import {TableType}  from './TableList';
 import TableContent from './TableContent';
 import TableInfo from './TableInfo';
 
@@ -13,11 +14,12 @@ type TableViewState = {
   tableInfoData: string,
   selectedTable: string
 }
+
 class TableView extends React.Component<{tableName: string, schemaName: string, tableType: TableType, token: string}, TableViewState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      currentView: 'tableContent', //'tableContent' or 'tableInfo'
+      currentView: 'tableContent',
       tableContentData: [],
       tableAttributeData: [],
       tableInfoData: '',
@@ -32,7 +34,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
   componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props.tableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
       this.setState({selectedTable: this.props.tableName});
-
       if (this.state.currentView === 'tableContent') {
         // retrieve table headers
         fetch('/api/get_table_attributes', {
