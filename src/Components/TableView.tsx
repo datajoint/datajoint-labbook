@@ -67,7 +67,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           })
       }
     }
-
   }
 
   render() {
