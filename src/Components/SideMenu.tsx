@@ -59,7 +59,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
   }
 
   handleTableSelection(tableName: string, tableType: string) {
-    this.props.handleTableSelection(this.state.selectedSchemaBuffer, tableName, tableType, );
+    this.props.handleTableSelection(this.state.selectedSchemaBuffer, tableName, tableType);
   }
 
   render() {

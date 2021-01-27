@@ -53,8 +53,6 @@ type TableListState = {
   sortedTables: Array<any>,
   tablesToSort: any,
   showPT: any,
-  selectedTableName: string,
-  selectedTableType: string,
   tableList: Array<TableListEntry>
 }
 
@@ -67,8 +65,6 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
       sortedTables: [],
       tablesToSort: this.props.tableListDict,
       showPT: {},
-      selectedTableName: '',
-      selectedTableType: '',
       tableList: [],
     }
   }
@@ -79,7 +75,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
 
   componentDidUpdate(prevProps: any, prevState: any) {
     // Check if the selectedSchemaBuffer is different if so than update the tableList
-    if (prevProps.selectedSchemaBuffer === this.props.selectedSchemaBuffer) {
+    if (prevProps.tableListDict === this.props.tableListDict) {
       return;
     }
 
@@ -149,10 +145,6 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
      this.setState({tableList: tableList});
   }
 
-  tableSelected(tablename: string, tabletype: string) {
-    this.props.onTableSelection(tablename, tabletype);
-  }
-
   render() {
     return (
       <div className="table-menu">
@@ -184,7 +176,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
           {
             this.state.tableList.map((table: TableListEntry) => {
               return(
-                <div>{table.tableName}</div>
+                <div onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>{table.tableName}</div>
               )
             })
           
