@@ -1,18 +1,34 @@
 import React from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
+import { start } from 'repl';
 
 type TableContentStatus = {
   currentlyOpenCtrl: string,
   ctrlIsOpen: boolean,
-  tableHeadings: Array<string>
+  tableHeadings: Array<string>,
+  pageIncrement: number,
+  paginatorState: Array<number>
 }
-class TableContent extends React.Component<{contentData: Array<any>, attributeData: Array<any>, tableName: string, tableType: string}, TableContentStatus> {
+
+enum PaginationCommand {
+  forward,
+  backward,
+  start,
+  end
+}
+
+class TableContent extends React.Component<{contentData: Array<any>, attributeData: any, tableName: string, tableType: string}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
       currentlyOpenCtrl: '',
       ctrlIsOpen: false,
-      tableHeadings: []
+      tableHeadings: [],
+      pageIncrement: 25,
+      paginatorState: [0, 25],
+
     }
   }
 
@@ -27,11 +43,50 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
 
   componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props.contentData !== prevProps.contentData) {
-      this.setState({tableHeadings: Object.keys(this.props.contentData[0])});
+      console.log('contentData: ', this.props.contentData)
+      console.log('attributeData: ', this.props.attributeData)
+      let headings = this.resortAttributes(this.props.attributeData)
+      console.log('headings: ', headings)
+      this.setState({tableHeadings: headings});
     }
   }
 
-  render() {
+  resortAttributes(attributeData: any) {
+    let tableHeadings: Array<any> = []
+    attributeData['primary_attributes'].forEach((attr: Array<any>) => {
+      attr.push(true) // true for primary key, false for secondary
+      tableHeadings.push(attr)
+    })
+    attributeData['secondary_attributes'].forEach((attr: Array<any>) => {
+      attr.push(false) // true for primary key, false for secondary
+      tableHeadings.push(attr)
+    })
+    return tableHeadings
+  }
+
+  handlePagination(cmd: PaginationCommand) {
+    console.log('pagination control: ', cmd);
+    if (cmd === PaginationCommand.start) {
+      this.setState({paginatorState: [0, this.state.pageIncrement]})
+    } else if (cmd === PaginationCommand.end) {
+      this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
+    } else if (cmd === PaginationCommand.forward) {
+      if (this.state.paginatorState[1] + this.state.pageIncrement < this.props.contentData.length) {
+        this.setState({paginatorState: [this.state.paginatorState[0] + this.state.pageIncrement, this.state.paginatorState[1] + this.state.pageIncrement]})
+      } else {
+        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
+      }
+    } else if (cmd === PaginationCommand.backward) {
+      if (this.state.paginatorState[0] - this.state.pageIncrement > 0 || this.state.paginatorState[0] - this.state.pageIncrement === 0) {
+        this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]]})
+      } else {
+        this.setState({paginatorState: [0, this.state.pageIncrement]})
+      }
+    }
+  }
+
+  
+  render() { 
     return (
       <div className="table-content-viewer">
         <div className={this.props.tableType === 'computed' ? 'content-view-header computed ' : this.props.tableType === 'imported' ? 'content-view-header imported' : this.props.tableType === 'lookup' ? 'content-view-header lookup' : this.props.tableType === 'manual' ? 'content-view-header manual' : 'content-view-header part'}>
@@ -56,22 +111,35 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
 
           </div> : ''}
         <div className="content-view-area">
-          <div className="table">
-            <div className="headerRow">
+          <div className="table-container">
+          <table className="table">
+            <thead>
+            <tr className="headerRow">
               {this.state.tableHeadings.map((head) => {
-                return (<div>{head}</div>)
+                return (<th>
+                  <div style={{color: head[5]? '#4A9F5A' : 'inherit'}}>{head[0]}</div>
+                </th>)
               })}
-            </div>
-            {this.props.contentData.slice(0, 25).map((entry: any) => {
-              return (<div className="tableRow">
-                {this.state.tableHeadings.map((heading: string) => {
-                  return (<div className="tableCell">{entry[heading]}</div>)
+            </tr>
+            </thead>
+            <tbody>
+            {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
+              return (<tr className="tableRow">
+                {entry.map((column: any) => {
+                  return (<td className="tableCell">{column}</td>)
                 })
-                }</div>)
+                }</tr>)
             })}
+            </tbody>
+          </table>
           </div>
           <div className="paginator">
             <p>Total Rows: {this.props.contentData.length}</p>
+            <FontAwesomeIcon className="backAll" icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.start)} />
+            <FontAwesomeIcon className="backOne" icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.backward)} />
+            Currently viewing: {this.state.paginatorState[0] + 1} - {this.state.paginatorState[1]}
+            <FontAwesomeIcon className="forwardOne" icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.forward)} />
+            <FontAwesomeIcon className="forwardAll" icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.end)} />
           </div>
         </div>
 

@@ -3,6 +3,8 @@
   box-sizing: border-box;
   padding: 12px;
   width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 .content-view-header {
   box-sizing: border-box;
@@ -102,12 +104,47 @@
   justify-content: center;
 }
 
+.content-view-area .table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table.table {
+  position: relative;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+
+.table tbody {
+  display: inline-block;
+  /* height: 60%; */
+  overflow: auto;
+  width: 100%;
+}
 
 .content-view-area .table .headerRow {
+  border-bottom: 1px solid rgb(0, 0, 0);
   display: flex;
   font-weight: 600;
+
 }
 
 .content-view-area .table .tableRow {
   display: flex;
+  border-bottom: 1px solid rgb(221, 221, 221);
+}
+
+.content-view-area .table .tableRow td.tableCell,
+.content-view-area .table .headerRow th {
+  width: 100%;
+  padding: 0 4px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 1px solid rgb(221, 221, 221);
+}
+
+.content-view-area .table .tableRow td.tableCell:hover {
+  overflow: auto;
 }
