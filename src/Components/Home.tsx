@@ -34,6 +34,7 @@ class Home extends React.Component<{token: string}, DJGUIHomeState> {
           <SideMenu token={this.props.token}
             selectedSchema={this.state.selectedSchema}
             selectedTableName={this.state.selectedTableName}
+            selectedTableType={this.state.selectedTableType}
             handleTableSelection={(schema:string, tablename:string, tabletype:TableType)=>{this.handleTableSelection(schema, tablename, tabletype)}}/>
         </div>
         <div className="table-view-container">
