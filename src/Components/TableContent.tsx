@@ -2,7 +2,15 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
-import { start } from 'repl';
+
+
+enum TableType {
+  MANUAL = 0,
+  COMPUTED = 1,
+  LOOKUP = 2,
+  IMPORTED = 3,
+  PART = 4
+}
 
 type TableContentStatus = {
   currentlyOpenCtrl: string,
@@ -19,7 +27,7 @@ enum PaginationCommand {
   end
 }
 
-class TableContent extends React.Component<{contentData: Array<any>, attributeData: any, tableName: string, tableType: string}, TableContentStatus> {
+class TableContent extends React.Component<{contentData: Array<any>, attributeData: any, tableName: string, tableType: TableType}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -43,10 +51,7 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
 
   componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props.contentData !== prevProps.contentData) {
-      console.log('contentData: ', this.props.contentData)
-      console.log('attributeData: ', this.props.attributeData)
       let headings = this.resortAttributes(this.props.attributeData)
-      console.log('headings: ', headings)
       this.setState({tableHeadings: headings});
     }
   }
@@ -65,7 +70,6 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
   }
 
   handlePagination(cmd: PaginationCommand) {
-    console.log('pagination control: ', cmd);
     if (cmd === PaginationCommand.start) {
       this.setState({paginatorState: [0, this.state.pageIncrement]})
     } else if (cmd === PaginationCommand.end) {
@@ -89,8 +93,8 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
   render() { 
     return (
       <div className="table-content-viewer">
-        <div className={this.props.tableType === 'computed' ? 'content-view-header computed ' : this.props.tableType === 'imported' ? 'content-view-header imported' : this.props.tableType === 'lookup' ? 'content-view-header lookup' : this.props.tableType === 'manual' ? 'content-view-header manual' : 'content-view-header part'}>
-          <div className={this.props.tableType === 'computed' ? 'computed table-type-tag' : this.props.tableType === 'imported' ? 'imported table-type-tag' : this.props.tableType === 'lookup' ? 'lookup table-type-tag' : this.props.tableType === 'manual' ? 'manual table-type-tag' : 'part table-type-tag'}>{this.props.tableType}</div>
+        <div className={this.props.tableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.tableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.tableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.tableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
+          <div className={this.props.tableType === TableType.COMPUTED ? 'computed table-type-tag' : this.props.tableType === TableType.IMPORTED  ? 'imported table-type-tag' : this.props.tableType === TableType.LOOKUP ? 'lookup table-type-tag' : this.props.tableType === TableType.MANUAL ? 'manual table-type-tag' : 'part table-type-tag'}>{TableType[this.props.tableType]}</div>
           <h4 className="table-name">{this.props.tableName}</h4>
           <div className="content-controllers">
             <button onClick={() => this.openControl('filter')} className={this.state.currentlyOpenCtrl === 'filter' ? 'selectedButton' : ''}>Filter</button>
@@ -142,13 +146,6 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
             <FontAwesomeIcon className="forwardAll" icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.end)} />
           </div>
         </div>
-
-
-        {/* {this.props.contentData.map((tableEntry:any) => {
-                    return (
-                        <div>{tableEntry}</div>
-                    )
-                })} */}
 
       </div>
     )

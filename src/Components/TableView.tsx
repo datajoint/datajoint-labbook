@@ -5,6 +5,14 @@ import "./TableView.css";
 import TableContent from './TableContent';
 import TableInfo from './TableInfo';
 
+enum TableType {
+  MANUAL = 0,
+  COMPUTED = 1,
+  LOOKUP = 2,
+  IMPORTED = 3,
+  PART = 4
+}
+
 type TableViewState = {
   currentView: string,
   tableContentData: Array<any>,
@@ -12,7 +20,7 @@ type TableViewState = {
   tableInfoData: string,
   selectedTable: string
 }
-class TableView extends React.Component<{tableName: string, schemaName: string, tableType: string, token: string}, TableViewState> {
+class TableView extends React.Component<{tableName: string, schemaName: string, tableType: TableType, token: string}, TableViewState> {
   constructor(props: any) {
     super(props);
     this.state = {
