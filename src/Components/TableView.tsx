@@ -69,9 +69,9 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
           body: JSON.stringify({ schemaName: this.props.schemaName, tableName: this.props.tableName })
         })
-          .then(result => result.json())
+          .then(result => result.text())
           .then(result => {
-            this.setState({tableInfoData: result.definition})
+            this.setState({tableInfoData: result})
           })
       }
     }
