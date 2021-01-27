@@ -302,7 +302,10 @@ span.tier-label {
   display: flex;
   flex-direction: column;
   text-align: center;
-  justify-content: space-between;
+  box-sizing: border-box;
+  position: absolute;
+  right: 0;
+  height: 100%;
 }
 .show-part-table.computed {
   border-color: #BC3B68;

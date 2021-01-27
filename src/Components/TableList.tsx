@@ -1,7 +1,7 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
-import { TableType }  from '../utilities/enums'
+import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons';
+import { TableType }  from '../utilities/enums';
 
 /**
  * Enum for each type of table supported by datajoint
@@ -196,7 +196,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
                 <div>
                   <div className={this.props.selectedTableName === table.tableName ? 'table-entry selected' : 'table-entry'} key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
                     <p className="table-name">{table.tableName}</p>
-                    <span className={table.tableType === TableType.COMPUTED ? 'computed tier-label' : (table.tableType === TableType.LOOKUP ? 'lookup tier-label' : (table.tableType === TableType.MANUAL ? 'manual tier-label' : 'unknown tier-label'))}>{TableType[table.tableType].toLowerCase()}</span>
+                    <span className={table.tableType === TableType.COMPUTED ? 'computed tier-label' : (table.tableType === TableType.LOOKUP ? 'lookup tier-label' : (table.tableType === TableType.MANUAL ? 'manual tier-label' : 'imported tier-label'))}>{TableType[table.tableType].toLowerCase()}</span>
                     {table.partTables.length ?
                       (<div onClick={() => {this.toggleEachPartTableView(table)}} className={table.tableType === TableType.COMPUTED ? "computed show-part-table" : table.tableType === TableType.IMPORTED ? "imported show-part-table" : table.tableType === TableType.LOOKUP  ? "lookup show-part-table" : "manual show-part-table"}>
                         <label className="head">part table</label>
