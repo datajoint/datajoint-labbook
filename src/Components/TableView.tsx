@@ -93,12 +93,12 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
             }
             return result.text()})
           .then(result => {
-            this.setState({tableInfoData: result, errorMessage: 'Problem fetching table information'})
+            this.setState({tableInfoData: result, errorMessage: ''})
           })
           .catch(error => {
             console.error('problem fetching table information: ');
             console.error(error);
-            this.setState({tableInfoData: '', errorMessage: error})
+            this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information'})
           })
       }
     }
@@ -112,8 +112,8 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           <div className={this.state.currentView === "tableInfo" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableInfo')}>Table Information</div>
         </div>
 
-        <p>error? {this.state.errorMessage}</p>
         <div className="view-area"> {
+            this.state.errorMessage ? <div className="errorMessage">{this.state.errorMessage}</div> : 
             this.state.currentView === 'tableContent' ?
             <TableContent contentData={this.state.tableContentData} tableAttributeData={this.state.tableAttributeData} tableName={this.state.selectedTable} tableType={this.props.tableType} />
             : this.state.currentView === 'tableInfo' ?
