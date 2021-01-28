@@ -37,6 +37,7 @@ class SchemaList extends React.Component<{token: string, handleSchemaSelection: 
       })
       .catch(error => {
         console.error('Error: ', error);
+        throw Error('problem fetching schema list: ' + error);
       })
   }
 
