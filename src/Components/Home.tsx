@@ -3,7 +3,7 @@ import './Home.css';
 
 // Component imports
 import SideMenu from './SideMenu';
-import TableView from './TableView';
+import {TableView} from './TableView';
 import {TableType} from './TableList'
 
 type DJGUIHomeState = {

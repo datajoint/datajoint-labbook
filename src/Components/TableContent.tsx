@@ -4,6 +4,7 @@ import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@for
 import './TableContent.css'
 import {TableType}  from './TableList'
 import InsertTuple from './InsertTuple'
+import {TableAttributesInfo, PrimaryTableAttribute, SecondaryTableAttribute} from './TableView'
 
 enum PaginationCommand {
   forward,
@@ -22,18 +23,16 @@ enum TableActionType {
 type TableContentStatus = {
   currentSelectedTableActionMenu: TableActionType,
   hideTableActionMenu: boolean,
-  tableHeadings: Array<string>,
   pageIncrement: number,
   paginatorState: Array<number>
 }
 
-class TableContent extends React.Component<{contentData: Array<any>, tableAttributeData: any, tableName: string, tableType: TableType}, TableContentStatus> {
+class TableContent extends React.Component<{contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, tableName: string, tableType: TableType}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
       currentSelectedTableActionMenu: TableActionType.FILTER,
       hideTableActionMenu: true,
-      tableHeadings: [],
       pageIncrement: 25,
       paginatorState: [0, 25]
     }
@@ -51,27 +50,6 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
       this.setState({hideTableActionMenu: false, currentSelectedTableActionMenu: tableActionMenu});
     }
 
-  }
-
-  componentDidUpdate(prevProps: any, prevState: any) {
-    if (this.props.contentData !== prevProps.contentData) {
-      console.log(this.props.tableAttributeData);
-      let headings = this.parseTableAttributeData(this.props.tableAttributeData)
-      this.setState({tableHeadings: headings});
-    }
-  }
-
-  parseTableAttributeData(attributeData: any) {
-    let tableHeadings: Array<any> = []
-    attributeData['primary_attributes'].forEach((attr: Array<any>) => {
-      attr.push(true) // true for primary key, false for secondary
-      tableHeadings.push(attr)
-    })
-    attributeData['secondary_attributes'].forEach((attr: Array<any>) => {
-      attr.push(false) // true for primary key, false for secondary
-      tableHeadings.push(attr)
-    })
-    return tableHeadings
   }
 
   handlePagination(cmd: PaginationCommand) {
@@ -116,6 +94,29 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
     // Raise and error if none of the other conditions above trigger
     throw Error('Unsupported TableActionType');
   }
+
+  /**
+   * Function to get the list of attributes for rendering
+   */
+  getTableAttributeHeadingList(): Array<string> {
+    let headingList: Array<string> = [];
+
+    if (this.props.tableAttributesInfo === undefined) {
+      return headingList;
+    }
+
+    // Deal with primary attributes from tableAttributesInfo
+    for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
+      headingList.push(primaryAttribute.attributeName);
+    }
+
+    // Deal with secondary attributes from secondaryAttributesInfo
+    for (let secondary_attributes of this.props.tableAttributesInfo.secondaryAttributes) {
+      headingList.push(secondary_attributes.attributeName);
+    }
+
+    return headingList;
+  }
   
   render() { 
     return(
@@ -136,10 +137,8 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
           <table className="table">
             <thead>
             <tr className="headerRow">
-              {this.state.tableHeadings.map((head) => {
-                return (<th>
-                  <div style={{color: head[5]? '#4A9F5A' : 'inherit'}}>{head[0]}</div>
-                </th>)
+              {this.getTableAttributeHeadingList().map((attributeName) => {
+                return <div>{attributeName}</div> // Make this look pretty again - Daniel
               })}
             </tr>
             </thead>
