@@ -117,8 +117,26 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
 
     return headingList;
   }
+
+  /**
+   * Function to get the list of primary attributes for rendering
+   */
+  getPrimaryKeys(): Array<string> {
+    let primaryKeyList: Array<string> = [];
+
+    if (this.props.tableAttributesInfo === undefined) {
+      return primaryKeyList;
+    }
+    for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
+      primaryKeyList.push(primaryAttribute.attributeName);
+    }
+
+    return primaryKeyList;
+  }
   
   render() { 
+
+    let primaryKeys: Array<string> = this.getPrimaryKeys();
     return(
       <div className="table-content-viewer">
         <div className={this.props.tableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.tableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.tableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.tableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
@@ -138,7 +156,9 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
             <thead>
             <tr className="headerRow">
               {this.getTableAttributeHeadingList().map((attributeName) => {
-                return <div>{attributeName}</div> // Make this look pretty again - Daniel
+                return (<th>
+                  <div style={primaryKeys.includes(attributeName) ? {color: '#4A9F5A' }: {color: 'inherit'}}>{attributeName}</div>
+                </th>)
               })}
             </tr>
             </thead>
