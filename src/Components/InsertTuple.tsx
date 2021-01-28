@@ -10,7 +10,7 @@ class InsertTuple extends React.Component<{}, insertTupleState> {
 
   render() {
     return(
-      <div></div>
+      <div>Insert Tuple Data</div>
     )
   }
   
