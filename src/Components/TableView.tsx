@@ -44,7 +44,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName})
         })
           .then(result => {
-            console.log('result for table attributes: ', result);
             if (!result.ok) {
               throw Error(`${result.status} - ${result.statusText}`)
             }
@@ -66,7 +65,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName})
         })
           .then(result => {
-            console.log('result for table content: ', result);
             if (!result.ok) {
               throw Error(`${result.status} - ${result.statusText}`)
             }
@@ -87,7 +85,6 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           body: JSON.stringify({ schemaName: this.props.schemaName, tableName: this.props.tableName })
         })
           .then(result => {
-            console.log('result for table info: ', result);
             if (!result.ok) {
               throw Error(`${result.status} - ${result.statusText}`)
             }
