@@ -10,7 +10,7 @@ import TableInfo from './TableInfo';
 type TableViewState = {
   currentView: string,
   tableContentData: Array<any>,
-  tableAttributeData: Array<any>,
+  tableAttributeData: {},
   tableInfoData: string,
   selectedTable: string
 }
@@ -21,7 +21,7 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
     this.state = {
       currentView: 'tableContent',
       tableContentData: [],
-      tableAttributeData: [],
+      tableAttributeData: {},
       tableInfoData: '',
       selectedTable: ''
     }
@@ -79,7 +79,7 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
         </div>
         <div className="view-area"> {
             this.state.currentView === 'tableContent' ?
-            <TableContent contentData={this.state.tableContentData} attributeData={this.state.tableAttributeData} tableName={this.state.selectedTable} tableType={this.props.tableType} />
+            <TableContent contentData={this.state.tableContentData} tableAttributeData={this.state.tableAttributeData} tableName={this.state.selectedTable} tableType={this.props.tableType} />
             : this.state.currentView === 'tableInfo' ?
               <TableInfo infoDefData={this.state.tableInfoData} /> : ''
           }

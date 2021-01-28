@@ -27,7 +27,7 @@ type TableContentStatus = {
   paginatorState: Array<number>
 }
 
-class TableContent extends React.Component<{contentData: Array<any>, attributeData: any, tableName: string, tableType: TableType}, TableContentStatus> {
+class TableContent extends React.Component<{contentData: Array<any>, tableAttributeData: any, tableName: string, tableType: TableType}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -55,12 +55,13 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
 
   componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props.contentData !== prevProps.contentData) {
-      let headings = this.resortAttributes(this.props.attributeData)
+      console.log(this.props.tableAttributeData);
+      let headings = this.parseTableAttributeData(this.props.tableAttributeData)
       this.setState({tableHeadings: headings});
     }
   }
 
-  resortAttributes(attributeData: any) {
+  parseTableAttributeData(attributeData: any) {
     let tableHeadings: Array<any> = []
     attributeData['primary_attributes'].forEach((attr: Array<any>) => {
       attr.push(true) // true for primary key, false for secondary
@@ -103,7 +104,7 @@ class TableContent extends React.Component<{contentData: Array<any>, attributeDa
       return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return <div><h3>Insert</h3><p>Replace with Insert Component</p></div>;
+      return <InsertTuple/>
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
