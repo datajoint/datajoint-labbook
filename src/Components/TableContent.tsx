@@ -116,6 +116,11 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
     // Raise and error if none of the other conditions above trigger
     throw Error('Unsupported TableActionType');
   }
+
+  handleCheckedEntry(event:any, tableEntry:any) {
+    console.log('event: ', event)
+    console.log('tableEntry: ', tableEntry)
+  }
   
   render() { 
     return(
@@ -136,8 +141,9 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
           <table className="table">
             <thead>
             <tr className="headerRow">
+              <th className="buffer"><input type="checkbox" /></th>
               {this.state.tableHeadings.map((head) => {
-                return (<th>
+                return (<th className="headings">
                   <div style={{color: head[5]? '#4A9F5A' : 'inherit'}}>{head[0]}</div>
                 </th>)
               })}
@@ -146,6 +152,7 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
             <tbody>
             {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
               return (<tr className="tableRow">
+                <td colSpan={1}><input type="checkbox" onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
                 {entry.map((column: any) => {
                   return (<td className="tableCell">{column}</td>)
                 })
