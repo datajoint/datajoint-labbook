@@ -96,29 +96,6 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
   }
 
   /**
-   * Function to get the list of attributes for rendering
-   */
-  getTableAttributeHeadingList(): Array<string> {
-    let headingList: Array<string> = [];
-
-    if (this.props.tableAttributesInfo === undefined) {
-      return headingList;
-    }
-
-    // Deal with primary attributes from tableAttributesInfo
-    for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
-      headingList.push(primaryAttribute.attributeName);
-    }
-
-    // Deal with secondary attributes from secondaryAttributesInfo
-    for (let secondary_attributes of this.props.tableAttributesInfo.secondaryAttributes) {
-      headingList.push(secondary_attributes.attributeName);
-    }
-
-    return headingList;
-  }
-
-  /**
    * Function to get the list of primary attributes for rendering
    */
   getPrimaryKeys(): Array<string> {
@@ -133,10 +110,24 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
 
     return primaryKeyList;
   }
+
+  /**
+   * Function to get the list of secondary attributes for rendering
+   */
+  getSecondaryKeys(): Array<string> {
+    let secondaryKeyList: Array<string> = [];
+
+    if (this.props.tableAttributesInfo === undefined) {
+      return secondaryKeyList;
+    }
+    for (let secondaryAttribute of this.props.tableAttributesInfo.secondaryAttributes) {
+      secondaryKeyList.push(secondaryAttribute.attributeName);
+    }
+
+    return secondaryKeyList;
+  }
   
   render() { 
-
-    let primaryKeys: Array<string> = this.getPrimaryKeys();
     return(
       <div className="table-content-viewer">
         <div className={this.props.tableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.tableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.tableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.tableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
@@ -155,9 +146,14 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
           <table className="table">
             <thead>
             <tr className="headerRow">
-              {this.getTableAttributeHeadingList().map((attributeName) => {
+              {this.getPrimaryKeys().map((attributeName) => {
                 return (<th>
-                  <div style={primaryKeys.includes(attributeName) ? {color: '#4A9F5A' }: {color: 'inherit'}}>{attributeName}</div>
+                  <div style={{color: '#4A9F5A' }}>{attributeName}</div>
+                </th>)
+              })}
+              {this.getSecondaryKeys().map((attributeName) => {
+                return (<th>
+                  <div style={{color: 'inherit'}}>{attributeName}</div>
                 </th>)
               })}
             </tr>
