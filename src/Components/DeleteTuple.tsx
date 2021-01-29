@@ -112,25 +112,25 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
           <p>Delete this entry?</p>
           {Object.values(this.props.stagedEntry).map((entry: any) => {
             return (
-              <div>
+              <div key={JSON.stringify(entry)}>
                 <table className="stagedEntry">
                   <thead>
                     <tr>
-                    {Object.keys(entry?.primaryEntries).map((primaries: any) => {
-                      return (<th className="primaryKey">{primaries}</th>)
+                    {Object.keys(entry?.primaryEntries).map((primaryKey: any) => {
+                      return (<th key={primaryKey} className="primaryKey">{primaryKey}</th>)
                     })}
-                    {Object.keys(entry?.secondaryEntries).map((secondaries: any) => {
-                      return (<th className="secondaryKey">{secondaries}</th>)
+                    {Object.keys(entry?.secondaryEntries).map((secondaryKey: any) => {
+                      return (<th key={secondaryKey} className="secondaryKey">{secondaryKey}</th>)
                     })}
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                    {Object.values(entry?.primaryEntries).map((primaries: any) => {
-                      return (<td className="primaryEntry">{primaries}</td>)
+                    {Object.values(entry?.primaryEntries).map((primaryVal: any) => {
+                      return (<td key={primaryVal} className="primaryEntry">{primaryVal}</td>)
                     })}
-                    {Object.values(entry?.secondaryEntries).map((secondaries: any) => {
-                      return (<td className="secondaryEntry">{secondaries}</td>)
+                    {Object.values(entry?.secondaryEntries).map((secondaryVal: any) => {
+                      return (<td key={secondaryVal} className="secondaryEntry">{secondaryVal}</td>)
                     })}
                     </tr>
                   </tbody>
