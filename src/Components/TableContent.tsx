@@ -27,6 +27,17 @@ type TableContentStatus = {
   paginatorState: Array<number>
 }
 
+/**
+ * Class component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponetns
+ * 
+ * @param token JWT token for authentaction
+ * @param selectedSchemaName Name of selected schema
+ * @param selectedTableName Name of selected table
+ * @param selectedTableType Type of selected table, should be one of the TableType defined under TableList
+ * @param contentData Array of tuples obtain from the fetch of a table
+ * @param tableAttributesInfo A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
+ * @param fetchTableContent Callback function to tell the parent component to update the contentData
+ */
 class TableContent extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType, contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, TableContentStatus> {
   constructor(props: any) {
     super(props);
@@ -40,6 +51,11 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
   }
 
+  /**
+   * Reset the table action sub menu selection upon a new table selection
+   * @param prevProps 
+   * @param prevState 
+   */
   componentDidUpdate(prevProps: any, prevState: any) {
     // Break if the the selectedTable did not change
     if (prevProps.selectedTableName === this.props.selectedTableName) {
@@ -50,6 +66,10 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true});
   }
 
+  /**
+   * Function to handle the hiding/showing of the sub menus including dealing with switching between the table actions sub menu
+   * @param tableActionMenu The tableActionMenu that was clicked on
+   */
   setCurrentTableActionMenu(tableActionMenu: TableActionType) {
     if (this.state.currentSelectedTableActionMenu === tableActionMenu) {
       // Toggle hiding and showing
@@ -61,6 +81,10 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
   }
 
+  /**
+   * MAHO DOCUMENT THIS
+   * @param cmd 
+   */
   handlePagination(cmd: PaginationCommand) {
     if (cmd === PaginationCommand.start) {
       this.setState({paginatorState: [0, this.state.pageIncrement]})
@@ -86,7 +110,11 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
   }
 
+  /**
+   * Switching return code based this.state.currentSelectedTableActionMenu. Mainly used in the render() function below
+   */
   getCurrentTableActionMenuComponent() {
+    
     if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
       return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
     }
@@ -142,7 +170,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   }
 
   /**
-   * Disable Insert Update or Delete based on the table type and return the buttons accordingly
+   * Handle button rednering with disable feature for Insert Update or Delete based on the table type and return the buttons accordingly
    */
   getTableActionButtons() {
     let disableInsert: boolean = false;

@@ -1,11 +1,20 @@
 import React from 'react';
-import {TableAttribute, PrimaryTableAttribute, TableAttributesInfo, TableAttributeType, SecondaryTableAttribute} from './TableView'
+import {TableAttribute, PrimaryTableAttribute, TableAttributesInfo, TableAttributeType} from './TableView'
 
 type insertTupleState = {
-  tupleBuffer: any
-  errorMessage: string
+  tupleBuffer: any // Object to stored the values typed in by the user
+  errorMessage: string // Error message string for failed inserts
 }
 
+/**
+ * Class component to insertion of tuples
+ * 
+ * @param token JWT token for authentaction
+ * @param selectedSchemaName Name of selected schema
+ * @param selectedTableName Name of selected table
+ * @param tableAttributesInfo A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
+ * @param fetchTableContent Callback function to tell the parent component to update the contentData
+ */
 class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, insertTupleState> {
   constructor(props: any) {
     super(props);
@@ -17,16 +26,23 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  /**
+   * Helper function to handle attribute changes by updating tupleBuffer accordingly
+   * @param attributeName Attribute name of the change, this is used to access the tupleBuffer object members to set the value
+   * @param event Event object that come from the onChange function
+   */
   handleChange(attributeName: string, event: any) {
-    // Check that event.value is not null
-    console.log(attributeName);
-    console.log(this.state.tupleBuffer);
-    
+    // Create a copy, update the object, then set state
     let tupleBuffer = this.state.tupleBuffer;
     tupleBuffer[attributeName] = event.target.value;
     this.setState({tupleBuffer: tupleBuffer});
   }
 
+  /**
+   * On submit handle function which checks that all attributes of the tupleBuffer object are filled out correctly
+   * based upon the info provided by this.props.tableAttributeInfo such as nullable? autoIncrement?, etc.
+   * @param event Event object from the standard OnSubmit function
+   */
   onSubmit(event: any) {
     event.preventDefault();
     // Check that tableAttirbutesInfo is not undefined
@@ -86,10 +102,20 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     })
   }
 
+  /**
+   * Helper function to deal with the creation of the lables to go with the inputs creatd in the getAttributeInputBlock
+   * @param tableAttribute Table attribute object so the function can extract the attributeName (Could add special label/look CSS for differnet types later on)
+   * @param typeString The string to put in () for the user to see of what type the attribute is
+   */
   getAttributeLabelBlock(tableAttribute: TableAttribute, typeString: string) {
     return <label htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + '): '}</label>;
   }
 
+  /**
+   * Helper rendering function to handle the create of Input and its corresponding Label
+   * @param tableAttribute Table attribute object so the function can extract the attributeName and attributeType
+   * @param defaultValue Default value of any to set the input component to, assuming that the input type supports a default value
+   */
   getAttributeInputBlock(tableAttribute: TableAttribute, defaultValue: string = '') {
     let type: string = ''
     let typeString: string = ''
@@ -239,6 +265,10 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
   }
 
+  /**
+   * Helper function specifically dealing with primary attributes where it checks for autoIncrement, if that is true then return a disable Input
+   * @param primaryTableAttribute PrimaryTableAttribute attribute object to mainly check for autoIncrement
+   */
   getPrimaryAttributeInputBlock(primaryTableAttribute: PrimaryTableAttribute) {
     if (primaryTableAttribute.autoIncrement === true) {
       return(
@@ -251,10 +281,6 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     else {
       return this.getAttributeInputBlock(primaryTableAttribute);
     }
-  }
-
-  getSecondaryAttributeInputBlock(secondaryTableAttribute: SecondaryTableAttribute) {
-    return this.getAttributeInputBlock(secondaryTableAttribute);
   }
 
   render() {
@@ -274,7 +300,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
             // Deal with secondary attributes 
             this.props.tableAttributesInfo?.secondaryAttributes.map((secondaryAttribute) => {
               return(
-                this.getSecondaryAttributeInputBlock(secondaryAttribute)
+                this.getAttributeInputBlock(secondaryAttribute)
               )
             })
           }
