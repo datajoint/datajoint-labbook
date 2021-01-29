@@ -24,10 +24,11 @@ enum TableAttributeType {
   FLOAT = 12,
   FLOAT_UNSIGNED = 13,
   BOOL = 14,
-  VAR_CHAR = 15,
-  UUID = 16,
-  DATETIME = 17,
-  TIMESTAMP = 18
+  CHAR = 15,
+  VAR_CHAR = 16,
+  UUID = 17,
+  DATETIME = 18,
+  TIMESTAMP = 19
 }
 
 /**
@@ -36,10 +37,12 @@ enum TableAttributeType {
 class TableAttribute {
   attributeName: string;
   attributeType: TableAttributeType;
+  stringTypeAttributeLengthInfo?: number;
 
-  constructor(attributeName: string, attributeType: TableAttributeType) {
+  constructor(attributeName: string, attributeType: TableAttributeType, stringTypeAttributeLengthInfo?: number) {
     this.attributeName = attributeName;
     this.attributeType = attributeType;
+    this.stringTypeAttributeLengthInfo = stringTypeAttributeLengthInfo;
   }
 }
 
@@ -49,8 +52,8 @@ class TableAttribute {
 class PrimaryTableAttribute extends TableAttribute {
   autoIncrement: boolean; // Note this is only valid if the attributeType is int type
 
-  constructor(attributeName: string, attributeType: TableAttributeType, autoIncrement: boolean) {
-    super(attributeName, attributeType);
+  constructor(attributeName: string, attributeType: TableAttributeType, autoIncrement: boolean, stringTypeAttributeLengthInfo?: number) {
+    super(attributeName, attributeType, stringTypeAttributeLengthInfo);
     this.autoIncrement = autoIncrement;
   }
 }
@@ -62,8 +65,8 @@ class SecondaryTableAttribute extends TableAttribute {
   nullable: boolean;
   defaultValue: string;
 
-  constructor(attributeName: string, attributeType: TableAttributeType, nullable: boolean, defaultValue: string) {
-    super(attributeName, attributeType);
+  constructor(attributeName: string, attributeType: TableAttributeType, nullable: boolean, defaultValue: string, stringTypeAttributeLengthInfo?: number) {
+    super(attributeName, attributeType, stringTypeAttributeLengthInfo);
     this.nullable = nullable;
     this.defaultValue = defaultValue;
   }
@@ -88,7 +91,7 @@ type TableViewState = {
   errorMessage: string
 }
 
-class TableView extends React.Component<{tableName: string, schemaName: string, tableType: TableType, token: string}, TableViewState> {
+class TableView extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType}, TableViewState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -99,6 +102,8 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
       selectedTable: '',
       errorMessage: ''
     }
+
+    this.fetchTableContent = this.fetchTableContent.bind(this);
   }
 
   switchCurrentView(viewChoice: string) {
@@ -106,14 +111,14 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    if (this.props.tableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
-      this.setState({selectedTable: this.props.tableName});
+    if (this.props.selectedTableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
+      this.setState({selectedTable: this.props.selectedTableName});
       if (this.state.currentView === 'tableContent') {
         // retrieve table headers
         fetch('/api/get_table_attributes', {
           method: 'POST',
           headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-          body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName})
+          body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
         })
           .then(result => {
             if (!result.ok) {
@@ -131,30 +136,13 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
             this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes'})
           })
         // retrieve table content
-        fetch('/api/fetch_tuples', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-          body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName})
-        })
-          .then(result => {
-            if (!result.ok) {
-              throw Error(`${result.status} - ${result.statusText}`)
-            }
-            return result.json()})
-          .then(result => {
-            this.setState({tableContentData: result.tuples, errorMessage: ''})
-          })
-          .catch(error => {
-            console.error('problem fetching table content');
-            console.error(error);
-            this.setState({tableContentData: [], errorMessage: 'Problem fetching table content'})
-          })
+        this.fetchTableContent();
       }
       if (this.state.currentView === 'tableInfo') {
         fetch('/api/get_table_definition', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-          body: JSON.stringify({ schemaName: this.props.schemaName, tableName: this.props.tableName })
+          body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
         })
           .then(result => {
             if (!result.ok) {
@@ -173,6 +161,28 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
     }
   }
 
+  fetchTableContent() {
+    fetch('/api/fetch_tuples', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
+    })
+    .then(result => {
+      if (!result.ok) {
+        throw Error(`${result.status} - ${result.statusText}`)
+      }
+      return result.json()
+    })
+    .then(result => {
+      this.setState({tableContentData: result.tuples, errorMessage: ''})
+    })
+    .catch(error => {
+      console.error('problem fetching table content');
+      console.error(error);
+      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content'})
+    })
+  }
+
   /**
    * Function to convert the api return json to produce a TableAttributeInfo
    * @param jsonResult 
@@ -183,20 +193,64 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
 
     // Deal with primary attributes
     for (let primaryAttributeInfoArray of jsonResult.primary_attributes) {
-      tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
-        primaryAttributeInfoArray[0], 
-        this.parseTableTypeString(primaryAttributeInfoArray[1]), 
-        primaryAttributeInfoArray[4]));
+      let tableAttributeType: TableAttributeType = this.parseTableTypeString(primaryAttributeInfoArray[1]);
+
+      // If the datatype is of type VarChar or Char record the limit or range of it
+      if (tableAttributeType === TableAttributeType.VAR_CHAR) {
+        tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
+          primaryAttributeInfoArray[0], 
+          tableAttributeType, 
+          primaryAttributeInfoArray[4],
+          parseInt(primaryAttributeInfoArray[1].substring(8, primaryAttributeInfoArray[1].length - 1))
+          ));
+      }
+      else if (tableAttributeType === TableAttributeType.CHAR) {
+        tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
+          primaryAttributeInfoArray[0], 
+          tableAttributeType, 
+          primaryAttributeInfoArray[4],
+          parseInt(primaryAttributeInfoArray[1].substring(5, primaryAttributeInfoArray[1].length - 1))
+          ));
+      }
+      else {
+        tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
+          primaryAttributeInfoArray[0], 
+          tableAttributeType, 
+          primaryAttributeInfoArray[4]));
+      }
     }
 
     // Deal with secondary attributes
     for (let secondaryAttributesInfoArray of jsonResult.secondary_attributes) {
-      tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
-        secondaryAttributesInfoArray[0],
-        this.parseTableTypeString(secondaryAttributesInfoArray[1]),
-        secondaryAttributesInfoArray[2],
-        secondaryAttributesInfoArray[3]
-        ))
+      let tableAttributeType: TableAttributeType = this.parseTableTypeString(secondaryAttributesInfoArray[1]);
+
+      // If the datatype is of type VarChar or Char record the limit or range of it
+      if (tableAttributeType === TableAttributeType.VAR_CHAR) {
+        tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
+          secondaryAttributesInfoArray[0],
+          this.parseTableTypeString(secondaryAttributesInfoArray[1]),
+          secondaryAttributesInfoArray[2],
+          secondaryAttributesInfoArray[3],
+          parseInt(secondaryAttributesInfoArray[1].substring(8, secondaryAttributesInfoArray[1].length - 1))
+          ));
+      }
+      else if (tableAttributeType === TableAttributeType.CHAR) {
+        tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
+          secondaryAttributesInfoArray[0],
+          this.parseTableTypeString(secondaryAttributesInfoArray[1]),
+          secondaryAttributesInfoArray[2],
+          secondaryAttributesInfoArray[3],
+          parseInt(secondaryAttributesInfoArray[1].substring(5, secondaryAttributesInfoArray[1].length - 1))
+          ));
+      }
+      else {
+        tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
+          secondaryAttributesInfoArray[0],
+          this.parseTableTypeString(secondaryAttributesInfoArray[1]),
+          secondaryAttributesInfoArray[2],
+          secondaryAttributesInfoArray[3]
+          ));
+      }
     }
 
     return tableAttributesInfo;
@@ -251,6 +305,9 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
     else if (tableTypeString === 'bool') {
       return TableAttributeType.BOOL;
     }
+    else if ('char' === tableTypeString.substring(0, 4)) {
+      return TableAttributeType.CHAR;
+    }
     else if ('varchar' === tableTypeString.substring(0, 7)) {
       return TableAttributeType.VAR_CHAR;
     }
@@ -267,25 +324,49 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
     throw Error('Unsupported TableAttributeType: ' + tableTypeString);
   }
 
+  getCurrentView() {
+    if (this.props.selectedTableName === '') {
+      return <div>Select a Table to see contents</div>
+    } 
+    else if (this.state.errorMessage) {
+      return <div className="errorMessage">{this.state.errorMessage}</div>
+    }
+    else {
+      if (this.state.currentView === 'tableContent') {
+        return (
+          <TableContent 
+              token={this.props.token} 
+              selectedSchemaName={this.props.selectedSchemaName} 
+              selectedTableName={this.state.selectedTable} 
+              selectedTableType={this.props.selectedTableType}
+              contentData={this.state.tableContentData} 
+              tableAttributesInfo={this.state.tableAttributesInfo}
+              fetchTableContent={this.fetchTableContent}
+          />
+        )
+      }
+      else if (this.state.currentView === 'tableInfo') {
+        return <TableInfo infoDefData={this.state.tableInfoData}/>
+      }
+
+      // Error out cause the view selected is not valid
+      throw Error('Invalid View Selected');
+    }
+  }
+
   render() {
     return (
       <div className="table-view">
         <div className="nav-tabs">
-          <div className={this.state.currentView === "tableContent" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableContent')}>View Content</div>
-          <div className={this.state.currentView === "tableInfo" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableInfo')}>Table Information</div>
+          <button className={this.state.currentView === "tableContent" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableContent')} disabled={this.props.selectedTableName === ''}>View Content</button>
+          <button className={this.state.currentView === "tableInfo" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableInfo')} disabled={this.props.selectedTableName === ''}>Table Information</button>
         </div>
 
-        <div className="view-area"> {
-            this.state.errorMessage ? <div className="errorMessage">{this.state.errorMessage}</div> : 
-            this.state.currentView === 'tableContent' ?
-            <TableContent contentData={this.state.tableContentData} tableAttributesInfo={this.state.tableAttributesInfo} tableName={this.state.selectedTable} tableType={this.props.tableType} schemaName={this.props.schemaName} token={this.props.token} />
-            : this.state.currentView === 'tableInfo' ?
-              <TableInfo infoDefData={this.state.tableInfoData} /> : ''
-          }
+        <div className="view-area"> {this.getCurrentView()}
         </div>
       </div>
     )
   }
 }
 
-export {TableView, TableAttributesInfo, PrimaryTableAttribute, SecondaryTableAttribute}
+export {TableView, TableAttributesInfo, TableAttribute, PrimaryTableAttribute, SecondaryTableAttribute, TableAttributeType}
