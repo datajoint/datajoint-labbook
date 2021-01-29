@@ -4,6 +4,7 @@ import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@for
 import './TableContent.css'
 import {TableType}  from './TableList'
 import InsertTuple from './InsertTuple'
+import DeleteTuple from './DeleteTuple'
 import {TableAttributesInfo, PrimaryTableAttribute, SecondaryTableAttribute} from './TableView'
 
 enum PaginationCommand {
@@ -24,17 +25,19 @@ type TableContentStatus = {
   currentSelectedTableActionMenu: TableActionType,
   hideTableActionMenu: boolean,
   pageIncrement: number,
-  paginatorState: Array<number>
+  paginatorState: Array<number>,
+  stagedTableEntryDict: any
 }
 
-class TableContent extends React.Component<{contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, tableName: string, tableType: TableType}, TableContentStatus> {
+class TableContent extends React.Component<{contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, tableName: string, tableType: TableType, schemaName: string, token: string}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
       currentSelectedTableActionMenu: TableActionType.FILTER,
       hideTableActionMenu: true,
       pageIncrement: 25,
-      paginatorState: [0, 25]
+      paginatorState: [0, 25],
+      stagedTableEntryDict: {}
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
@@ -88,17 +91,65 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
-      return <div><h3>Delete</h3><p>Replace with Delete Component</p></div>
+      return <div><h3>Delete</h3><DeleteTuple stagedEntry={this.state.stagedTableEntryDict} tableName={this.props.tableName} schemaName={this.props.schemaName} token={this.props.token} /></div>
     }
 
     // Raise and error if none of the other conditions above trigger
     throw Error('Unsupported TableActionType');
   }
 
+  /**
+   * Function to stage the selected table entries for insert/update/delete process
+   */
   handleCheckedEntry(event:any, tableEntry:any) {
-    console.log('event: ', event)
-    console.log('tableEntry: ', tableEntry)
+    // goal format of this.state.stagedTableEntryDict = {
+    //   "primaryKey1_value.primaryKey2_value": {
+    //     "primaryEntries": {
+    //       "primaryKey1" : "primaryKey1_value",
+    //       "primaryKey2" : "primaryKey2_value",
+    //     },
+    //     "secondaryEntries": {
+    //       "secondaryKey1" : "secondaryKey1_value"
+    //     }
+    //   },
+    // }
+
+    // getting the list of primary attributes and secondary attributes, perhaps better to just use a stored value instead
+    let primaryKeys: Array<string> = this.getPrimaryKeys();
+    let secondaryKeys: Array<string>  = this.getSecondaryKeys();
+
+    // splitting the selected table entry into primary and secondary attributes
+    let primaryTableEntries = tableEntry.slice(0, primaryKeys.length);
+    let secondaryTableEntries = tableEntry.slice(primaryKeys.length);
+
+    // pairing the table entry with it's corresponding key
+    let primaryEntries: any = {};
+    let secondaryEntries: any = {};
+    primaryKeys.forEach((PK, index) => {
+      primaryEntries[PK] = primaryTableEntries[index]
+    })
+    secondaryKeys.forEach((SK, index) => {
+      secondaryEntries[SK] = secondaryTableEntries[index]
+    })
+
+    // store the labeled entries under unique keyname using its primary keys if not already there
+    let uniqueEntryName = primaryTableEntries.join(".")
+    let stageCopy = Object.assign({}, this.state.stagedTableEntryDict);
+    if (this.state.stagedTableEntryDict[uniqueEntryName]) {
+      // delete if already there
+      const { [uniqueEntryName]: remove, ...updatedCopy} = stageCopy;
+      this.setState({stagedTableEntryDict: updatedCopy})
+    }
+    else {
+      // create entry if not there
+      stageCopy[uniqueEntryName] = {
+        "primaryEntries": primaryEntries,
+        "secondaryEntries": secondaryEntries
+      }
+      this.setState({stagedTableEntryDict: stageCopy})
+    }
   }
+
   /**
    * Function to get the list of primary attributes for rendering
    */

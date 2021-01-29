@@ -278,7 +278,7 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
         <div className="view-area"> {
             this.state.errorMessage ? <div className="errorMessage">{this.state.errorMessage}</div> : 
             this.state.currentView === 'tableContent' ?
-            <TableContent contentData={this.state.tableContentData} tableAttributesInfo={this.state.tableAttributesInfo} tableName={this.state.selectedTable} tableType={this.props.tableType} />
+            <TableContent contentData={this.state.tableContentData} tableAttributesInfo={this.state.tableAttributesInfo} tableName={this.state.selectedTable} tableType={this.props.tableType} schemaName={this.props.schemaName} token={this.props.token} />
             : this.state.currentView === 'tableInfo' ?
               <TableInfo infoDefData={this.state.tableInfoData} /> : ''
           }
