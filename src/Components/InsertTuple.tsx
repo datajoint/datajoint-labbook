@@ -34,8 +34,6 @@ class InsertTuple extends React.Component<{tableAttributesInfo?: TableAttributes
   }
 
   getAttributeLabelBlock(tableAttribute: TableAttribute, typeString: string) {
-    console.log(tableAttribute.attributeName);
-    console.log('getAttributelabel')
     return <label htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + '): '}</label>;
   }
 
@@ -209,6 +207,7 @@ class InsertTuple extends React.Component<{tableAttributesInfo?: TableAttributes
   render() {
     return (
       <div>
+        <h1>Insert</h1>
         <form>
           {
             // Deal with primary attirbutes

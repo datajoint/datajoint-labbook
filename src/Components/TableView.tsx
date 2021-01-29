@@ -163,7 +163,7 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           primaryAttributeInfoArray[0], 
           tableAttributeType, 
           primaryAttributeInfoArray[4],
-          parseInt(primaryAttributeInfoArray[1].substring(7, primaryAttributeInfoArray[1].length - 1))
+          parseInt(primaryAttributeInfoArray[1].substring(8, primaryAttributeInfoArray[1].length - 1))
           ));
       }
       else if (tableAttributeType === TableAttributeType.CHAR) {
@@ -171,7 +171,7 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
           primaryAttributeInfoArray[0], 
           tableAttributeType, 
           primaryAttributeInfoArray[4],
-          parseInt(primaryAttributeInfoArray[1].substring(4, primaryAttributeInfoArray[1].length - 1))
+          parseInt(primaryAttributeInfoArray[1].substring(5, primaryAttributeInfoArray[1].length - 1))
           ));
       }
       else {
