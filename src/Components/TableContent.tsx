@@ -4,7 +4,7 @@ import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@for
 import './TableContent.css'
 import {TableType}  from './TableList'
 import InsertTuple from './InsertTuple'
-import {TableAttributesInfo, PrimaryTableAttribute, SecondaryTableAttribute} from './TableView'
+import {TableAttributesInfo} from './TableView'
 
 enum PaginationCommand {
   forward,
@@ -49,7 +49,6 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
       // Switch to the new tableActionMenu
       this.setState({hideTableActionMenu: false, currentSelectedTableActionMenu: tableActionMenu});
     }
-
   }
 
   handlePagination(cmd: PaginationCommand) {
@@ -82,7 +81,7 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
       return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return <InsertTuple/>
+      return <InsertTuple tableAttributesInfo={this.props.tableAttributesInfo}/>
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;

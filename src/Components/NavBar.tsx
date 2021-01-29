@@ -12,10 +12,8 @@ type DJGUINavBarState = {
 class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJGUINavBarState> {
   constructor(props: any) {
     super(props);
-    this.state = {
-    }
-
   }
+  
   render() {
     return (
       <nav className='top-nav'>

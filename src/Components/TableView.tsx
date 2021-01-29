@@ -24,10 +24,11 @@ enum TableAttributeType {
   FLOAT = 12,
   FLOAT_UNSIGNED = 13,
   BOOL = 14,
-  VAR_CHAR = 15,
-  UUID = 16,
-  DATETIME = 17,
-  TIMESTAMP = 18
+  CHAR = 15,
+  VAR_CHAR = 16,
+  UUID = 17,
+  DATETIME = 18,
+  TIMESTAMP = 19
 }
 
 /**
@@ -36,10 +37,12 @@ enum TableAttributeType {
 class TableAttribute {
   attributeName: string;
   attributeType: TableAttributeType;
+  stringTypeAttributeLengthInfo?: number;
 
-  constructor(attributeName: string, attributeType: TableAttributeType) {
+  constructor(attributeName: string, attributeType: TableAttributeType, stringTypeAttributeLengthInfo?: number) {
     this.attributeName = attributeName;
     this.attributeType = attributeType;
+    this.stringTypeAttributeLengthInfo = stringTypeAttributeLengthInfo;
   }
 }
 
@@ -49,8 +52,8 @@ class TableAttribute {
 class PrimaryTableAttribute extends TableAttribute {
   autoIncrement: boolean; // Note this is only valid if the attributeType is int type
 
-  constructor(attributeName: string, attributeType: TableAttributeType, autoIncrement: boolean) {
-    super(attributeName, attributeType);
+  constructor(attributeName: string, attributeType: TableAttributeType, autoIncrement: boolean, stringTypeAttributeLengthInfo?: number) {
+    super(attributeName, attributeType, stringTypeAttributeLengthInfo);
     this.autoIncrement = autoIncrement;
   }
 }
@@ -62,8 +65,8 @@ class SecondaryTableAttribute extends TableAttribute {
   nullable: boolean;
   defaultValue: string;
 
-  constructor(attributeName: string, attributeType: TableAttributeType, nullable: boolean, defaultValue: string) {
-    super(attributeName, attributeType);
+  constructor(attributeName: string, attributeType: TableAttributeType, nullable: boolean, defaultValue: string, stringTypeAttributeLengthInfo?: number) {
+    super(attributeName, attributeType, stringTypeAttributeLengthInfo);
     this.nullable = nullable;
     this.defaultValue = defaultValue;
   }
@@ -152,20 +155,64 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
 
     // Deal with primary attributes
     for (let primaryAttributeInfoArray of jsonResult.primary_attributes) {
-      tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
-        primaryAttributeInfoArray[0], 
-        this.parseTableTypeString(primaryAttributeInfoArray[1]), 
-        primaryAttributeInfoArray[4]));
+      let tableAttributeType: TableAttributeType = this.parseTableTypeString(primaryAttributeInfoArray[1]);
+
+      // If the datatype is of type VarChar or Char record the limit or range of it
+      if (tableAttributeType === TableAttributeType.VAR_CHAR) {
+        tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
+          primaryAttributeInfoArray[0], 
+          tableAttributeType, 
+          primaryAttributeInfoArray[4],
+          parseInt(primaryAttributeInfoArray[1].substring(7, primaryAttributeInfoArray[1].length - 1))
+          ));
+      }
+      else if (tableAttributeType === TableAttributeType.CHAR) {
+        tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
+          primaryAttributeInfoArray[0], 
+          tableAttributeType, 
+          primaryAttributeInfoArray[4],
+          parseInt(primaryAttributeInfoArray[1].substring(4, primaryAttributeInfoArray[1].length - 1))
+          ));
+      }
+      else {
+        tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
+          primaryAttributeInfoArray[0], 
+          tableAttributeType, 
+          primaryAttributeInfoArray[4]));
+      }
     }
 
     // Deal with secondary attributes
     for (let secondaryAttributesInfoArray of jsonResult.secondary_attributes) {
-      tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
-        secondaryAttributesInfoArray[0],
-        this.parseTableTypeString(secondaryAttributesInfoArray[1]),
-        secondaryAttributesInfoArray[2],
-        secondaryAttributesInfoArray[3]
-        ))
+      let tableAttributeType: TableAttributeType = this.parseTableTypeString(secondaryAttributesInfoArray[1]);
+
+      // If the datatype is of type VarChar or Char record the limit or range of it
+      if (tableAttributeType === TableAttributeType.VAR_CHAR) {
+        tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
+          secondaryAttributesInfoArray[0],
+          this.parseTableTypeString(secondaryAttributesInfoArray[1]),
+          secondaryAttributesInfoArray[2],
+          secondaryAttributesInfoArray[3],
+          parseInt(secondaryAttributesInfoArray[1].substring(8, secondaryAttributesInfoArray[1].length - 1))
+          ));
+      }
+      else if (tableAttributeType === TableAttributeType.CHAR) {
+        tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
+          secondaryAttributesInfoArray[0],
+          this.parseTableTypeString(secondaryAttributesInfoArray[1]),
+          secondaryAttributesInfoArray[2],
+          secondaryAttributesInfoArray[3],
+          parseInt(secondaryAttributesInfoArray[1].substring(5, secondaryAttributesInfoArray[1].length - 1))
+          ));
+      }
+      else {
+        tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
+          secondaryAttributesInfoArray[0],
+          this.parseTableTypeString(secondaryAttributesInfoArray[1]),
+          secondaryAttributesInfoArray[2],
+          secondaryAttributesInfoArray[3]
+          ));
+      }
     }
 
     return tableAttributesInfo;
@@ -220,6 +267,9 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
     else if (tableTypeString === 'bool') {
       return TableAttributeType.BOOL;
     }
+    else if ('char' === tableTypeString.substring(0, 4)) {
+      return TableAttributeType.CHAR;
+    }
     else if ('varchar' === tableTypeString.substring(0, 7)) {
       return TableAttributeType.VAR_CHAR;
     }
@@ -255,4 +305,4 @@ class TableView extends React.Component<{tableName: string, schemaName: string, 
   }
 }
 
-export {TableView, TableAttributesInfo, PrimaryTableAttribute, SecondaryTableAttribute}
+export {TableView, TableAttributesInfo, TableAttribute, PrimaryTableAttribute, SecondaryTableAttribute, TableAttributeType}
