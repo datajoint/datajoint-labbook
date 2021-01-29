@@ -1,4 +1,3 @@
-import { table } from 'console';
 import React from 'react';
 
 type deleteTupleState = {
@@ -20,8 +19,8 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
   }
 
   /**
-   * Function to check table dependencies for the selected entry, fake API for now
-   * 
+   * Function to check table dependencies for the selected table entry, fake API for now
+   * @param entry
    */
   handleDependencyCheck(entry: any) {
     // console.log('handling dependency: ', entry)
@@ -59,8 +58,8 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
   }
 
   /**
-   * Function to delete the selected entry after user is presented with potential dependencies and confirms
-   * 
+   * Function to delete the selected table entry after user is presented with potential dependencies and confirms
+   * @param entry
    */
   handleTupleDeletion(entry: any) {
     let processedEntry = entry[0]?.primaryEntries // TODO: again, assuming component is only assuming 1 staged entry
@@ -107,7 +106,6 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
           {Object.values(this.props.stagedEntry).map((entry: any) => {
             return (
               <div>
-                {/* <p>{JSON.stringify(entry)}</p> */}
                 <table className="stagedEntry">
                   <thead>
                     <tr>
@@ -136,7 +134,7 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
           {this.state.dependencies ? '' :
           <button className="checkDependencies" onClick={() => this.handleDependencyCheck(Object.values(this.props.stagedEntry))}>Check Dependencies</button>
           }
-
+          {/* TODO: replace with proper animation */}
           {this.state.checkingDependency ? <p>Checking dependency...(imagine a wheel turning)...</p>: '' }
           
         </div>
@@ -152,12 +150,10 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
             <button className="confirmDelete" onClick={() => this.handleTupleDeletion(Object.values(this.props.stagedEntry))}>Confirm Delete</button>
           </div>
         ) : ''}
-        {this.state.deletingEntry ? <p>Deleting entry might take a while...(replace with wheel)</p>: '' }
+        {this.state.deletingEntry ? <p>Deleting entry might take a while...(replace with wheel)</p>: '' } {/* TODO: replace with proper animation */}
         {this.state.deleteStatusMessage ? (
           <div>{this.state.deleteStatusMessage}<span><button onClick={() => this.closeMessage()}>dismiss</button></span></div>
         ) : ''}
-        
-      
       </div>
     )
   }

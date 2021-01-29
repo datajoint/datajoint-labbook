@@ -88,7 +88,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   }
 
   /**
-   * MAHO DOCUMENT THIS
+   * Function for paginating between data entries. Takes in forward/backward/start/end commands to set
+   * the page view state by increments (currently hardcoded on pageIncrement state) of 25 entries.
    * @param cmd 
    */
   handlePagination(cmd: PaginationCommand) {
@@ -145,7 +146,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
 
   /**
    * Function to stage the selected table entries for insert/update/delete process
-   *  
+   * For insert, this will be used for the entry-copy-autofill feature requested.
+   * May need to also include datatype here for delete/update.  
    */
   handleCheckedEntry(event:any, tableEntry:any) {
     // goal format of this.state.stagedTableEntryDict = {

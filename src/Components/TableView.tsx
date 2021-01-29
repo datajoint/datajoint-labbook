@@ -129,8 +129,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
           })
           .catch(error => {
-            console.log('type of eerrror: ', typeof error)
-            console.log(error)
             console.error('problem fetching table attributes');
             console.error(error)
             this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes'})
