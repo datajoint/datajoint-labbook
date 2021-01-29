@@ -112,7 +112,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
           <p>Delete this entry?</p>
           {Object.values(this.props.stagedEntry).map((entry: any) => {
             return (
-              <div key={JSON.stringify(entry)}>
+              <div key={entry}>
                 <table className="stagedEntry">
                   <thead>
                     <tr>

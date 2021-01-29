@@ -310,12 +310,12 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             <tr className="headerRow">
               <th className="buffer"><input type="checkbox" /></th>
               {this.getPrimaryKeys().map((attributeName) => {
-                return (<th className="headings">
+                return (<th key={attributeName} className="headings">
                   <div style={{color: '#4A9F5A' }}>{attributeName}</div>
                 </th>)
               })}
               {this.getSecondaryKeys().map((attributeName) => {
-                return (<th className="headings">
+                return (<th key={attributeName} className="headings">
                   <div style={{color: 'inherit'}}>{attributeName}</div>
                 </th>)
               })}
@@ -323,10 +323,10 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             </thead>
             <tbody>
             {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
-              return (<tr className="tableRow">
+              return (<tr key={entry} className="tableRow">
                 <td colSpan={1}><input type="checkbox" onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
                 {entry.map((column: any) => {
-                  return (<td className="tableCell">{column}</td>)
+                  return (<td key={column} className="tableCell">{column}</td>)
                 })
                 }</tr>)
             })}
