@@ -7,7 +7,7 @@ type deleteTupleState = {
   deletingEntry: boolean
 }
 
-class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string, schemaName: string, token: string}, deleteTupleState> {
+class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, stagedEntry?: any, fetchTableContent: any, clearStage: any}, deleteTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -33,7 +33,7 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
     fetch('/api/check_dependencies', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName, tuple: processedEntry})
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: processedEntry})
     })
       .then(result => {
         // Check for error mesage 500, if so throw error, but for now, send back dummy
@@ -71,7 +71,7 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
     fetch('/api/delete_tuple', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      body: JSON.stringify({schemaName: this.props.schemaName, tableName: this.props.tableName, restrictionTuple: processedEntry})
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restrictionTuple: processedEntry})
     })
       .then(result => {
         // set deleting status to done
@@ -87,6 +87,13 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
       })
       .then(result => {
         this.setState({deleteStatusMessage: result});
+
+        // clear staged entry upon successful delete
+        this.props.clearStage();
+
+        // update table content reflecting the successful delete
+        this.props.fetchTableContent();
+
       })
       .catch(error => {
         console.error(error);

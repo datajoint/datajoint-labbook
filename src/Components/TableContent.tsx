@@ -137,7 +137,16 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
-      return <div><h3>Delete</h3><DeleteTuple stagedEntry={this.state.stagedTableEntryDict} tableName={this.props.selectedTableName} schemaName={this.props.selectedSchemaName} token={this.props.token} /></div>
+      return (<div>
+        <h3>Delete</h3>
+        <DeleteTuple  token={this.props.token}
+          stagedEntry={this.state.stagedTableEntryDict}
+          selectedSchemaName={this.props.selectedSchemaName} 
+          selectedTableName={this.props.selectedTableName} 
+          fetchTableContent={this.props.fetchTableContent}
+          clearStage={() => this.handleStageClearRequest()}
+        />
+      </div>)
     }
 
     // Raise and error if none of the other conditions above trigger
@@ -214,6 +223,13 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       <div className="warningText">One item only for delete and update!!</div>
       <button onClick={() => this.setState({showWarning: false})}>dismiss</button>
     </div>)
+  }
+
+  /**
+   * Clears the staging once delete/update is successful and table content has been modified
+   */
+  handleStageClearRequest() {
+    this.setState({stagedTableEntryDict: {}});
   }
 
   /**
