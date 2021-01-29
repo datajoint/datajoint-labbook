@@ -185,7 +185,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     let stageCopy = Object.assign({}, this.state.stagedTableEntryDict);
     if (this.state.stagedTableEntryDict[uniqueEntryName]) {
       // delete if already there
-      const { [uniqueEntryName]: remove, ...updatedCopy} = stageCopy;
+      const {[uniqueEntryName]: remove, ...updatedCopy} = stageCopy;
       this.setState({stagedTableEntryDict: updatedCopy});
     }
     else {
@@ -206,6 +206,9 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
   }
 
+  /**
+   * Warning that pops up to prevent user from staging multiple entries for delete/update
+   */
   getShowWarningComponent() {
     return (<div className="warningPopup">
       <div className="warningText">One item only for delete and update!!</div>
