@@ -27,7 +27,7 @@ type TableContentStatus = {
   paginatorState: Array<number>
 }
 
-class TableContent extends React.Component<{contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, tableName: string, tableType: TableType}, TableContentStatus> {
+class TableContent extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType, contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -38,6 +38,16 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
+  }
+
+  componentDidUpdate(prevProps: any, prevState: any) {
+    // Break if the the selectedTable did not change
+    if (prevProps.selectedTableName === this.props.selectedTableName) {
+      return;
+    }
+
+    // Reset TableActionview
+    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true});
   }
 
   setCurrentTableActionMenu(tableActionMenu: TableActionType) {
@@ -81,7 +91,7 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
       return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return <InsertTuple tableAttributesInfo={this.props.tableAttributesInfo}/>
+      return <InsertTuple token={this.props.token} selectedSchemaName={this.props.selectedSchemaName} selectedTableName={this.props.selectedTableName} tableAttributesInfo={this.props.tableAttributesInfo}/>
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
@@ -125,19 +135,43 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
 
     return secondaryKeyList;
   }
+
+  /**
+   * Disable Insert Update or Delete based on the table type and return the buttons accordingly
+   */
+  getTableActionButtons() {
+    let disableInsert: boolean = false;
+    let disableUpdate: boolean = false;
+    let disableDelete: boolean = false;
+
+
+    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED) {
+      disableInsert = true;
+      disableUpdate = true;
+    }
+    else if (this.props.selectedTableType === TableType.LOOKUP || this.props.selectedTableType === TableType.PART) {
+      disableInsert = true;
+      disableUpdate = true;
+      disableDelete = true;
+    }
+
+    return(
+      <div className="content-controllers">
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.FILTER)} className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Filter</button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.INSERT)} className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableInsert}>Insert</button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.UPDATE)} className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableUpdate}>Update</button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableDelete}>Delete</button>
+      </div>
+    )
+  }
   
   render() { 
     return(
       <div className="table-content-viewer">
-        <div className={this.props.tableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.tableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.tableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.tableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
-          <div className={this.props.tableType === TableType.COMPUTED ? 'computed table-type-tag' : this.props.tableType === TableType.IMPORTED  ? 'imported table-type-tag' : this.props.tableType === TableType.LOOKUP ? 'lookup table-type-tag' : this.props.tableType === TableType.MANUAL ? 'manual table-type-tag' : 'part table-type-tag'}>{TableType[this.props.tableType]}</div>
-          <h4 className="table-name">{this.props.tableName}</h4>
-          <div className="content-controllers">
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.FILTER)} className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Filter</button>
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.INSERT)} className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Insert</button>
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.UPDATE)} className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Update</button>
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Delete</button>
-          </div>
+        <div className={this.props.selectedTableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.selectedTableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.selectedTableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.selectedTableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
+          <div className={this.props.selectedTableType === TableType.COMPUTED ? 'computed table-type-tag' : this.props.selectedTableType === TableType.IMPORTED  ? 'imported table-type-tag' : this.props.selectedTableType === TableType.LOOKUP ? 'lookup table-type-tag' : this.props.selectedTableType === TableType.MANUAL ? 'manual table-type-tag' : 'part table-type-tag'}>{TableType[this.props.selectedTableType]}</div>
+          <h4 className="table-name">{this.props.selectedTableName}</h4>
+          {this.getTableActionButtons()}
         </div>
         {this.state.hideTableActionMenu ? '' : <this.getCurrentTableActionMenuComponent/>}
         <div className="content-view-area">

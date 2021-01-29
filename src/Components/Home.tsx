@@ -7,7 +7,7 @@ import {TableView} from './TableView';
 import {TableType} from './TableList'
 
 type DJGUIHomeState = {
-  selectedSchema: string,
+  selectedSchemaName: string,
   selectedTableName: string,
   selectedTableType: TableType
 }
@@ -16,7 +16,7 @@ class Home extends React.Component<{token: string}, DJGUIHomeState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      selectedSchema: '',
+      selectedSchemaName: '',
       selectedTableName: '',
       selectedTableType: TableType.MANUAL
     }
@@ -24,7 +24,7 @@ class Home extends React.Component<{token: string}, DJGUIHomeState> {
   }
 
   handleTableSelection(schemaName:string, tableName:string, tableType:TableType) {
-    this.setState({selectedSchema: schemaName, selectedTableName: tableName, selectedTableType: tableType})
+    this.setState({selectedSchemaName: schemaName, selectedTableName: tableName, selectedTableType: tableType})
   }
 
   render() {
@@ -32,13 +32,13 @@ class Home extends React.Component<{token: string}, DJGUIHomeState> {
       <div className="home-container">
         <div className="side-menu-container">
           <SideMenu token={this.props.token}
-            selectedSchema={this.state.selectedSchema}
+            selectedSchema={this.state.selectedSchemaName}
             selectedTableName={this.state.selectedTableName}
             selectedTableType={this.state.selectedTableType}
             handleTableSelection={(schema:string, tablename:string, tabletype:TableType)=>{this.handleTableSelection(schema, tablename, tabletype)}}/>
         </div>
         <div className="table-view-container">
-          <TableView token={this.props.token} schemaName={this.state.selectedSchema} tableName={this.state.selectedTableName}  tableType={this.state.selectedTableType}/>
+          <TableView token={this.props.token} selectedSchemaName={this.state.selectedSchemaName} selectedTableName={this.state.selectedTableName}  selectedTableType={this.state.selectedTableType}/>
         </div>
       </div>
     )

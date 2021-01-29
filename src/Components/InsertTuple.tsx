@@ -5,7 +5,7 @@ type insertTupleState = {
   tupleBuffer: any
 }
 
-class InsertTuple extends React.Component<{tableAttributesInfo?: TableAttributesInfo}, insertTupleState> {
+class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo}, insertTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
