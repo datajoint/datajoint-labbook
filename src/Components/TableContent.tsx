@@ -27,7 +27,7 @@ type TableContentStatus = {
   paginatorState: Array<number>
 }
 
-class TableContent extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType, contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo}, TableContentStatus> {
+class TableContent extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType, contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -91,7 +91,12 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return <InsertTuple token={this.props.token} selectedSchemaName={this.props.selectedSchemaName} selectedTableName={this.props.selectedTableName} tableAttributesInfo={this.props.tableAttributesInfo}/>
+      return <InsertTuple token={this.props.token}
+        selectedSchemaName={this.props.selectedSchemaName}
+        selectedTableName={this.props.selectedTableName}
+        tableAttributesInfo={this.props.tableAttributesInfo}
+        fetchTableContent={this.props.fetchTableContent}
+        />
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;

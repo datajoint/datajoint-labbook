@@ -6,7 +6,7 @@ type insertTupleState = {
   errorMessage: string
 }
 
-class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo}, insertTupleState> {
+class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, insertTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -64,7 +64,6 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       }
     }
 
-
     // All checks passed thus attempt insert
     fetch('/api/insert_tuple', {
       method: 'POST',
@@ -79,7 +78,8 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return result.text();
     })
     .then(result => {
-      // Insert was sucessful, trigger update
+      // Insert was sucessful, tell TableView to fetch the content again
+      this.props.fetchTableContent();
     })
     .catch((error) => {
       this.setState({errorMessage: error});

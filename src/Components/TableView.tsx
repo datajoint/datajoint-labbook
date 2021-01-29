@@ -100,6 +100,8 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       tableInfoData: '',
       selectedTable: ''
     }
+
+    this.fetchTableContent = this.fetchTableContent.bind(this);
   }
 
   switchCurrentView(viewChoice: string) {
@@ -121,15 +123,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.setState({tableAttributesInfo: this.parseTableAttributes(result)});
           })
         // retrieve table content
-        fetch('/api/fetch_tuples', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-          body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
-        })
-          .then(result => result.json())
-          .then(result => {
-            this.setState({tableContentData: result.tuples})
-          })
+        this.fetchTableContent();
       }
       if (this.state.currentView === 'tableInfo') {
         fetch('/api/get_table_definition', {
@@ -143,6 +137,18 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           })
       }
     }
+  }
+
+  fetchTableContent() {
+    fetch('/api/fetch_tuples', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
+    })
+    .then(result => result.json())
+    .then(result => {
+      this.setState({tableContentData: result.tuples})
+    })
   }
 
   /**
@@ -299,7 +305,8 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
               selectedTableName={this.state.selectedTable} 
               selectedTableType={this.props.selectedTableType}
               contentData={this.state.tableContentData} 
-              tableAttributesInfo={this.state.tableAttributesInfo} 
+              tableAttributesInfo={this.state.tableAttributesInfo}
+              fetchTableContent={this.fetchTableContent}
           />
         )
       }
