@@ -26,7 +26,8 @@ type TableContentStatus = {
   hideTableActionMenu: boolean,
   pageIncrement: number,
   paginatorState: Array<number>,
-  stagedTableEntryDict: any
+  stagedTableEntryDict: any,
+  showWarning: boolean
 }
 
 class TableContent extends React.Component<{contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, tableName: string, tableType: TableType, schemaName: string, token: string}, TableContentStatus> {
@@ -37,10 +38,12 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
       hideTableActionMenu: true,
       pageIncrement: 25,
       paginatorState: [0, 25],
-      stagedTableEntryDict: {}
+      stagedTableEntryDict: {},
+      showWarning: false
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
+    this.getShowWarningComponent = this.getShowWarningComponent.bind(this);
   }
 
   setCurrentTableActionMenu(tableActionMenu: TableActionType) {
@@ -100,6 +103,7 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
 
   /**
    * Function to stage the selected table entries for insert/update/delete process
+   *  
    */
   handleCheckedEntry(event:any, tableEntry:any) {
     // goal format of this.state.stagedTableEntryDict = {
@@ -138,16 +142,31 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
     if (this.state.stagedTableEntryDict[uniqueEntryName]) {
       // delete if already there
       const { [uniqueEntryName]: remove, ...updatedCopy} = stageCopy;
-      this.setState({stagedTableEntryDict: updatedCopy})
+      this.setState({stagedTableEntryDict: updatedCopy});
     }
     else {
+      // prevent further creation if there's already an entry and action is set to delete or update
+      if (Object.entries(this.state.stagedTableEntryDict).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE)) {
+        console.log('delete and update should only allow for one entry to be staged')
+        event.preventDefault();
+        this.setState({showWarning: true});
+        return
+      }
+
       // create entry if not there
       stageCopy[uniqueEntryName] = {
         "primaryEntries": primaryEntries,
         "secondaryEntries": secondaryEntries
       }
-      this.setState({stagedTableEntryDict: stageCopy})
+      this.setState({stagedTableEntryDict: stageCopy});
     }
+  }
+
+  getShowWarningComponent() {
+    return (<div className="warningPopup">
+      <div className="warningText">One item only for delete and update!!</div>
+      <button onClick={() => this.setState({showWarning: false})}>dismiss</button>
+    </div>)
   }
 
   /**
@@ -196,6 +215,7 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
           </div>
         </div>
         {this.state.hideTableActionMenu ? '' : <this.getCurrentTableActionMenuComponent/>}
+        {this.state.showWarning ? <this.getShowWarningComponent />: ''}
         <div className="content-view-area">
           <div className="table-container">
           <table className="table">
