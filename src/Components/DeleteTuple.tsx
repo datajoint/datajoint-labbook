@@ -104,8 +104,34 @@ class DeleteTuple extends React.Component<{stagedEntry?: any, tableName: string,
       <div className="deleteWorkZone">
         <div className="stagedEntryCheck">
           <p>Delete this entry?</p>
-          {Object.keys(this.props.stagedEntry).map((entry) => {
-            return (<p>{entry}</p>)
+          {Object.values(this.props.stagedEntry).map((entry: any) => {
+            return (
+              <div>
+                {/* <p>{JSON.stringify(entry)}</p> */}
+                <table className="stagedEntry">
+                  <thead>
+                    <tr>
+                    {Object.keys(entry?.primaryEntries).map((primaries: any) => {
+                      return (<th className="primaryKey">{primaries}</th>)
+                    })}
+                    {Object.keys(entry?.secondaryEntries).map((secondaries: any) => {
+                      return (<th className="secondaryKey">{secondaries}</th>)
+                    })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                    {Object.values(entry?.primaryEntries).map((primaries: any) => {
+                      return (<td className="primaryEntry">{primaries}</td>)
+                    })}
+                    {Object.values(entry?.secondaryEntries).map((secondaries: any) => {
+                      return (<td className="secondaryEntry">{secondaries}</td>)
+                    })}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )
           })}
           {this.state.dependencies ? '' :
           <button className="checkDependencies" onClick={() => this.handleDependencyCheck(Object.values(this.props.stagedEntry))}>Check Dependencies</button>
