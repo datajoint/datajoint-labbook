@@ -4,7 +4,7 @@ import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@for
 import './TableContent.css'
 import {TableType}  from './TableList'
 import InsertTuple from './InsertTuple'
-import {TableAttributesInfo, PrimaryTableAttribute, SecondaryTableAttribute} from './TableView'
+import {TableAttributesInfo} from './TableView'
 
 enum PaginationCommand {
   forward,
@@ -27,7 +27,18 @@ type TableContentStatus = {
   paginatorState: Array<number>
 }
 
-class TableContent extends React.Component<{contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, tableName: string, tableType: TableType}, TableContentStatus> {
+/**
+ * Class component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponetns
+ * 
+ * @param token JWT token for authentaction
+ * @param selectedSchemaName Name of selected schema
+ * @param selectedTableName Name of selected table
+ * @param selectedTableType Type of selected table, should be one of the TableType defined under TableList
+ * @param contentData Array of tuples obtain from the fetch of a table
+ * @param tableAttributesInfo A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
+ * @param fetchTableContent Callback function to tell the parent component to update the contentData
+ */
+class TableContent extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType, contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -40,6 +51,25 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
   }
 
+  /**
+   * Reset the table action sub menu selection upon a new table selection
+   * @param prevProps 
+   * @param prevState 
+   */
+  componentDidUpdate(prevProps: any, prevState: any) {
+    // Break if the the selectedTable did not change
+    if (prevProps.selectedTableName === this.props.selectedTableName) {
+      return;
+    }
+
+    // Reset TableActionview
+    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true});
+  }
+
+  /**
+   * Function to handle the hiding/showing of the sub menus including dealing with switching between the table actions sub menu
+   * @param tableActionMenu The tableActionMenu that was clicked on
+   */
   setCurrentTableActionMenu(tableActionMenu: TableActionType) {
     if (this.state.currentSelectedTableActionMenu === tableActionMenu) {
       // Toggle hiding and showing
@@ -49,9 +79,12 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
       // Switch to the new tableActionMenu
       this.setState({hideTableActionMenu: false, currentSelectedTableActionMenu: tableActionMenu});
     }
-
   }
 
+  /**
+   * MAHO DOCUMENT THIS
+   * @param cmd 
+   */
   handlePagination(cmd: PaginationCommand) {
     if (cmd === PaginationCommand.start) {
       this.setState({paginatorState: [0, this.state.pageIncrement]})
@@ -77,12 +110,21 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
     }
   }
 
+  /**
+   * Switching return code based this.state.currentSelectedTableActionMenu. Mainly used in the render() function below
+   */
   getCurrentTableActionMenuComponent() {
+    
     if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
       return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return <InsertTuple/>
+      return <InsertTuple token={this.props.token}
+        selectedSchemaName={this.props.selectedSchemaName}
+        selectedTableName={this.props.selectedTableName}
+        tableAttributesInfo={this.props.tableAttributesInfo}
+        fetchTableContent={this.props.fetchTableContent}
+        />
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
@@ -126,19 +168,43 @@ class TableContent extends React.Component<{contentData: Array<any>, tableAttrib
 
     return secondaryKeyList;
   }
+
+  /**
+   * Handle button rednering with disable feature for Insert Update or Delete based on the table type and return the buttons accordingly
+   */
+  getTableActionButtons() {
+    let disableInsert: boolean = false;
+    let disableUpdate: boolean = false;
+    let disableDelete: boolean = false;
+
+
+    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED) {
+      disableInsert = true;
+      disableUpdate = true;
+    }
+    else if (this.props.selectedTableType === TableType.LOOKUP || this.props.selectedTableType === TableType.PART) {
+      disableInsert = true;
+      disableUpdate = true;
+      disableDelete = true;
+    }
+
+    return(
+      <div className="content-controllers">
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.FILTER)} className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Filter</button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.INSERT)} className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableInsert}>Insert</button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.UPDATE)} className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableUpdate}>Update</button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableDelete}>Delete</button>
+      </div>
+    )
+  }
   
   render() { 
     return(
       <div className="table-content-viewer">
-        <div className={this.props.tableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.tableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.tableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.tableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
-          <div className={this.props.tableType === TableType.COMPUTED ? 'computed table-type-tag' : this.props.tableType === TableType.IMPORTED  ? 'imported table-type-tag' : this.props.tableType === TableType.LOOKUP ? 'lookup table-type-tag' : this.props.tableType === TableType.MANUAL ? 'manual table-type-tag' : 'part table-type-tag'}>{TableType[this.props.tableType]}</div>
-          <h4 className="table-name">{this.props.tableName}</h4>
-          <div className="content-controllers">
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.FILTER)} className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Filter</button>
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.INSERT)} className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Insert</button>
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.UPDATE)} className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Update</button>
-            <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Delete</button>
-          </div>
+        <div className={this.props.selectedTableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.selectedTableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.selectedTableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.selectedTableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
+          <div className={this.props.selectedTableType === TableType.COMPUTED ? 'computed table-type-tag' : this.props.selectedTableType === TableType.IMPORTED  ? 'imported table-type-tag' : this.props.selectedTableType === TableType.LOOKUP ? 'lookup table-type-tag' : this.props.selectedTableType === TableType.MANUAL ? 'manual table-type-tag' : 'part table-type-tag'}>{TableType[this.props.selectedTableType]}</div>
+          <h4 className="table-name">{this.props.selectedTableName}</h4>
+          {this.getTableActionButtons()}
         </div>
         {this.state.hideTableActionMenu ? '' : <this.getCurrentTableActionMenuComponent/>}
         <div className="content-view-area">
