@@ -3,20 +3,18 @@ import {TableAttribute, PrimaryTableAttribute, TableAttributesInfo, TableAttribu
 
 type insertTupleState = {
   tupleBuffer: any
+  errorMessage: string
 }
 
 class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo}, insertTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      tupleBuffer: {}
+      tupleBuffer: {},
+      errorMessage: ''
     }
 
     this.onSubmit = this.onSubmit.bind(this);
-  }
-
-  componentDidUpdate(prevProps: any, prevState: any) {
-    console.log(this.props.tableAttributesInfo);
   }
 
   handleChange(attributeName: string, event: any) {
@@ -30,7 +28,62 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
   }
 
   onSubmit(event: any) {
+    event.preventDefault();
+    // Check that tableAttirbutesInfo is not undefined
+    if (this.props.tableAttributesInfo === undefined) {
+      return;
+    }
+    
+    // Copy the current state of tupleBuffer for processing for submission
+    let tupleBuffer = this.state.tupleBuffer;
+    // Check primary attributes first that everything is filled out correctly in tupleBuffer
+    for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
+      // Check if attribute exist, if not then complain
+      if (!tupleBuffer.hasOwnProperty(primaryAttribute.attributeName) && primaryAttribute.autoIncrement === false) {
+        this.setState({errorMessage: 'Missing require field: ' + primaryAttribute.attributeName});
+        return;
+      }
+    }
 
+    // Check for secondary attributes are filled out correctly
+    for (let secondaryAttribute of this.props.tableAttributesInfo.secondaryAttributes) {
+      if (!tupleBuffer.hasOwnProperty(secondaryAttribute.attributeName)) {
+        if (secondaryAttribute.nullable === true) {
+          // Nullable is allow
+          tupleBuffer[secondaryAttribute.attributeName] = 'null';
+        }
+        else if (secondaryAttribute.defaultValue !== null) {
+          // Nullable is not allowed, but there is a default value
+          tupleBuffer[secondaryAttribute.attributeName] = secondaryAttribute.defaultValue;
+        }
+        else {
+          // Missing attribute, set error and return
+          this.setState({errorMessage: 'Missing require field: ' + secondaryAttribute.attributeName});
+          return;
+        }
+      }
+    }
+
+
+    // All checks passed thus attempt insert
+    fetch('/api/insert_tuple', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: tupleBuffer})
+    })
+    .then(result => {
+      // Check for error mesage 500, if so throw and error
+      if (result.status === 500) {
+        result.text().then(errorMessage => {throw new Error(errorMessage)});
+      }
+      return result.text();
+    })
+    .then(result => {
+      // Insert was sucessful, trigger update
+    })
+    .catch((error) => {
+      this.setState({errorMessage: error});
+    })
   }
 
   getAttributeLabelBlock(tableAttribute: TableAttribute, typeString: string) {
@@ -208,7 +261,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     return (
       <div>
         <h1>Insert</h1>
-        <form>
+        <form onSubmit={this.onSubmit}>
           {
             // Deal with primary attirbutes
             this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
@@ -227,6 +280,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
           }
           <input type='submit' value='Submit'></input>
         </form>
+        <div>{this.state.errorMessage}</div>
       </div>
     )
   }
