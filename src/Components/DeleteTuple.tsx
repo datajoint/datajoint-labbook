@@ -1,10 +1,13 @@
 import React from 'react';
 
+/**
+ * list of allowed states on this delete tuple component
+ */
 type deleteTupleState = {
-  dependencies: any,
-  deleteStatusMessage: string,
-  isGettingDependencies: boolean,
-  isDeletingEntry: boolean
+  dependencies: any, // list of dependencies fetched from API
+  deleteStatusMessage: string, // for GUI to show
+  isGettingDependencies: boolean, // for loading animation status
+  isDeletingEntry: boolean // for loading animation status
 }
 
 class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToDelete?: any, fetchTableContent: any, clearEntrySelection: any}, deleteTupleState> {
@@ -100,6 +103,9 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
       })
   }
 
+  /** 
+   * clears the content of status message
+   */ 
   closeMessage() {
     this.setState({deleteStatusMessage: ''})
   }
