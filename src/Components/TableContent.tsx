@@ -140,11 +140,11 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       return (<div>
         <h3>Delete</h3>
         <DeleteTuple  token={this.props.token}
-          stagedEntry={this.state.stagedTableEntryDict}
+          tupleToDelete={this.state.stagedTableEntryDict}
           selectedSchemaName={this.props.selectedSchemaName} 
           selectedTableName={this.props.selectedTableName} 
           fetchTableContent={this.props.fetchTableContent}
-          clearStage={() => this.handleStageClearRequest()}
+          clearStage={() => this.handleSelectionClearRequest()}
         />
       </div>)
     }
@@ -157,6 +157,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
    * Function to stage the selected table entries for insert/update/delete process
    * For insert, this will be used for the entry-copy-autofill feature requested.
    * May need to also include datatype here for delete/update.  
+   * @param event
+   * @param tableEntry // table row selection from the checkbox
    */
   handleCheckedEntry(event:any, tableEntry:any) {
     // goal format of this.state.stagedTableEntryDict = {
@@ -228,7 +230,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   /**
    * Clears the staging once delete/update is successful and table content has been modified
    */
-  handleStageClearRequest() {
+  handleSelectionClearRequest() {
     this.setState({stagedTableEntryDict: {}});
   }
 

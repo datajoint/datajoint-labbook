@@ -3,18 +3,18 @@ import React from 'react';
 type deleteTupleState = {
   dependencies: any,
   deleteStatusMessage: string,
-  checkingDependency: boolean,
-  deletingEntry: boolean
+  isGettingDependencies: boolean,
+  isDeletingEntry: boolean
 }
 
-class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, stagedEntry?: any, fetchTableContent: any, clearStage: any}, deleteTupleState> {
+class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToDelete?: any, fetchTableContent: any, clearStage: any}, deleteTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
       dependencies: undefined,
       deleteStatusMessage: '',
-      checkingDependency: false,
-      deletingEntry: false
+      isGettingDependencies: false,
+      isDeletingEntry: false
     }
   }
 
@@ -22,12 +22,12 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
    * Function to check table dependencies for the selected table entry, fake API for now
    * @param entry
    */
-  handleDependencyCheck(entry: any) {
+  getDependencies(entry: any) {
     // console.log('handling dependency: ', entry)
     let processedEntry = entry[0]?.primaryEntries // TODO: make sure deleteTuple component only gets one entry staged for deletion to begin with
 
-    // set status true for checkingDependency, switch to false once api responds
-    this.setState({checkingDependency: true})
+    // set status true for isGettingDependencies, switch to false once api responds
+    this.setState({isGettingDependencies: true})
 
     // TODO: Run api fetch for list of dependencies/permission
     fetch('/api/check_dependencies', {
@@ -42,7 +42,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
         }
         
         // set check status to done
-        this.setState({checkingDependency: false})
+        this.setState({isGettingDependencies: false})
 
         // return dummy result;
         return [{name: 'schema.someTable', entryCount: 39}, {name: 'schema.anotherTable', entryCount: 12}]
@@ -65,7 +65,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     let processedEntry = entry[0]?.primaryEntries // TODO: again, assuming component is only assuming 1 staged entry
 
     // set status true for deleting entry, switch to false once api responds
-    this.setState({deletingEntry: true})
+    this.setState({isDeletingEntry: true})
 
     // TODO: Run api fetch for list of dependencies/permission
     fetch('/api/delete_tuple', {
@@ -75,7 +75,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     })
       .then(result => {
         // set deleting status to done
-        this.setState({deletingEntry: false, dependencies: undefined})
+        this.setState({isDeletingEntry: false, dependencies: undefined})
 
         // Check for error mesage 500, if so throw error - shouldn't happen as often once real dependency check is in place
         if (result.status === 500) {
@@ -108,12 +108,12 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
   render() {
     return(
       <div className="deleteWorkZone">
-        <div className="stagedEntryCheck">
+        <div className="tupleToDeleteCheck">
           <p>Delete this entry?</p>
-          {Object.values(this.props.stagedEntry).map((entry: any) => {
+          {Object.values(this.props.tupleToDelete).map((entry: any) => {
             return (
               <div key={entry}>
-                <table className="stagedEntry">
+                <table className="tupleToDelete">
                   <thead>
                     <tr>
                     {Object.keys(entry?.primaryEntries).map((primaryKey: any) => {
@@ -139,10 +139,10 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
             )
           })}
           {this.state.dependencies ? '' :
-          <button className="checkDependencies" onClick={() => this.handleDependencyCheck(Object.values(this.props.stagedEntry))}>Check Dependencies</button>
+          <button className="checkDependencies" onClick={() => this.getDependencies(Object.values(this.props.tupleToDelete))}>Check Dependencies</button>
           }
           {/* TODO: replace with proper animation */}
-          {this.state.checkingDependency ? <p>Checking dependency...(imagine a wheel turning)...</p>: '' }
+          {this.state.isGettingDependencies ? <p>Checking dependency...(imagine a wheel turning)...</p>: '' }
           
         </div>
         {this.state.dependencies ? (
@@ -154,10 +154,10 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
             })}
             </ul>
             <p>Are you sure you want to delete this entry?</p>
-            <button className="confirmDelete" onClick={() => this.handleTupleDeletion(Object.values(this.props.stagedEntry))}>Confirm Delete</button>
+            <button className="confirmDelete" onClick={() => this.handleTupleDeletion(Object.values(this.props.tupleToDelete))}>Confirm Delete</button>
           </div>
         ) : ''}
-        {this.state.deletingEntry ? <p>Deleting entry might take a while...(replace with wheel)</p>: '' } {/* TODO: replace with proper animation */}
+        {this.state.isDeletingEntry ? <p>Deleting entry might take a while...(replace with wheel)</p>: '' } {/* TODO: replace with proper animation */}
         {this.state.deleteStatusMessage ? (
           <div>{this.state.deleteStatusMessage}<span><button onClick={() => this.closeMessage()}>dismiss</button></span></div>
         ) : ''}

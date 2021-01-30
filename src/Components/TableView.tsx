@@ -129,8 +129,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
           })
           .catch(error => {
-            console.error('problem fetching table attributes');
-            console.error(error)
             this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes'})
           })
         // retrieve table content
@@ -151,8 +149,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.setState({tableInfoData: result, errorMessage: ''})
           })
           .catch(error => {
-            console.error('problem fetching table information: ');
-            console.error(error);
             this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information'})
           })
       }
@@ -175,8 +171,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       this.setState({tableContentData: result.tuples, errorMessage: ''})
     })
     .catch(error => {
-      console.error('problem fetching table content');
-      console.error(error);
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content'})
     })
   }
