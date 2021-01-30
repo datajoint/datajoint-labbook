@@ -253,6 +253,19 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         </div>
       );
     }
+    else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
+      // Does not handle default value for enum
+      return (
+        <div>
+          {this.getAttributeLabelBlock(tableAttribute, 'enum')}
+          <select> {
+            tableAttribute.enumOptions?.map((enumOptionString: string) => {
+              return(<option value={enumOptionString}>{enumOptionString}</option>);
+          })}
+          </select>
+        </div>
+      )
+    }
 
     // Handle number return types
     if (type === 'number') {
@@ -263,6 +276,8 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       </div>
       )
     }
+
+    throw Error('Unsupported Type found for attribute: ' + tableAttribute.attributeName);
   }
 
   /**
