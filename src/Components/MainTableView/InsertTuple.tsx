@@ -1,5 +1,8 @@
 import React from 'react';
-import {TableAttribute, PrimaryTableAttribute, TableAttributesInfo, TableAttributeType} from './TableView'
+import TableAttribute from './DataStorageClasses/TableAttribute';
+import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
+import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
+import TableAttributeType from './enums/TableAttributeType';
 
 type insertTupleState = {
   tupleBuffer: any // Object to stored the values typed in by the user
@@ -253,6 +256,19 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         </div>
       );
     }
+    else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
+      // Does not handle default value for enum
+      return (
+        <div>
+          {this.getAttributeLabelBlock(tableAttribute, 'enum')}
+          <select> {
+            tableAttribute.enumOptions?.map((enumOptionString: string) => {
+              return(<option value={enumOptionString}>{enumOptionString}</option>);
+          })}
+          </select>
+        </div>
+      )
+    }
 
     // Handle number return types
     if (type === 'number') {
@@ -263,6 +279,8 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       </div>
       )
     }
+
+    throw Error('Unsupported Type found for attribute: ' + tableAttribute.attributeName);
   }
 
   /**

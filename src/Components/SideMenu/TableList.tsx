@@ -1,17 +1,7 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
-
-/**
- * Enum for each type of table supported by datajoint
- */
-enum TableType {
-  MANUAL = 0,
-  COMPUTED = 1,
-  LOOKUP = 2,
-  IMPORTED = 3,
-  PART = 4
-}
+import TableType from '../TableTypeEnum/TableType'
 
 /**
  * Parent Class for all table entry which mainly contains name and type of each table
@@ -228,4 +218,4 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
   }
 }
 
-export {TableList, TableType}
+export {TableList}

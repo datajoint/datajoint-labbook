@@ -2,9 +2,9 @@ import React from 'react';
 import './Home.css';
 
 // Component imports
-import SideMenu from './SideMenu';
-import {TableView} from './TableView';
-import {TableType} from './TableList'
+import SideMenu from './SideMenu/SideMenu';
+import TableView from './MainTableView/TableView';
+import TableType from './TableTypeEnum/TableType'
 
 type DJGUIHomeState = {
   selectedSchemaName: string,
