@@ -2,10 +2,10 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
-import {TableType}  from './TableList'
+import TableType from '../TableTypeEnum/TableType'
 import InsertTuple from './InsertTuple'
 import DeleteTuple from './DeleteTuple'
-import {TableAttributesInfo} from './TableView'
+import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 
 enum PaginationCommand {
   forward,

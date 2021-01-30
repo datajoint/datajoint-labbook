@@ -1,90 +1,14 @@
 import React from 'react';
 import "./TableView.css";
 
-
 // Component imports
-import {TableType}  from './TableList';
+import TableType from '../TableTypeEnum/TableType'
 import TableContent from './TableContent';
 import TableInfo from './TableInfo';
-
-// Struct and enums to handle table attirbutes
-enum TableAttributeType {
-  TINY = 0,
-  TINY_UNSIGNED = 1,
-  SMALL = 2,
-  SMALL_UNSIGNED = 3,
-  MEDIUM = 4,
-  MEDIUM_UNSIGNED = 5,
-  BIG = 6,
-  BIG_UNSIGNED = 7,
-  INT = 8,
-  INT_UNSIGNED = 9,
-  DECIMAL = 10,
-  DECIMAL_UNSIGNED = 11,
-  FLOAT = 12,
-  FLOAT_UNSIGNED = 13,
-  BOOL = 14,
-  CHAR = 15,
-  VAR_CHAR = 16,
-  UUID = 17,
-  DATE = 18,
-  DATETIME = 19,
-  TIMESTAMP = 20,
-  ENUM = 21
-}
-
-/**
- * Parent class for table attributes, typically never used directly
- */
-class TableAttribute {
-  attributeName: string;
-  attributeType: TableAttributeType;
-  stringTypeAttributeLengthInfo?: number;
-  enumOptions?: Array<string>;
-
-  constructor(attributeName: string, attributeType: TableAttributeType, stringTypeAttributeLengthInfo?: number, enumOptions?: Array<string>) {
-    this.attributeName = attributeName;
-    this.attributeType = attributeType;
-    this.stringTypeAttributeLengthInfo = stringTypeAttributeLengthInfo;
-    this.enumOptions = enumOptions;
-  }
-}
-
-/**
- * Class for Primary attributes of a table, only has the additional field of autoIncrement for int type keys
- */
-class PrimaryTableAttribute extends TableAttribute {
-  autoIncrement: boolean; // Note this is only valid if the attributeType is int type
-
-  constructor(attributeName: string, attributeType: TableAttributeType, autoIncrement: boolean, stringTypeAttributeLengthInfo?: number, enumOptions?: Array<string>) {
-    super(attributeName, attributeType, stringTypeAttributeLengthInfo, enumOptions);
-    this.autoIncrement = autoIncrement;
-  }
-}
-
-/**
- * Class for secondary attributes of a table, deals with cases of it being nullable, defaultValue
- */
-class SecondaryTableAttribute extends TableAttribute {
-  nullable: boolean;
-  defaultValue: string;
-
-  constructor(attributeName: string, attributeType: TableAttributeType, nullable: boolean, defaultValue: string, stringTypeAttributeLengthInfo?: number, enumOptions?: Array<string>) {
-    super(attributeName, attributeType, stringTypeAttributeLengthInfo, enumOptions);
-    this.nullable = nullable;
-    this.defaultValue = defaultValue;
-  }
-}
-
-class TableAttributesInfo {
-  primaryAttributes: Array<PrimaryTableAttribute>;
-  secondaryAttributes: Array<SecondaryTableAttribute>;
-
-  constructor(primaryAtributes: Array<PrimaryTableAttribute>, secondaryAttributes: Array<SecondaryTableAttribute>) {
-    this.primaryAttributes = primaryAtributes;
-    this.secondaryAttributes = secondaryAttributes;
-  }
-}
+import TableAttributeType from './enums/TableAttributeType';
+import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
+import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
+import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 
 type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,
@@ -391,4 +315,4 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   }
 }
 
-export {TableView, TableAttributesInfo, TableAttribute, PrimaryTableAttribute, SecondaryTableAttribute, TableAttributeType}
+export default TableView;

@@ -1,5 +1,8 @@
 import React from 'react';
-import {TableAttribute, PrimaryTableAttribute, TableAttributesInfo, TableAttributeType} from './TableView'
+import TableAttribute from './DataStorageClasses/TableAttribute';
+import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
+import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
+import TableAttributeType from './enums/TableAttributeType';
 
 type insertTupleState = {
   tupleBuffer: any // Object to stored the values typed in by the user
