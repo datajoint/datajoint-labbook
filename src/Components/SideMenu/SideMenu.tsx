@@ -1,8 +1,8 @@
 import React from 'react';
 import SchemaList from './SchemaList'
-import TableLists from './TableList'
+import {TableList} from './TableList'
+import TableType from '../TableTypeEnum/TableType'
 import './SideMenu.css';
-
 
 /**
  * selectedSchemaBuffer: Buffer to temporarly stored the selected schema and wait until the user select a table to update the parent state which will update other views
@@ -17,7 +17,7 @@ type HomeSideMenuState = {
  * SideMenu component that handles listing schemas and tables
  * 
  */
-class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, handleTableSelection: any}, HomeSideMenuState> {
+class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, selectedTableType: TableType, handleTableSelection: any}, HomeSideMenuState> {
   constructor(props: any) {
     super(props);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
@@ -64,7 +64,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
    * @param tableName
    * @param tableType Enums from TableList
    */
-  handleTableSelection(tableName: string, tableType: string) {
+  handleTableSelection(tableName: string, tableType: TableType) {
     this.props.handleTableSelection(this.state.selectedSchemaBuffer, tableName, tableType);
   }
 
@@ -72,11 +72,12 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
     return (
       <div className="side-full-menu">
         <SchemaList token={this.props.token} handleSchemaSelection={(val: string) => this.handleSchemaSelection(val)} />
-        <TableLists 
+        <TableList
           token={this.props.token} 
           tableListDict={this.state.tableDict} 
           selectedTableName={this.props.selectedTableName}
-          onTableSelection={(tableName: string, tableType: string) => {this.handleTableSelection(tableName, tableType)}}
+          selectedTableType = {this.props.selectedTableType}
+          onTableSelection={(tableName: string, tableType: TableType) => {this.handleTableSelection(tableName, tableType)}}
         />
       </div>
     )

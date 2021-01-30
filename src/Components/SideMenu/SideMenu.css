@@ -100,9 +100,6 @@ select.sort-schema-options {
   box-shadow: 1px 2px 3px lightgray;
 }
 
-
-
-
 /* table menu styling */
 .table-menu {
   display: flex;
@@ -125,7 +122,6 @@ select.sort-schema-options {
   width: 65%;
   height: 100%;
 }
-
 
 .sort-table-field select.sort-table-options {
   width: 100%;
@@ -296,13 +292,15 @@ span.tier-label {
   color: #399E5A;
 }
 
-
 .show-part-table {
   border: 1px solid transparent;
   display: flex;
   flex-direction: column;
   text-align: center;
-  justify-content: space-between;
+  box-sizing: border-box;
+  position: absolute;
+  right: 0;
+  height: 100%;
 }
 .show-part-table.computed {
   border-color: #BC3B68;

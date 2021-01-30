@@ -1,17 +1,7 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
-
-/**
- * Enum for each type of table supported by datajoint
- */
-enum TableType {
-  MANUAL = 0,
-  COMPUTED = 1,
-  LOOKUP = 2,
-  IMPORTED = 3,
-  PART = 4
-}
+import TableType from '../TableTypeEnum/TableType'
 
 /**
  * Parent Class for all table entry which mainly contains name and type of each table
@@ -51,24 +41,42 @@ type TableListState = {
   currentSort: string,
   viewAllPartTables: boolean,
   tablesToSort: any,
-  showPT: any,
+  hidePartTable: Array<string>,
   tableList: Array<ParentTableListEntry>
 }
 
-class TableList extends React.Component<{token: string, tableListDict: any, selectedTableName: string, onTableSelection: any}, TableListState> {
+class TableList extends React.Component<{token: string, tableListDict: any, selectedTableName: string, selectedTableType: TableType, onTableSelection: any}, TableListState> {
   constructor(props: any) {
     super(props);
     this.state = {
       currentSort: 'tier',
       viewAllPartTables: true,
       tablesToSort: this.props.tableListDict,
-      showPT: {},
+      hidePartTable: [],
       tableList: [],
     }
   }
 
   toggleAllPartTableView() {
+    // Controls visibility for all of the part tables in the list
     this.setState({viewAllPartTables: !this.state.viewAllPartTables})
+    if (this.state.viewAllPartTables) {
+      this.setState({hidePartTable: []})
+    }
+    
+  }
+
+  toggleEachPartTableView(table: any) {
+    let updatedList = this.state.hidePartTable;
+    if (this.state.hidePartTable.includes(table.tableName)) {
+      let deleteIndex = updatedList.indexOf(table.tableName);
+      updatedList.splice(deleteIndex, 1)
+    } else {  
+      updatedList.push(table.tableName)
+    }
+
+    this.setState({hidePartTable: updatedList})
+    
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -144,7 +152,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
   }
 
   render() {
-    return (
+    return(
       <div className="table-menu">
         <div className="table-view-controls">
           <div className="sort-table-field">
@@ -173,42 +181,41 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
           {
             this.state.tableList.map((table: ParentTableListEntry) => {
               return(
-                <div key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>{table.tableName}</div>
+                <div key={`${table.tableName}-${table.tableType}`}>
+                  <div className={this.props.selectedTableName === table.tableName && this.props.selectedTableType === table.tableType ? 'table-entry selected' : 'table-entry'} key={`${table.tableName}-${table.tableType}`} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
+                    <p className="table-name">{table.tableName}</p>
+                    <span className={table.tableType === TableType.COMPUTED ? 'computed tier-label' : (table.tableType === TableType.LOOKUP ? 'lookup tier-label' : (table.tableType === TableType.MANUAL ? 'manual tier-label' : 'imported tier-label'))}>{TableType[table.tableType].toLowerCase()}</span>
+                    {table.partTables.length ?
+                      (<div onClick={() => {this.toggleEachPartTableView(table)}} className={table.tableType === TableType.COMPUTED ? "computed show-part-table" : table.tableType === TableType.IMPORTED ? "imported show-part-table" : table.tableType === TableType.LOOKUP  ? "lookup show-part-table" : "manual show-part-table"}>
+                        <label className="head">part table</label>
+                        <div className="icon">{!this.state.viewAllPartTables || this.state.hidePartTable.includes(table.tableName) ?
+                          <FontAwesomeIcon className="eye-icon" icon={faEyeSlash} />
+                          : <FontAwesomeIcon className="eye-icon" icon={faEye} />}
+                        </div>
+                      </div>) : ''}
+                  </div>
+                  {table.partTables.length && !this.state.hidePartTable.includes(table.tableName) ? (
+                    table.partTables.map((partTable: PartTableListEntry) => {
+                      return (
+                        <div onClick={() => {this.props.onTableSelection(partTable.tableName, partTable.tableType)}} key={partTable.tableName} className={this.state.viewAllPartTables && this.props.selectedTableName === partTable.tableName && this.props.selectedTableType === partTable.tableType ? "part-table-entry selected" : this.state.viewAllPartTables && (this.props.selectedTableName !== partTable.tableName || this.props.selectedTableType !== partTable.tableType)? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide" : ""}>
+                        <p className="table-name">{partTable.tableName}</p>
+                        <span className={table.tableType === TableType.COMPUTED ? "part-label computed-part" : table.tableType === TableType.LOOKUP ? "part-label lookup-part" : table.tableType === TableType.IMPORTED ? "part-label imported-part" : "part-label manual-part"}>
+                          <div className="MT-type">{TableType[table.tableType].toLowerCase()}</div>
+                          <div className="part-table-tag">{TableType[partTable.tableType].toLowerCase() + ' table'}</div>
+                        </span>
+                      </div>
+                      )
+                    })
+                  ) : ''
+                  }
+                </div>
               )
             })
-          
-          
-          /*this.state.sortedTables.map((eachTable: any) => {
-            return (
-              !eachTable['type'].endsWith('.part') ?
-                (<div className={this.state.selectedTableName === eachTable['name'] ? 'table-entry selected' : 'table-entry'} key={eachTable['name']} onClick={() => {this.tableSelected(eachTable['name'], eachTable['type'])}}>
-                  <p className="table-name">{eachTable['name']}</p>
-                  <span className={eachTable['type'] === 'computed' ? 'computed tier-label' : (eachTable['type'] === 'lookup' ? 'lookup tier-label' : (eachTable['type'] === 'manual' ? 'manual tier-label' : 'unknown tier-label'))}>{eachTable['type']}</span>
-                  {eachTable['hasPartTable'] ?
-                    (<div className={eachTable['type'] === 'computed' ? "computed show-part-table" : eachTable['type'] === 'imported' ? "imported show-part-table" : eachTable['type'] === 'lookup' ? "lookup show-part-table" : "manual show-part-table"}>
-                      <label className="head">part table</label>
-                      <div className="icon">{this.state.showPT[eachTable['name']] ?
-                        <FontAwesomeIcon className="eye-icon" icon={faEye} />
-                        : <FontAwesomeIcon className="eye-icon" icon={faEyeSlash} />}
-                      </div>
-                    </div>) : ''}
-                </div>)
-                :
-                (
-                  <div onClick={() => {this.tableSelected(eachTable['name'], 'part')}} key={eachTable['name']} className={this.state.viewAllPartTables && this.state.selectedTableName === eachTable['name'] ? "part-table-entry selected" : this.state.viewAllPartTables && this.state.selectedTableName !== eachTable['name'] ? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide" : ""}>
-                    <p className="table-name">{eachTable['name'].split('.')[1]}</p>
-                    <span className={eachTable['type'].split('.')[0] === 'computed' ? "part-label computed-part" : eachTable['type'].split('.')[0] === 'lookup' ? "part-label lookup-part" : eachTable['type'].split('.')[0] === 'imported' ? "part-label imported-part" : "part-label manual-part"}>
-                      <div className="MT-type">{eachTable['type'].split('.')[0]}</div>
-                      <div className="part-table-tag">{eachTable['type'].split('.')[1] + ' table'}</div>
-                    </span>
-                  </div>
-                )
-            )
-          })*/}
+          }
         </div>
       </div>
     )
   }
 }
 
-export default TableList
+export {TableList}

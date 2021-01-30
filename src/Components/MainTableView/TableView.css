@@ -39,3 +39,8 @@
   height: 85vh;
   box-shadow: -1px 0px 3px rgb(160, 160, 160);
 }
+
+.errorMessage {
+  padding-left: 24px;
+  padding-top: 52px;
+}
