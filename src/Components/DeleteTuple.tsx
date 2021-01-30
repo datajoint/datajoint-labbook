@@ -23,14 +23,13 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
    * @param entry
    */
   getDependencies(entry: any) {
-    // console.log('handling dependency: ', entry)
     let processedEntry = entry[0]?.primaryEntries // TODO: make sure deleteTuple component only gets one entry staged for deletion to begin with
 
     // set status true for isGettingDependencies, switch to false once api responds
     this.setState({isGettingDependencies: true})
 
     // TODO: Run api fetch for list of dependencies/permission
-    fetch('/api/check_dependencies', {
+    fetch('/api/list_dependencies', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: processedEntry})

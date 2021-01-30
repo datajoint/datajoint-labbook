@@ -156,39 +156,41 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   /**
    * Function to stage the selected table entries for insert/update/delete process
    * For insert, this will be used for the entry-copy-autofill feature requested.
-   * May need to also include datatype here for delete/update.  
+   * Datatype included in the stagedTableEntryDict but should we format datatype to 
+   * DJ style here or right before making the API call?
    * @param event
    * @param tableEntry // table row selection from the checkbox
    */
   handleCheckedEntry(event:any, tableEntry:any) {
-    // goal format of this.state.stagedTableEntryDict = {
-    //   "primaryKey1_value.primaryKey2_value": {
-    //     "primaryEntries": {
-    //       "primaryKey1" : "primaryKey1_value",
-    //       "primaryKey2" : "primaryKey2_value",
-    //     },
-    //     "secondaryEntries": {
-    //       "secondaryKey1" : "secondaryKey1_value"
-    //     }
-    //   },
-    // }
-
-    // getting the list of primary attributes and secondary attributes, perhaps better to just use a stored value instead
-    let primaryKeys: Array<string> = this.getPrimaryKeys();
-    let secondaryKeys: Array<string>  = this.getSecondaryKeys();
+    /* goal format of this.state.stagedTableEntryDict = 
+      {
+        "primaryKey1_value.primaryKey2_value": {
+          "primaryEntries": {
+            "primaryKey1" : "primaryKey1_value",
+            "primaryKey2" : "primaryKey2_value"
+          },
+          "secondaryEntries": {
+            "secondaryKey1" : "secondaryKey1_value"
+          },
+          "attributesInfo": {
+            from this.props.tableAttributesInfo
+          }
+        },
+      }
+    */
 
     // splitting the selected table entry into primary and secondary attributes
-    let primaryTableEntries = tableEntry.slice(0, primaryKeys.length);
-    let secondaryTableEntries = tableEntry.slice(primaryKeys.length);
+    let primaryTableEntries = tableEntry.slice(0, this.props.tableAttributesInfo?.primaryAttributes.length);
+    let secondaryTableEntries = tableEntry.slice(this.props.tableAttributesInfo?.primaryAttributes.length);
 
     // pairing the table entry with it's corresponding key
     let primaryEntries: any = {};
     let secondaryEntries: any = {};
-    primaryKeys.forEach((PK, index) => {
-      primaryEntries[PK] = primaryTableEntries[index]
+    this.props.tableAttributesInfo?.primaryAttributes.forEach((PK, index) => {
+      primaryEntries[PK.attributeName] = primaryTableEntries[index]
     })
-    secondaryKeys.forEach((SK, index) => {
-      secondaryEntries[SK] = secondaryTableEntries[index]
+    this.props.tableAttributesInfo?.secondaryAttributes.forEach((SK, index) => {
+      secondaryEntries[SK.attributeName] = secondaryTableEntries[index]
     })
 
     // store the labeled entries under unique keyname using its primary keys if not already there
@@ -202,7 +204,6 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     else {
       // prevent further creation if there's already an entry and action is set to delete or update
       if (Object.entries(this.state.stagedTableEntryDict).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE)) {
-        console.log('delete and update should only allow for one entry to be staged')
         event.preventDefault();
         this.setState({showWarning: true});
         return
@@ -211,7 +212,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       // create entry if not there
       stageCopy[uniqueEntryName] = {
         "primaryEntries": primaryEntries,
-        "secondaryEntries": secondaryEntries
+        "secondaryEntries": secondaryEntries,
+        "tableAttributesInfo": this.props.tableAttributesInfo
       }
       this.setState({stagedTableEntryDict: stageCopy});
     }
