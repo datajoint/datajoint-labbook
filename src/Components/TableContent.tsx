@@ -26,7 +26,7 @@ type TableContentStatus = {
   hideTableActionMenu: boolean,
   pageIncrement: number,
   paginatorState: Array<number>,
-  stagedTableEntryDict: any,
+  selectedTableEntries: any,
   showWarning: boolean
 }
 
@@ -49,7 +49,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       hideTableActionMenu: true,
       pageIncrement: 25,
       paginatorState: [0, 25],
-      stagedTableEntryDict: {},
+      selectedTableEntries: {},
       showWarning: false
     }
 
@@ -140,11 +140,11 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       return (<div>
         <h3>Delete</h3>
         <DeleteTuple  token={this.props.token}
-          tupleToDelete={this.state.stagedTableEntryDict}
+          tupleToDelete={this.state.selectedTableEntries}
           selectedSchemaName={this.props.selectedSchemaName} 
           selectedTableName={this.props.selectedTableName} 
           fetchTableContent={this.props.fetchTableContent}
-          clearStage={() => this.handleSelectionClearRequest()}
+          clearEntrySelection={() => this.handleSelectionClearRequest()}
         />
       </div>)
     }
@@ -156,13 +156,13 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   /**
    * Function to stage the selected table entries for insert/update/delete process
    * For insert, this will be used for the entry-copy-autofill feature requested.
-   * Datatype included in the stagedTableEntryDict but should we format datatype to 
+   * Datatype included in the selectedTableEntries but should we format datatype to 
    * DJ style here or right before making the API call?
    * @param event
    * @param tableEntry // table row selection from the checkbox
    */
   handleCheckedEntry(event:any, tableEntry:any) {
-    /* goal format of this.state.stagedTableEntryDict = 
+    /* goal format of this.state.selectedTableEntries = 
       {
         "primaryKey1_value.primaryKey2_value": {
           "primaryEntries": {
@@ -195,27 +195,27 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
 
     // store the labeled entries under unique keyname using its primary keys if not already there
     let uniqueEntryName = primaryTableEntries.join(".")
-    let stageCopy = Object.assign({}, this.state.stagedTableEntryDict);
-    if (this.state.stagedTableEntryDict[uniqueEntryName]) {
+    let selectionsCopy = Object.assign({}, this.state.selectedTableEntries);
+    if (this.state.selectedTableEntries[uniqueEntryName]) {
       // delete if already there
-      const {[uniqueEntryName]: remove, ...updatedCopy} = stageCopy;
-      this.setState({stagedTableEntryDict: updatedCopy});
+      const {[uniqueEntryName]: remove, ...updatedCopy} = selectionsCopy;
+      this.setState({selectedTableEntries: updatedCopy});
     }
     else {
       // prevent further creation if there's already an entry and action is set to delete or update
-      if (Object.entries(this.state.stagedTableEntryDict).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE)) {
+      if (Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE)) {
         event.preventDefault();
         this.setState({showWarning: true});
         return
       }
 
       // create entry if not there
-      stageCopy[uniqueEntryName] = {
+      selectionsCopy[uniqueEntryName] = {
         "primaryEntries": primaryEntries,
         "secondaryEntries": secondaryEntries,
         "tableAttributesInfo": this.props.tableAttributesInfo
       }
-      this.setState({stagedTableEntryDict: stageCopy});
+      this.setState({selectedTableEntries: selectionsCopy});
     }
   }
 
@@ -233,7 +233,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
    * Clears the staging once delete/update is successful and table content has been modified
    */
   handleSelectionClearRequest() {
-    this.setState({stagedTableEntryDict: {}});
+    this.setState({selectedTableEntries: {}});
   }
 
   /**

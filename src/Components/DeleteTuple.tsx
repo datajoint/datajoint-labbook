@@ -7,7 +7,7 @@ type deleteTupleState = {
   isDeletingEntry: boolean
 }
 
-class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToDelete?: any, fetchTableContent: any, clearStage: any}, deleteTupleState> {
+class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToDelete?: any, fetchTableContent: any, clearEntrySelection: any}, deleteTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -88,7 +88,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
         this.setState({deleteStatusMessage: result});
 
         // clear staged entry upon successful delete
-        this.props.clearStage();
+        this.props.clearEntrySelection();
 
         // update table content reflecting the successful delete
         this.props.fetchTableContent();
