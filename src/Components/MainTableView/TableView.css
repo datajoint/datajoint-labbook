@@ -19,12 +19,20 @@
   border-radius: 2px 2px 0 0;
   cursor: pointer;
   box-shadow: -1px -1px 2px rgb(160, 160, 160);
+  border: none;
 }
 
 .table-view .nav-tabs .tab:hover {
   box-shadow: -1px -2px 3px rgb(160, 160, 160);
   background-color: #82D088; /* light alternative green */
 }
+
+.table-view .nav-tabs .tab:disabled {
+  color:rgb(160, 160, 160);
+  background-color: #609b74;
+  cursor: not-allowed;
+}
+
 
 .table-view .nav-tabs .tab.inView {
   color: #262A22;
