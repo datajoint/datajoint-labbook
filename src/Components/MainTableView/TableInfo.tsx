@@ -4,6 +4,7 @@ import './TableInfo.css';
 type TableInfoState = {
   tableDefinition: string
 }
+
 class TableInfo extends React.Component<{infoDefData: string}, TableInfoState> {
   constructor(props: any) {
     super(props);

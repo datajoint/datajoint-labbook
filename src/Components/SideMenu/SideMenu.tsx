@@ -1,6 +1,7 @@
 import React from 'react';
 import SchemaList from './SchemaList'
-import {TableList, TableType} from './TableList'
+import {TableList} from './TableList'
+import TableType from '../TableTypeEnum/TableType'
 import './SideMenu.css';
 
 /**
