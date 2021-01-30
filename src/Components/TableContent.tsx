@@ -161,7 +161,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
    * @param event
    * @param tableEntry // table row selection from the checkbox
    */
-  handleCheckedEntry(event:any, tableEntry:any) {
+  handleCheckedEntry(event: any, tableEntry: any) {
     /* goal format of this.state.selectedTableEntries = 
       {
         "primaryKey1_value.primaryKey2_value": {
