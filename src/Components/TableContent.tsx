@@ -4,6 +4,7 @@ import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@for
 import './TableContent.css'
 import {TableType}  from './TableList'
 import InsertTuple from './InsertTuple'
+import DeleteTuple from './DeleteTuple'
 import {TableAttributesInfo} from './TableView'
 
 enum PaginationCommand {
@@ -24,7 +25,9 @@ type TableContentStatus = {
   currentSelectedTableActionMenu: TableActionType,
   hideTableActionMenu: boolean,
   pageIncrement: number,
-  paginatorState: Array<number>
+  paginatorState: Array<number>,
+  selectedTableEntries: any,
+  showWarning: boolean
 }
 
 /**
@@ -45,10 +48,13 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       currentSelectedTableActionMenu: TableActionType.FILTER,
       hideTableActionMenu: true,
       pageIncrement: 25,
-      paginatorState: [0, 25]
+      paginatorState: [0, 25],
+      selectedTableEntries: {},
+      showWarning: false
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
+    this.getShowWarningComponent = this.getShowWarningComponent.bind(this);
   }
 
   /**
@@ -82,7 +88,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   }
 
   /**
-   * MAHO DOCUMENT THIS
+   * Function for paginating between data entries. Takes in forward/backward/start/end commands to set
+   * the page view state by increments (currently hardcoded on pageIncrement state) of 25 entries.
    * @param cmd 
    */
   handlePagination(cmd: PaginationCommand) {
@@ -130,11 +137,103 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
-      return <div><h3>Delete</h3><p>Replace with Delete Component</p></div>
+      return (<div>
+        <h3>Delete</h3>
+        <DeleteTuple  token={this.props.token}
+          tupleToDelete={this.state.selectedTableEntries}
+          selectedSchemaName={this.props.selectedSchemaName} 
+          selectedTableName={this.props.selectedTableName} 
+          fetchTableContent={this.props.fetchTableContent}
+          clearEntrySelection={() => this.handleSelectionClearRequest()}
+        />
+      </div>)
     }
 
     // Raise and error if none of the other conditions above trigger
     throw Error('Unsupported TableActionType');
+  }
+
+  /**
+   * Function to stage the selected table entries for insert/update/delete process
+   * For insert, this will be used for the entry-copy-autofill feature requested.
+   * Datatype included in the selectedTableEntries but should we format datatype to 
+   * DJ style here or right before making the API call?
+   * @param event
+   * @param tableEntry // table row selection from the checkbox
+   */
+  handleCheckedEntry(event: any, tableEntry: any) {
+    /* goal format of this.state.selectedTableEntries = 
+      {
+        "primaryKey1_value.primaryKey2_value": {
+          "primaryEntries": {
+            "primaryKey1" : "primaryKey1_value",
+            "primaryKey2" : "primaryKey2_value"
+          },
+          "secondaryEntries": {
+            "secondaryKey1" : "secondaryKey1_value"
+          },
+          "attributesInfo": {
+            from this.props.tableAttributesInfo
+          }
+        },
+      }
+    */
+
+    // splitting the selected table entry into primary and secondary attributes
+    let primaryTableEntries = tableEntry.slice(0, this.props.tableAttributesInfo?.primaryAttributes.length);
+    let secondaryTableEntries = tableEntry.slice(this.props.tableAttributesInfo?.primaryAttributes.length);
+
+    // pairing the table entry with it's corresponding key
+    let primaryEntries: any = {};
+    let secondaryEntries: any = {};
+    this.props.tableAttributesInfo?.primaryAttributes.forEach((PK, index) => {
+      primaryEntries[PK.attributeName] = primaryTableEntries[index]
+    })
+    this.props.tableAttributesInfo?.secondaryAttributes.forEach((SK, index) => {
+      secondaryEntries[SK.attributeName] = secondaryTableEntries[index]
+    })
+
+    // store the labeled entries under unique keyname using its primary keys if not already there
+    let uniqueEntryName = primaryTableEntries.join(".")
+    let selectionsCopy = Object.assign({}, this.state.selectedTableEntries);
+    if (this.state.selectedTableEntries[uniqueEntryName]) {
+      // delete if already there
+      const {[uniqueEntryName]: remove, ...updatedCopy} = selectionsCopy;
+      this.setState({selectedTableEntries: updatedCopy});
+    }
+    else {
+      // prevent further creation if there's already an entry and action is set to delete or update
+      if (Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE)) {
+        event.preventDefault();
+        this.setState({showWarning: true});
+        return
+      }
+
+      // create entry if not there
+      selectionsCopy[uniqueEntryName] = {
+        "primaryEntries": primaryEntries,
+        "secondaryEntries": secondaryEntries,
+        "tableAttributesInfo": this.props.tableAttributesInfo
+      }
+      this.setState({selectedTableEntries: selectionsCopy});
+    }
+  }
+
+  /**
+   * Warning that pops up to prevent user from staging multiple entries for delete/update
+   */
+  getShowWarningComponent() {
+    return (<div className="warningPopup">
+      <div className="warningText">One item only for delete and update!!</div>
+      <button onClick={() => this.setState({showWarning: false})}>dismiss</button>
+    </div>)
+  }
+
+  /**
+   * Clears the staging once delete/update is successful and table content has been modified
+   */
+  handleSelectionClearRequest() {
+    this.setState({selectedTableEntries: {}});
   }
 
   /**
@@ -207,18 +306,20 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           {this.getTableActionButtons()}
         </div>
         {this.state.hideTableActionMenu ? '' : <this.getCurrentTableActionMenuComponent/>}
+        {this.state.showWarning ? <this.getShowWarningComponent />: ''}
         <div className="content-view-area">
           <div className="table-container">
           <table className="table">
             <thead>
             <tr className="headerRow">
+              <th className="buffer"><input type="checkbox" /></th>
               {this.getPrimaryKeys().map((attributeName) => {
-                return (<th>
+                return (<th key={attributeName} className="headings">
                   <div style={{color: '#4A9F5A' }}>{attributeName}</div>
                 </th>)
               })}
               {this.getSecondaryKeys().map((attributeName) => {
-                return (<th>
+                return (<th key={attributeName} className="headings">
                   <div style={{color: 'inherit'}}>{attributeName}</div>
                 </th>)
               })}
@@ -226,9 +327,10 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             </thead>
             <tbody>
             {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
-              return (<tr className="tableRow">
+              return (<tr key={entry} className="tableRow">
+                <td colSpan={1}><input type="checkbox" onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
                 {entry.map((column: any) => {
-                  return (<td className="tableCell">{column}</td>)
+                  return (<td key={column} className="tableCell">{column}</td>)
                 })
                 }</tr>)
             })}
