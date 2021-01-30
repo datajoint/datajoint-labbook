@@ -191,8 +191,8 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
           {
             this.state.tableList.map((table: ParentTableListEntry) => {
               return(
-                <div>
-                  <div className={this.props.selectedTableName === table.tableName && this.props.selectedTableType === table.tableType ? 'table-entry selected' : 'table-entry'} key={table.tableName} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
+                <div key={`${table.tableName}-${table.tableType}`}>
+                  <div className={this.props.selectedTableName === table.tableName && this.props.selectedTableType === table.tableType ? 'table-entry selected' : 'table-entry'} key={`${table.tableName}-${table.tableType}`} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
                     <p className="table-name">{table.tableName}</p>
                     <span className={table.tableType === TableType.COMPUTED ? 'computed tier-label' : (table.tableType === TableType.LOOKUP ? 'lookup tier-label' : (table.tableType === TableType.MANUAL ? 'manual tier-label' : 'imported tier-label'))}>{TableType[table.tableType].toLowerCase()}</span>
                     {table.partTables.length ?

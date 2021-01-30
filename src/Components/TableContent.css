@@ -138,7 +138,7 @@ table.table {
 }
 
 .content-view-area .table .tableRow td.tableCell,
-.content-view-area .table .headerRow th {
+.content-view-area .table .headerRow th.headings {
   width: 100%;
   padding: 0 4px;
   text-align: left;
@@ -149,4 +149,12 @@ table.table {
 
 .content-view-area .table .tableRow td.tableCell:hover {
   overflow: auto;
+}
+
+.headerRow th.buffer {
+  /* width: 82px; */
+}
+
+.headerRow th.buffer input {
+  visibility: hidden;
 }

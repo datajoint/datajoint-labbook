@@ -87,7 +87,8 @@ type TableViewState = {
   currentView: string,
   tableContentData: Array<any>,
   tableInfoData: string,
-  selectedTable: string
+  selectedTable: string,
+  errorMessage: string
 }
 
 class TableView extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType}, TableViewState> {
@@ -98,7 +99,8 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       currentView: 'tableContent',
       tableContentData: [],
       tableInfoData: '',
-      selectedTable: ''
+      selectedTable: '',
+      errorMessage: ''
     }
 
     this.fetchTableContent = this.fetchTableContent.bind(this);
@@ -118,9 +120,16 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
           body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
         })
-          .then(result => result.json())
           .then(result => {
-            this.setState({tableAttributesInfo: this.parseTableAttributes(result)});
+            if (!result.ok) {
+              throw Error(`${result.status} - ${result.statusText}`)
+            }
+            return result.json()})
+          .then(result => {
+            this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
+          })
+          .catch(error => {
+            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes'})
           })
         // retrieve table content
         this.fetchTableContent();
@@ -131,9 +140,16 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
           body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
         })
-          .then(result => result.text())
           .then(result => {
-            this.setState({tableInfoData: result})
+            if (!result.ok) {
+              throw Error(`${result.status} - ${result.statusText}`)
+            }
+            return result.text()})
+          .then(result => {
+            this.setState({tableInfoData: result, errorMessage: ''})
+          })
+          .catch(error => {
+            this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information'})
           })
       }
     }
@@ -145,9 +161,17 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
     })
-    .then(result => result.json())
     .then(result => {
-      this.setState({tableContentData: result.tuples})
+      if (!result.ok) {
+        throw Error(`${result.status} - ${result.statusText}`)
+      }
+      return result.json()
+    })
+    .then(result => {
+      this.setState({tableContentData: result.tuples, errorMessage: ''})
+    })
+    .catch(error => {
+      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content'})
     })
   }
 
@@ -295,6 +319,9 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   getCurrentView() {
     if (this.props.selectedTableName === '') {
       return <div>Select a Table to see contents</div>
+    } 
+    else if (this.state.errorMessage) {
+      return <div className="errorMessage">{this.state.errorMessage}</div>
     }
     else {
       if (this.state.currentView === 'tableContent') {
@@ -326,6 +353,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           <button className={this.state.currentView === "tableContent" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableContent')} disabled={this.props.selectedTableName === ''}>View Content</button>
           <button className={this.state.currentView === "tableInfo" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableInfo')} disabled={this.props.selectedTableName === ''}>Table Information</button>
         </div>
+
         <div className="view-area"> {this.getCurrentView()}
         </div>
       </div>
