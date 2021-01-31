@@ -27,7 +27,8 @@ type TableContentStatus = {
   pageIncrement: number,
   paginatorState: Array<number>,
   selectedTableEntries: any,
-  showWarning: boolean
+  showWarning: boolean,
+  isDisabledCheckbox: boolean
 }
 
 /**
@@ -50,7 +51,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       pageIncrement: 25,
       paginatorState: [0, 25],
       selectedTableEntries: {},
-      showWarning: false
+      showWarning: false,
+      isDisabledCheckbox: false,
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
@@ -296,6 +298,23 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       </div>
     )
   }
+
+  checkSelection(tableEntry: any) {
+    // splitting the selected table entry into primary and secondary attributes
+    let primaryTableEntries = tableEntry.slice(0, this.props.tableAttributesInfo?.primaryAttributes.length);
+
+    // pairing the table entry with it's corresponding key
+    let primaryEntries: any = {};
+    this.props.tableAttributesInfo?.primaryAttributes.forEach((PK, index) => {
+      primaryEntries[PK.attributeName] = primaryTableEntries[index]
+    })
+
+    // store the labeled entries under unique keyname using its primary keys if not already there
+    let uniqueEntryName = primaryTableEntries.join(".")
+
+    // returns true if entry is already selected
+    return this.state.selectedTableEntries[uniqueEntryName]
+  }
   
   render() { 
     return(
@@ -328,7 +347,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             <tbody>
             {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
               return (<tr key={entry} className="tableRow">
-                <td colSpan={1}><input type="checkbox" onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
+                <td colSpan={1}><input type="checkbox" disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) && !this.checkSelection(entry)} onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
                 {entry.map((column: any) => {
                   return (<td key={column} className="tableCell">{column}</td>)
                 })

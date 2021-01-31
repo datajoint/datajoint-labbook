@@ -158,3 +158,11 @@ table.table {
 .headerRow th.buffer input {
   visibility: hidden;
 }
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+input[type="checkbox"][disabled] {
+  cursor: not-allowed;
+}
