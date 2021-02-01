@@ -159,22 +159,30 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   getCurrentTableActionMenuComponent() {
     
     if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
-      return <div><h3>Filter</h3><p>Replace with Filter Component</p></div>;
+      return (<div className="actionMenuContainer">
+          <h1>Filter</h1>
+          <p>Replace with Filter Component</p>
+        </div>)
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return <InsertTuple token={this.props.token}
-        selectedSchemaName={this.props.selectedSchemaName}
-        selectedTableName={this.props.selectedTableName}
-        tableAttributesInfo={this.props.tableAttributesInfo}
-        fetchTableContent={this.props.fetchTableContent}
-        />
+      return (<div className="actionMenuContainer">
+          <InsertTuple token={this.props.token}
+          selectedSchemaName={this.props.selectedSchemaName}
+          selectedTableName={this.props.selectedTableName}
+          tableAttributesInfo={this.props.tableAttributesInfo}
+          fetchTableContent={this.props.fetchTableContent}
+          />
+        </div>)
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
-      return <div><h3>Update</h3><p>Replace with Update Component</p></div>;
+      return (<div className="actionMenuContainer">
+        <h1>Update</h1>
+        <p>Replace with Update Component</p>
+      </div>)
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
-      return (<div>
-        <h3>Delete</h3>
+      return (<div className="actionMenuContainer">
+        <h1>Delete</h1>
         <DeleteTuple  token={this.props.token}
           tupleToDelete={this.state.selectedTableEntries}
           selectedSchemaName={this.props.selectedSchemaName} 

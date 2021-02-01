@@ -17,7 +17,6 @@
   font-weight: 600;
   margin-right: 8px;
   border-radius: 2px 2px 0 0;
-  cursor: pointer;
   box-shadow: -1px -1px 2px rgb(160, 160, 160);
   border: none;
 }
@@ -25,6 +24,10 @@
 .table-view .nav-tabs .tab:hover {
   box-shadow: -1px -2px 3px rgb(160, 160, 160);
   background-color: #82D088; /* light alternative green */
+}
+
+.table-view button {
+  cursor: pointer;
 }
 
 .table-view .nav-tabs .tab:disabled {
@@ -38,6 +41,12 @@
   color: #262A22;
   background-color: #F1f1f1;
   box-shadow: -1px -2px 3px rgb(160, 160, 160);
+}
+
+.actionMenuContainer {
+  height: 300px;
+  overflow: auto;
+  border-bottom: 1px solid gray;
 }
 
 .view-area {
