@@ -48,7 +48,12 @@ button.checkDependencies:hover {
   color: white;
 }
 
-div.dependencies {
+button.confirmDeletion {
+  margin-bottom: 24px;
+}
+
+div.dependencies p {
+  margin: 0;
 }
 
 div.deleting {
