@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
@@ -6,6 +6,7 @@ import TableType from '../TableTypeEnum/TableType'
 import InsertTuple from './InsertTuple'
 import DeleteTuple from './DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
+import { isThisTypeNode } from 'typescript';
 
 enum PaginationCommand {
   forward,
@@ -28,8 +29,13 @@ type TableContentStatus = {
   paginatorState: Array<number>,
   selectedTableEntries: any,
   showWarning: boolean,
-  isDisabledCheckbox: boolean
+  isDisabledCheckbox: boolean,
+  headerWidth: number,
+  dragStart: number,
+  dragDistance: number,
+  resizeIndex: any,
 }
+
 
 /**
  * Class component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponetns
@@ -53,10 +59,30 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       selectedTableEntries: {},
       showWarning: false,
       isDisabledCheckbox: false,
+      headerWidth: 0,
+      dragStart: 0,
+      dragDistance: 0,
+      resizeIndex: undefined
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
     this.getShowWarningComponent = this.getShowWarningComponent.bind(this);
+
+    // TODO: use effect to add reference for table column styling
+    // cellRef: React.RefObject<HTMLTableDataCellElement>;
+    // this.cellRef = createRef<HTMLTableDataCellElement>()
+    // const [colRefs, setColRefs] = React.useState([]);
+    // React.useEffect(() => {
+    // })
+      
+      
+  }
+
+
+  componentDidMount() {
+    
+    
+
   }
 
   /**
@@ -72,6 +98,14 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
 
     // Reset TableActionview
     this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true});
+
+    // TODO: part of reference for table column width update
+    // console.log('cellRef: ', this.cellRef)
+    // let cellStyle
+    // if (this.cellRef.current) {
+    //   cellStyle = getComputedStyle(this.cellRef.current)
+    //   console.log('width: ', cellStyle.width)
+    // }
   }
 
   /**
@@ -299,6 +333,10 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     )
   }
 
+  /**
+   * Function to check if the table entry has been selected or not (used to prevent multiple selection for delete/update mode)
+   * @param tableEntry 
+   */
   checkSelection(tableEntry: any) {
     // splitting the selected table entry into primary and secondary attributes
     let primaryTableEntries = tableEntry.slice(0, this.props.tableAttributesInfo?.primaryAttributes.length);
@@ -315,7 +353,72 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     // returns true if entry is already selected
     return this.state.selectedTableEntries[uniqueEntryName]
   }
+
+  /**
+   * Function to set the new adjusted width (TODO: fix to make sure the fix is for each column using reference)
+   * @param difference // the distance the user dragged the column divider handle
+   */
+  setHeaderWidth(difference: number) {
+    if (this.state.headerWidth + difference > 0) {
+      this.setState({headerWidth: this.state.headerWidth + difference});
+    }
+    else {
+      this.setState({headerWidth: 1})
+    }
+  }
+
+  /**
+   * Listens for when cell border is selected and stores the index of the column and mouse start position
+   * @param event
+   * @param colIndex 
+   */
+  cellResizeMouseDown(event: any, colIndex: any) {
+    this.setState({dragStart: event.clientX, resizeIndex: colIndex})
+    // console.log('event.target.offsetParent.nextSibling: ', event.target.offsetParent.nextSibling)
+  }
+
+  /**
+   * Updates the distance the user drags the table column divider
+   * @param event 
+   */
+  cellResizeMouseMove(event: any) {
+    if (this.state.dragStart) {
+      this.setState({dragDistance: event.pageX - this.state.dragStart})
+      this.setHeaderWidth(this.state.dragDistance);
+    }
+  }
+
+  /**
+   * Listens for when user is done resizing the column, resets drag position stats
+   * @param event 
+   */
+  cellResizeMouseUp(event: any) {
+    // reset column drag stats
+    this.setState({dragStart: 0, dragDistance: 0, resizeIndex: undefined})
+  }
   
+  /**
+   * Tells the element how to style width of the given table column index
+   * @param colIndex 
+   */
+  getCellWidth(colIndex: number) {
+    if (this.state.resizeIndex === colIndex && this.state.headerWidth) {
+      return {
+        width: this.state.headerWidth + 'px'
+      }
+    }
+    else if (this.state.resizeIndex !== colIndex && this.state.headerWidth) {
+      return {
+        width: '180px' // needs to refer to each col state
+      }
+    } 
+    else {
+      return {
+        width: '180px' // default
+      }
+    }
+  }
+
   render() { 
     return(
       <div className="table-content-viewer">
@@ -330,26 +433,31 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           <div className="table-container">
           <table className="table">
             <thead>
-            <tr className="headerRow">
+            <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}>
               <th className="buffer"><input type="checkbox" /></th>
-              {this.getPrimaryKeys().map((attributeName) => {
-                return (<th key={attributeName} className="headings">
-                  <div style={{color: '#4A9F5A' }}>{attributeName}</div>
+              {this.getPrimaryKeys().map((attributeName, index) => {
+                return (<th key={attributeName} className="headings" style={this.getCellWidth(index)}>
+                  <div className="headerContent" style={{color: '#4A9F5A'}}>{attributeName}</div>
+                  <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
                 </th>)
               })}
-              {this.getSecondaryKeys().map((attributeName) => {
-                return (<th key={attributeName} className="headings">
-                  <div style={{color: 'inherit'}}>{attributeName}</div>
+              {this.getSecondaryKeys().map((attributeName, index) => {
+                return (<th key={attributeName} className="headings" style={this.getCellWidth(index + this.getPrimaryKeys().length)}>
+                  <div className="headerContent" style={{color: 'inherit'}}>{attributeName}</div>
+                  <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index + this.getPrimaryKeys().length)}}></div>
                 </th>)
               })}
             </tr>
             </thead>
             <tbody>
             {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
-              return (<tr key={entry} className="tableRow">
+              return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}>
                 <td colSpan={1}><input type="checkbox" disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) && !this.checkSelection(entry)} onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
-                {entry.map((column: any) => {
-                  return (<td key={column} className="tableCell">{column}</td>)
+                {entry.map((column: any, index: number) => {
+                  return (
+                    <td key={column} className="tableCell" style={this.getCellWidth(index)}>{column} 
+                      <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
+                    </td>)
                 })
                 }</tr>)
             })}
@@ -358,11 +466,11 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           </div>
           <div className="paginator">
             <p>Total Rows: {this.props.contentData.length}</p>
-            <FontAwesomeIcon className="backAll" icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.start)} />
-            <FontAwesomeIcon className="backOne" icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.backward)} />
+            <FontAwesomeIcon className="backAll icon" icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.start)} />
+            <FontAwesomeIcon className="backOne icon" icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.backward)} />
             Currently viewing: {this.state.paginatorState[0] + 1} - {this.state.paginatorState[1]}
-            <FontAwesomeIcon className="forwardOne" icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.forward)} />
-            <FontAwesomeIcon className="forwardAll" icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.end)} />
+            <FontAwesomeIcon className="forwardOne icon" icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.forward)} />
+            <FontAwesomeIcon className="forwardAll icon" icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.end)} />
           </div>
         </div>
 

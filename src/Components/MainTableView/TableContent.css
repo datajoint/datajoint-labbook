@@ -129,7 +129,6 @@ table.table {
   border-bottom: 1px solid rgb(0, 0, 0);
   display: flex;
   font-weight: 600;
-
 }
 
 .content-view-area .table .tableRow {
@@ -139,18 +138,29 @@ table.table {
 
 .content-view-area .table .tableRow td.tableCell,
 .content-view-area .table .headerRow th.headings {
-  width: 100%;
+  position: relative;
   padding: 0 4px;
   text-align: left;
+  border-right: 1px solid rgb(221, 221, 221);
+  padding-top: 3px;
   white-space: nowrap;
   overflow: hidden;
-  border-right: 1px solid rgb(221, 221, 221);
+  text-overflow: ellipsis;
+}
+
+div.cellDivider {
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  cursor: col-resize;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
 
 .content-view-area .table .tableRow td.tableCell:hover {
-  overflow: auto;
+  /* overflow: auto; */
 }
-
 .headerRow th.buffer {
   /* width: 82px; */
 }
@@ -165,4 +175,15 @@ input[type="checkbox"] {
 
 input[type="checkbox"][disabled] {
   cursor: not-allowed;
+}
+
+.paginator p{
+  margin: 8px 0 0 0;
+}
+
+.paginator .icon {
+  color: gray;
+  font-size: 0.8rem;
+  margin: 0 4px;
+  cursor: pointer;
 }
