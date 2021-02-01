@@ -58,6 +58,13 @@
   color: #399E5A
 }
 
+.content-controllers button:disabled {
+  border: 2px solid #969b91;
+  background-color: #F1f1f1;
+  color: #969b91;
+  cursor: not-allowed;
+}
+
 .content-controllers button.selectedButton {
   background-color: #399E5A;
   border-color: #399E5A;
