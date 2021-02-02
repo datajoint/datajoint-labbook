@@ -193,3 +193,8 @@ input[type="checkbox"][disabled] {
   margin: 0 4px;
   cursor: pointer;
 }
+
+.paginator .icon.disabled {
+  color: rgb(196, 196, 196);
+  cursor: not-allowed;
+}

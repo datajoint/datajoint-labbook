@@ -33,6 +33,8 @@ type TableContentStatus = {
   dragStart: number,
   dragDistance: number,
   resizeIndex: any,
+  atEndPage: boolean,
+  atStartPage: boolean
 }
 
 
@@ -61,7 +63,9 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       headerWidth: 0,
       dragStart: 0,
       dragDistance: 0,
-      resizeIndex: undefined
+      resizeIndex: undefined,
+      atEndPage: false,
+      atStartPage: true
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
@@ -133,13 +137,14 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   handlePagination(cmd: PaginationCommand) {
     // check to see if paginator needs to even run for pages with small entries, if not, break
     if (this.state.paginatorState[1] < this.state.pageIncrement) {
+      this.setState({atStartPage: true, atEndPage: true})
       return;
     }
     
-    // jump to beginning 
+    // jump to beginning/end/next/previous page and update the page position and style status accordingly
     if (cmd === PaginationCommand.start) {
-      this.setState({paginatorState: [0, this.state.pageIncrement]})
-    } 
+      this.setState({paginatorState: [0, this.state.pageIncrement], atStartPage: true, atEndPage: false})
+    }
     else if (cmd === PaginationCommand.end) {
       if (this.props.contentData.length%this.state.pageIncrement > 0) {
         this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
@@ -147,24 +152,33 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       else {
         this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length]})
       }
+      this.setState({atStartPage: false, atEndPage: true})
     } 
     else if (cmd === PaginationCommand.forward) {
       if (this.state.paginatorState[1] + this.state.pageIncrement < this.props.contentData.length) {
-        this.setState({paginatorState: [this.state.paginatorState[0] + this.state.pageIncrement, this.state.paginatorState[1] + this.state.pageIncrement]})
+        this.setState({paginatorState: [this.state.paginatorState[0] + this.state.pageIncrement, this.state.paginatorState[1] + this.state.pageIncrement],
+                       atStartPage: false})
       } 
       else if (this.props.contentData.length%this.state.pageIncrement > 0) {
-        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
+        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length],
+                       atStartPage: false, atEndPage: true})
       } 
       else {
-        this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length]})
+        this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length],
+                       atStartPage: false, atEndPage: true})
       }
     } 
     else if (cmd === PaginationCommand.backward) {
-      if (this.state.paginatorState[0] - this.state.pageIncrement > 0 || this.state.paginatorState[0] - this.state.pageIncrement === 0) {
-        this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]]})
-      } 
+      if (this.state.paginatorState[0] - this.state.pageIncrement > 0) {
+        this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]],
+                       atEndPage: false})
+      } else if (this.state.paginatorState[0] - this.state.pageIncrement === 0) {
+        this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]],
+                       atStartPage: true, atEndPage: false})
+      }
       else {
-        this.setState({paginatorState: [0, this.state.pageIncrement]})
+        this.setState({paginatorState: [0, this.state.pageIncrement],
+                       atStartPage: true, atEndPage: false})
       }
     }
   }
@@ -489,11 +503,11 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           </div>
           <div className="paginator">
             <p>Total Rows: {this.props.contentData.length}</p>
-            <FontAwesomeIcon className="backAll icon" icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.start)} />
-            <FontAwesomeIcon className="backOne icon" icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.backward)} />
+            <FontAwesomeIcon className={!this.state.atStartPage ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.start)} />
+            <FontAwesomeIcon className={!this.state.atStartPage ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.backward)} />
             Currently viewing: {this.state.paginatorState[0] + 1} - {this.state.paginatorState[1]}
-            <FontAwesomeIcon className="forwardOne icon" icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.forward)} />
-            <FontAwesomeIcon className="forwardAll icon" icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.end)} />
+            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.forward)} />
+            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.end)} />
           </div>
         </div>
 
