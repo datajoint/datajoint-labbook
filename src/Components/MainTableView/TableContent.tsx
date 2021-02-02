@@ -6,7 +6,6 @@ import TableType from '../TableTypeEnum/TableType'
 import InsertTuple from './InsertTuple'
 import DeleteTuple from './DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
-import { isThisTypeNode } from 'typescript';
 
 enum PaginationCommand {
   forward,
@@ -78,19 +77,22 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       
   }
 
-
-  componentDidMount() {
-    
-    
-
-  }
-
   /**
    * Reset the table action sub menu selection upon a new table selection
    * @param prevProps 
    * @param prevState 
    */
   componentDidUpdate(prevProps: any, prevState: any) {
+    // check to see if contentData updated, if so, check length to update page info
+    if (this.props.contentData !== prevProps.contentData) {
+      // Update paginator state if contentData is less than 25
+      if (this.props.contentData.length < 25 ) {
+        this.setState({paginatorState: [0, this.props.contentData.length]})
+      } else {
+        this.setState({paginatorState: [0, this.state.pageIncrement]}) // set to default increment of 25
+      }
+    }
+
     // Break if the the selectedTable did not change
     if (prevProps.selectedTableName === this.props.selectedTableName) {
       return;
@@ -98,7 +100,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
 
     // Reset TableActionview
     this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true});
-
+    
     // TODO: part of reference for table column width update
     // console.log('cellRef: ', this.cellRef)
     // let cellStyle
@@ -129,18 +131,32 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
    * @param cmd 
    */
   handlePagination(cmd: PaginationCommand) {
+    // check to see if paginator needs to even run for pages with small entries, if not, break
+    if (this.state.paginatorState[1] < this.state.pageIncrement) {
+      return;
+    }
+    
+    // jump to beginning 
     if (cmd === PaginationCommand.start) {
       this.setState({paginatorState: [0, this.state.pageIncrement]})
     } 
     else if (cmd === PaginationCommand.end) {
-      this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
+      if (this.props.contentData.length%this.state.pageIncrement > 0) {
+        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
+      } 
+      else {
+        this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length]})
+      }
     } 
     else if (cmd === PaginationCommand.forward) {
       if (this.state.paginatorState[1] + this.state.pageIncrement < this.props.contentData.length) {
         this.setState({paginatorState: [this.state.paginatorState[0] + this.state.pageIncrement, this.state.paginatorState[1] + this.state.pageIncrement]})
       } 
-      else {
+      else if (this.props.contentData.length%this.state.pageIncrement > 0) {
         this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
+      } 
+      else {
+        this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length]})
       }
     } 
     else if (cmd === PaginationCommand.backward) {
@@ -157,7 +173,6 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
    * Switching return code based this.state.currentSelectedTableActionMenu. Mainly used in the render() function below
    */
   getCurrentTableActionMenuComponent() {
-    
     if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
       return (<div className="actionMenuContainer">
           <h1>Filter</h1>
@@ -427,7 +442,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
   }
 
-  render() { 
+  render() {
     return(
       <div className="table-content-viewer">
         <div className={this.props.selectedTableType === TableType.COMPUTED ? 'content-view-header computed ' : this.props.selectedTableType === TableType.IMPORTED  ? 'content-view-header imported' : this.props.selectedTableType === TableType.LOOKUP ? 'content-view-header lookup' : this.props.selectedTableType === TableType.MANUAL ? 'content-view-header manual' : 'content-view-header part'}>
@@ -463,7 +478,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
                 <td colSpan={1}><input type="checkbox" disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) && !this.checkSelection(entry)} onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
                 {entry.map((column: any, index: number) => {
                   return (
-                    <td key={column} className="tableCell" style={this.getCellWidth(index)}>{column} 
+                    <td key={`${column}-${index}`} className="tableCell" style={this.getCellWidth(index)}>{column} 
                       <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
                     </td>)
                 })
