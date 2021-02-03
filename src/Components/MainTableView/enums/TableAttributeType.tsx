@@ -1,4 +1,4 @@
-// Struct and enums to handle table attirbutes
+// Struct and enums to handle table attributes
 enum TableAttributeType {
     TINY = 0,
     TINY_UNSIGNED = 1,
