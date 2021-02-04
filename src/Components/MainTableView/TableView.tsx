@@ -57,7 +57,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
           })
           .catch(error => {
-            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes'})
+            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error})
           })
         // retrieve table content
         this.fetchTableContent();
@@ -77,7 +77,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.setState({tableInfoData: result, errorMessage: ''})
           })
           .catch(error => {
-            this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information'})
+            this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
           })
       }
     }
@@ -99,7 +99,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       this.setState({tableContentData: result.tuples, errorMessage: ''})
     })
     .catch(error => {
-      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content'})
+      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error})
     })
   }
 
@@ -259,6 +259,9 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     }
     else if (tableTypeString === 'datetime') {
       return TableAttributeType.DATETIME;
+    }
+    else if (tableTypeString === 'time') {
+      return TableAttributeType.TIME;
     }
     else if (tableTypeString === 'timestamp') {
       return TableAttributeType.TIMESTAMP;

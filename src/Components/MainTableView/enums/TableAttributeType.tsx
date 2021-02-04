@@ -20,8 +20,9 @@ enum TableAttributeType {
     UUID = 17,
     DATE = 18,
     DATETIME = 19,
-    TIMESTAMP = 20,
-    ENUM = 21
+    TIME = 20,
+    TIMESTAMP = 21,
+    ENUM = 22
   }
 
 export default TableAttributeType;

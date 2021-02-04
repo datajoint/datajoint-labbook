@@ -256,6 +256,14 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         </div>
       );
     }
+    else if (tableAttribute.attributeType === TableAttributeType.TIME) {
+      return (
+        <div>
+          {this.getAttributeLabelBlock(tableAttribute, 'time')}
+          <input type='time' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+        </div>
+      );
+    }
     else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
       return (
         <div>
