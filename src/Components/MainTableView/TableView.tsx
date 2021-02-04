@@ -9,6 +9,7 @@ import TableAttributeType from './enums/TableAttributeType';
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
+import TableAttribute from './DataStorageClasses/TableAttribute';
 
 type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,
@@ -56,11 +57,13 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           .then(result => {
             this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
           })
-          .catch(error => {
-            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes'})
+          .then(() => {
+            // Fetch table content after getting the table attribute info
+            this.fetchTableContent();
           })
-        // retrieve table content
-        this.fetchTableContent();
+          .catch(error => {
+            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error})
+          })
       }
       if (this.state.currentView === 'tableInfo') {
         fetch('/api/get_table_definition', {
@@ -77,7 +80,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.setState({tableInfoData: result, errorMessage: ''})
           })
           .catch(error => {
-            this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information'})
+            this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
           })
       }
     }
@@ -93,14 +96,65 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       if (!result.ok) {
         throw Error(`${result.status} - ${result.statusText}`)
       }
-      return result.json()
+      return result.json();
     })
     .then(result => {
+      // Deal with coverting time back to datajoint format
+      let tableAttributes: Array<TableAttribute> = this.state.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
+      tableAttributes = tableAttributes.concat(this.state.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
+
+      // Iterate though each tableAttribute and deal with TEMPORAL types
+      for (let i = 0; i < tableAttributes.length; i++) {
+        console.log(tableAttributes[i].attributeName)
+        if (tableAttributes[i].attributeType === TableAttributeType.TIME) {
+          for (let tuple of result.tuples) {
+            tuple[i] = this.parseTimeString(tuple[i]);
+          }
+        }
+        else if (tableAttributes[i].attributeType === TableAttributeType.TIMESTAMP || tableAttributes[i].attributeType === TableAttributeType.DATETIME) {
+          for (let tuple of result.tuples) {
+            tuple[i] = this.parseDateTime(tuple[i]);
+          }
+        }
+        else if (tableAttributes[i].attributeType === TableAttributeType.DATE) {
+          for (let tuple of result.tuples) {
+            tuple[i] = this.parseDate(tuple[i]);
+          }
+        }
+      }
+
       this.setState({tableContentData: result.tuples, errorMessage: ''})
     })
     .catch(error => {
-      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content'})
+      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error})
     })
+  }
+
+  /**
+   * Function to covert epoch time string back to datajoint time format
+   * @param timeString 
+   */
+  parseTimeString(timeString: string) {
+    let date = new Date(parseInt(timeString) * 1000);
+    return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+  }
+
+  /**
+   * Helper function for converting dateTime string back to string format for table view
+   * @param dateTimeString 
+   */
+  parseDateTime(dateTimeString: string) {
+    let date = new Date(parseInt(dateTimeString) * 1000);
+    return date.toString();
+  }
+
+  /**
+   * Helper function for converting date to Date String
+   * @param dateTimeString 
+   */
+  parseDate(dateTimeString: string) {
+    let date = new Date(parseInt(dateTimeString) * 1000);
+    return date.toDateString();
   }
 
   /**
@@ -173,6 +227,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           ));
       }
       else if (tableAttributeType === TableAttributeType.ENUM) {
+        // Get each enum option and save it under enumOptions
         tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
           secondaryAttributesInfoArray[0],
           this.parseTableTypeString(secondaryAttributesInfoArray[1]),
@@ -260,13 +315,19 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString === 'datetime') {
       return TableAttributeType.DATETIME;
     }
+    else if (tableTypeString === 'time') {
+      return TableAttributeType.TIME;
+    }
     else if (tableTypeString === 'timestamp') {
       return TableAttributeType.TIMESTAMP;
     }
     else if (tableTypeString.substring(0, 4) === 'enum') {
       return TableAttributeType.ENUM;
     }
-
+    else if (tableTypeString === 'blob' || tableTypeString === 'longblob') {
+      return TableAttributeType.BLOB;
+    }
+    console.log(tableTypeString)
     throw Error('Unsupported TableAttributeType: ' + tableTypeString);
   }
 
