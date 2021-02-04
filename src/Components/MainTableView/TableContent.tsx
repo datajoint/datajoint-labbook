@@ -341,6 +341,10 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     return secondaryKeyList;
   }
 
+  checkIfTableHasBlobs(): boolean {
+    return false;
+  }
+
   /**
    * Handle button rednering with disable feature for Insert Update or Delete based on the table type and return the buttons accordingly
    */
