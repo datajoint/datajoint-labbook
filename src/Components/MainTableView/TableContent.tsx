@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React, {createRef} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
@@ -8,10 +8,10 @@ import DeleteTuple from './DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 
 enum PaginationCommand {
-  forward,
-  backward,
-  start,
-  end
+  FORWARD,
+  BACKWARD,
+  START,
+  END
 }
 
 enum TableActionType {
@@ -26,17 +26,16 @@ type TableContentStatus = {
   hideTableActionMenu: boolean,
   pageIncrement: number,
   paginatorState: Array<number>,
-  selectedTableEntries: any,
-  showWarning: boolean,
-  isDisabledCheckbox: boolean,
-  headerWidth: number,
-  dragStart: number,
-  dragDistance: number,
-  resizeIndex: any,
-  atEndPage: boolean,
-  atStartPage: boolean
+  selectedTableEntries: any, // lookup dictionary to store the selected table entry - for menu UI
+  showWarning: boolean, // text warning when duplicate selection is made for delete/update, most likely to be take out once disable checkbox feature is finished
+  isDisabledCheckbox: boolean, // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
+  headerWidth: number, // part of table column resizer feature
+  dragStart: number, // part of table column resizer feature
+  dragDistance: number, // part of table column resizer feature
+  resizeIndex: any, // part of table column resizer feature
+  atEndPage: boolean, // tells the UI to disable certain pagination icons if user is on the last page
+  atStartPage: boolean // tells the UI to disable certain pagination icons if user is on the first page
 }
-
 
 /**
  * Class component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponetns
@@ -77,8 +76,6 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     // const [colRefs, setColRefs] = React.useState([]);
     // React.useEffect(() => {
     // })
-      
-      
   }
 
   /**
@@ -142,25 +139,25 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
     
     // jump to beginning/end/next/previous page and update the page position and style status accordingly
-    if (cmd === PaginationCommand.start) {
+    if (cmd === PaginationCommand.START) {
       this.setState({paginatorState: [0, this.state.pageIncrement], atStartPage: true, atEndPage: false})
     }
-    else if (cmd === PaginationCommand.end) {
-      if (this.props.contentData.length%this.state.pageIncrement > 0) {
-        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length]})
+    else if (cmd === PaginationCommand.END) {
+      if (this.props.contentData.length % this.state.pageIncrement > 0) {
+        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length % this.state.pageIncrement, this.props.contentData.length]})
       } 
       else {
         this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length]})
       }
       this.setState({atStartPage: false, atEndPage: true})
     } 
-    else if (cmd === PaginationCommand.forward) {
+    else if (cmd === PaginationCommand.FORWARD) {
       if (this.state.paginatorState[1] + this.state.pageIncrement < this.props.contentData.length) {
         this.setState({paginatorState: [this.state.paginatorState[0] + this.state.pageIncrement, this.state.paginatorState[1] + this.state.pageIncrement],
                        atStartPage: false})
       } 
-      else if (this.props.contentData.length%this.state.pageIncrement > 0) {
-        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length%this.state.pageIncrement, this.props.contentData.length],
+      else if (this.props.contentData.length % this.state.pageIncrement > 0) {
+        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length % this.state.pageIncrement, this.props.contentData.length],
                        atStartPage: false, atEndPage: true})
       } 
       else {
@@ -168,11 +165,12 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
                        atStartPage: false, atEndPage: true})
       }
     } 
-    else if (cmd === PaginationCommand.backward) {
+    else if (cmd === PaginationCommand.BACKWARD) {
       if (this.state.paginatorState[0] - this.state.pageIncrement > 0) {
         this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]],
                        atEndPage: false})
-      } else if (this.state.paginatorState[0] - this.state.pageIncrement === 0) {
+      } 
+      else if (this.state.paginatorState[0] - this.state.pageIncrement === 0) {
         this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]],
                        atStartPage: true, atEndPage: false})
       }
@@ -195,11 +193,12 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
       return (<div className="actionMenuContainer">
-          <InsertTuple token={this.props.token}
-          selectedSchemaName={this.props.selectedSchemaName}
-          selectedTableName={this.props.selectedTableName}
-          tableAttributesInfo={this.props.tableAttributesInfo}
-          fetchTableContent={this.props.fetchTableContent}
+          <InsertTuple 
+            token={this.props.token}
+            selectedSchemaName={this.props.selectedSchemaName}
+            selectedTableName={this.props.selectedTableName}
+            tableAttributesInfo={this.props.tableAttributesInfo}
+            fetchTableContent={this.props.fetchTableContent}
           />
         </div>)
     }
@@ -212,7 +211,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
       return (<div className="actionMenuContainer">
         <h1>Delete</h1>
-        <DeleteTuple  token={this.props.token}
+        <DeleteTuple  
+          token={this.props.token}
           tupleToDelete={this.state.selectedTableEntries}
           selectedSchemaName={this.props.selectedSchemaName} 
           selectedTableName={this.props.selectedTableName} 
@@ -503,11 +503,11 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           </div>
           <div className="paginator">
             <p>Total Rows: {this.props.contentData.length}</p>
-            <FontAwesomeIcon className={!this.state.atStartPage ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.start)} />
-            <FontAwesomeIcon className={!this.state.atStartPage ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.backward)} />
+            <FontAwesomeIcon className={!this.state.atStartPage ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.START)} />
+            <FontAwesomeIcon className={!this.state.atStartPage ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.BACKWARD)} />
             Currently viewing: {this.state.paginatorState[0] + 1} - {this.state.paginatorState[1]}
-            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.forward)} />
-            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.end)} />
+            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.FORWARD)} />
+            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.END)} />
           </div>
         </div>
 

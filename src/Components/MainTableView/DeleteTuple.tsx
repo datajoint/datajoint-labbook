@@ -142,16 +142,13 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
                   </tbody>
                 </table>
               </div>
-
-              
             )
           })}
           {Object.entries(this.props.tupleToDelete).length === 0 && !this.state.dependencies ? <p>Select a table entry to delete.</p> :
-          <button className="checkDependencies" onClick={() => this.getDependencies(Object.values(this.props.tupleToDelete))}>Check Dependencies</button>
+            <button className="checkDependencies" onClick={() => this.getDependencies(Object.values(this.props.tupleToDelete))}>Check Dependencies</button>
           }
           {/* TODO: replace with proper animation */}
           {this.state.isGettingDependencies ? <p>Checking dependency...(imagine a wheel turning)...</p>: '' }
-          
         </div>
         {this.state.dependencies ? (
           <div className="dependencies">
