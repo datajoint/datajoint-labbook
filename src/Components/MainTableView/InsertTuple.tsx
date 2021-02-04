@@ -287,11 +287,11 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         </div>
       );
     }
-    else if (tableAttribute.attributeType === TableAttributeType.UUID) { // TODO NEED TO DEAL WITH UUID GENRATION HERE
+    else if (tableAttribute.attributeType === TableAttributeType.UUID) {
       return (
         <div>
           {this.getAttributeLabelBlock(tableAttribute, 'UUID')}
-          <input disabled></input>
+          <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
