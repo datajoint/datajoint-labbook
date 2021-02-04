@@ -1,4 +1,5 @@
 import React from 'react';
+import "./DeleteTuple.css";
 
 /**
  * list of allowed states on this delete tuple component
@@ -114,10 +115,10 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     return(
       <div className="deleteWorkZone">
         <div className="tupleToDeleteCheck">
-          <p>Delete this entry?</p>
           {Object.values(this.props.tupleToDelete).map((entry: any) => {
             return (
               <div key={entry}>
+                <p className="confirmationText">Delete this entry?</p>
                 <table className="tupleToDelete">
                   <thead>
                     <tr>
@@ -143,12 +144,11 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
               </div>
             )
           })}
-          {this.state.dependencies ? '' :
-          <button className="checkDependencies" onClick={() => this.getDependencies(Object.values(this.props.tupleToDelete))}>Check Dependencies</button>
+          {Object.entries(this.props.tupleToDelete).length === 0 && !this.state.dependencies ? <p>Select a table entry to delete.</p> :
+            <button className="checkDependencies" onClick={() => this.getDependencies(Object.values(this.props.tupleToDelete))}>Check Dependencies</button>
           }
           {/* TODO: replace with proper animation */}
           {this.state.isGettingDependencies ? <p>Checking dependency...(imagine a wheel turning)...</p>: '' }
-          
         </div>
         {this.state.dependencies ? (
           <div className="dependencies">
@@ -159,13 +159,15 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
             })}
             </ul>
             <p>Are you sure you want to delete this entry?</p>
-            <button className="confirmDelete" onClick={() => this.handleTupleDeletion(Object.values(this.props.tupleToDelete))}>Confirm Delete</button>
+            <button className="confirmDeletion" onClick={() => this.handleTupleDeletion(Object.values(this.props.tupleToDelete))}>Confirm Delete</button>
           </div>
         ) : ''}
+        <div className="deleting">
         {this.state.isDeletingEntry ? <p>Deleting entry might take a while...(replace with wheel)</p>: '' } {/* TODO: replace with proper animation */}
         {this.state.deleteStatusMessage ? (
-          <div>{this.state.deleteStatusMessage}<span><button onClick={() => this.closeMessage()}>dismiss</button></span></div>
+          <div className="errorMessage">{this.state.deleteStatusMessage}<button className="dismiss" onClick={() => this.closeMessage()}>dismiss</button></div>
         ) : ''}
+        </div>
       </div>
     )
   }
