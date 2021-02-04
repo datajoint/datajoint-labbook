@@ -1,0 +1,75 @@
+div.tupleToDeleteCheck,
+div.dependencies,
+div.deleting {
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0px 16px;
+}
+
+table.tupleToDelete {
+  text-align: left;
+  border-collapse: collapse;
+}
+
+table.tupleToDelete thead tr th,
+table.tupleToDelete tbody tr td {
+  border: 1px solid gray;
+  padding: 4px;
+  white-space: nowrap;
+  width: auto;
+}
+
+table.tupleToDelete thead tr,
+table.tupleToDelete tbody tr {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table.tupleToDelete thead {
+  background-color: rgb(212, 212, 212);
+}
+
+button.checkDependencies,
+button.confirmDeletion {
+  position: relative;
+  display: inline-flex;
+  justify-self: flex-end;
+  margin-top: 16px;
+  border: 2px solid rgb(151, 0, 0);
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: rgb(151, 0, 0);
+  cursor: pointer;
+}
+
+button.checkDependencies:hover {
+  background-color: rgb(151, 0, 0);
+  color: white;
+}
+
+button.confirmDeletion {
+  margin-bottom: 24px;
+}
+
+div.dependencies p {
+  margin: 0;
+}
+
+div.deleting {
+
+}
+
+.deleting .errorMessage {
+  padding: 0;
+}
+
+.deleting button.dismiss {
+  margin-left: 8px;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+
+.deleting button.dismiss:hover {
+  background-color: rgb(212, 212, 212);
+}
