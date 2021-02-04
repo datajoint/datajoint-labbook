@@ -139,11 +139,19 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
   }
 
+  /**
+   * Helper function for converting dateTime string back to string format for table view
+   * @param dateTimeString 
+   */
   parseDateTime(dateTimeString: string) {
     let date = new Date(parseInt(dateTimeString) * 1000);
     return date.toString();
   }
 
+  /**
+   * Helper function for converting date to Date String
+   * @param dateTimeString 
+   */
   parseDate(dateTimeString: string) {
     let date = new Date(parseInt(dateTimeString) * 1000);
     return date.toDateString();
@@ -316,10 +324,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString.substring(0, 4) === 'enum') {
       return TableAttributeType.ENUM;
     }
-    else if (tableTypeString === 'blob') {
+    else if (tableTypeString === 'blob' || tableTypeString === 'longblob') {
       return TableAttributeType.BLOB;
     }
-
+    console.log(tableTypeString)
     throw Error('Unsupported TableAttributeType: ' + tableTypeString);
   }
 
