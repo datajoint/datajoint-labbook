@@ -6,6 +6,8 @@ import TableType from '../TableTypeEnum/TableType'
 import InsertTuple from './InsertTuple'
 import DeleteTuple from './DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
+import TableAttribute from './DataStorageClasses/TableAttribute'
+import TableAttributeType from './enums/TableAttributeType'
 
 enum PaginationCommand {
   FORWARD,
@@ -341,7 +343,23 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     return secondaryKeyList;
   }
 
+  /**
+   * Check if the current table has blob attributes
+   */
   checkIfTableHasBlobs(): boolean {
+    if (this.props.tableAttributesInfo === undefined) {
+      return false;
+    }
+    
+    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
+    tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
+    
+    for (let tableAttribute of tableAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.BLOB) {
+        return true;
+      }
+    }
+
     return false;
   }
 
@@ -353,8 +371,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     let disableUpdate: boolean = false;
     let disableDelete: boolean = false;
 
-
-    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED) {
+    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED || this.checkIfTableHasBlobs()) {
       disableInsert = true;
       disableUpdate = true;
     }
