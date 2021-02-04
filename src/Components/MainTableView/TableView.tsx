@@ -9,7 +9,6 @@ import TableAttributeType from './enums/TableAttributeType';
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
-import { table } from 'console';
 import TableAttribute from './DataStorageClasses/TableAttribute';
 
 type TableViewState = {
