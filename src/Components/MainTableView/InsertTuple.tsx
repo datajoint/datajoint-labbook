@@ -29,6 +29,27 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+/**
+ * Handle cases with enums on load by setting the deafult value to the first enum option
+ */
+  componentDidMount() {
+    // Figure out if any of the attribute is enum type, if so set the state ahead of time
+    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
+    tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
+    for (let tableAttribute of tableAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.ENUM) {
+        if (tableAttribute.enumOptions === undefined) {
+          throw Error('tableAttribute.enumOptions is undefined');
+        }
+
+        // Set enum to first value
+        let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+        tupleBuffer[tableAttribute.attributeName] = tableAttribute.enumOptions[0];
+        this.setState({tupleBuffer})
+      }
+    }
+  }
+
   /**
    * Helper function to handle attribute changes by updating tupleBuffer accordingly
    * @param attributeName Attribute name of the change, this is used to access the tupleBuffer object members to set the value
@@ -36,7 +57,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
    */
   handleChange(attributeName: string, event: any) {
     // Create a copy, update the object, then set state
-    let tupleBuffer = this.state.tupleBuffer;
+    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
     this.setState({tupleBuffer: tupleBuffer});
   }
@@ -52,9 +73,42 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     if (this.props.tableAttributesInfo === undefined) {
       return;
     }
-    
+
     // Copy the current state of tupleBuffer for processing for submission
-    let tupleBuffer = this.state.tupleBuffer;
+    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+
+    // Loop through and deal with date, datetime, and timestamp formats
+    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
+    tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
+    for (let tableAttribute of tableAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.DATE) {
+        // Check if attribute exists, if not break
+        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName)) {
+          break;
+        }
+
+        // Covert date to UTC
+        let date = new Date(tupleBuffer[tableAttribute.attributeName])
+        tupleBuffer[tableAttribute.attributeName] = date.getUTCFullYear() + ':' + date.getUTCMonth() + ':' + date.getUTCDay()
+      }
+      else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
+        // Check if attribute exists, if not break
+        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + 'time')) {
+          break;
+        }
+
+        // Covert date time to UTC
+        let date = new Date(tupleBuffer[tableAttribute.attributeName + '__date'] + 'T' + tupleBuffer[tableAttribute.attributeName + '__time']);
+
+        // Delete extra fields from tuple
+        delete tupleBuffer[tableAttribute.attributeName + '__date'];
+        delete tupleBuffer[tableAttribute.attributeName + '__time'];
+
+        // Construct the insert string 
+        tupleBuffer[tableAttribute.attributeName] = date.getUTCFullYear() + ':' + date.getUTCMonth() + ':' + date.getUTCDay() + ' ' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCMinutes();
+      }
+    }
+    
     // Check primary attributes first that everything is filled out correctly in tupleBuffer
     for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
       // Check if attribute exist, if not then complain
@@ -103,6 +157,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     .catch((error) => {
       this.setState({errorMessage: error});
     })
+
   }
 
   /**
@@ -232,11 +287,11 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         </div>
       );
     }
-    else if (tableAttribute.attributeType === TableAttributeType.UUID) { // TODO NEED TO DEAL WITH UUID GENRATION HERE
+    else if (tableAttribute.attributeType === TableAttributeType.UUID) {
       return (
         <div>
           {this.getAttributeLabelBlock(tableAttribute, 'UUID')}
-          <input disabled></input>
+          <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -252,32 +307,33 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return (
         <div>
           {this.getAttributeLabelBlock(tableAttribute, 'date time')}
-          <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+          <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
         </div>
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIME) {
       return (
         <div>
-          {this.getAttributeLabelBlock(tableAttribute, 'time')}
-          <input type='time' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          {this.getAttributeLabelBlock(tableAttribute, 'HH:MM:SS')}
+          <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
       return (
         <div>
-          {this.getAttributeLabelBlock(tableAttribute, 'time')}
-          <input type='time' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          {this.getAttributeLabelBlock(tableAttribute, 'time stamp')}
+          <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+          <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
         </div>
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
-      // Does not handle default value for enum
       return (
         <div>
           {this.getAttributeLabelBlock(tableAttribute, 'enum')}
-          <select> {
+          <select onChange={this.handleChange.bind(this, tableAttribute.attributeName)}> {
             tableAttribute.enumOptions?.map((enumOptionString: string) => {
               return(<option value={enumOptionString}>{enumOptionString}</option>);
           })}

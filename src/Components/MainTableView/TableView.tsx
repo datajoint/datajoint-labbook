@@ -87,6 +87,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   }
 
   fetchTableContent() {
+    console.log(this.props.selectedTableName)
     fetch('/api/fetch_tuples', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
@@ -105,7 +106,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
 
       // Iterate though each tableAttribute and deal with TEMPORAL types
       for (let i = 0; i < tableAttributes.length; i++) {
-        console.log(tableAttributes[i].attributeName)
         if (tableAttributes[i].attributeType === TableAttributeType.TIME) {
           for (let tuple of result.tuples) {
             tuple[i] = this.parseTimeString(tuple[i]);
