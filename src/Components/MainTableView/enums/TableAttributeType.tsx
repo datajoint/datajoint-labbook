@@ -1,4 +1,4 @@
-// Struct and enums to handle table attirbutes
+// Struct and enums to handle table attributes
 enum TableAttributeType {
     TINY = 0,
     TINY_UNSIGNED = 1,
@@ -20,8 +20,10 @@ enum TableAttributeType {
     UUID = 17,
     DATE = 18,
     DATETIME = 19,
-    TIMESTAMP = 20,
-    ENUM = 21
+    TIME = 20,
+    TIMESTAMP = 21,
+    ENUM = 22,
+    BLOB = 23
   }
 
 export default TableAttributeType;
