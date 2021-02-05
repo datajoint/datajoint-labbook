@@ -7,8 +7,16 @@ import TableAttributeType from '../enums/TableAttributeType'
 class PrimaryTableAttribute extends TableAttribute {
     autoIncrement: boolean; // Note this is only valid if the attributeType is int type
   
-    constructor(attributeName: string, attributeType: TableAttributeType, autoIncrement: boolean, stringTypeAttributeLengthInfo?: number, enumOptions?: Array<string>) {
-      super(attributeName, attributeType, stringTypeAttributeLengthInfo, enumOptions);
+    constructor(
+      attributeName: string, 
+      attributeType: TableAttributeType,
+      autoIncrement: boolean,
+      stringTypeAttributeLengthInfo?: number,
+      enumOptions?: Array<string>,
+      decimalNumDigits?: number,
+      decimalNumDecimalDigits?: number
+      ) {
+      super(attributeName, attributeType, stringTypeAttributeLengthInfo, enumOptions, decimalNumDigits, decimalNumDecimalDigits);
       this.autoIncrement = autoIncrement;
     }
   }

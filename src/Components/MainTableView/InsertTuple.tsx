@@ -1,8 +1,12 @@
 import React from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faRedoAlt, faTrashAlt, faPlusCircle} from '@fortawesome/free-solid-svg-icons'
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import TableAttributeType from './enums/TableAttributeType';
+import './InsertTuple.css'
+import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 
 type insertTupleState = {
   tupleBuffer: any // Object to stored the values typed in by the user
@@ -165,8 +169,18 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
    * @param tableAttribute Table attribute object so the function can extract the attributeName (Could add special label/look CSS for differnet types later on)
    * @param typeString The string to put in () for the user to see of what type the attribute is
    */
-  getAttributeLabelBlock(tableAttribute: TableAttribute, typeString: string) {
-    return <label htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + '): '}</label>;
+  getAttributeLabelBlock(tableAttribute: any, typeString: string) {
+    return (
+      <div className="attributeHead">
+        <label style={tableAttribute.constructor === PrimaryTableAttribute ? {color: '#399E5A'} : {color: 'inherit'}} htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + ')'}</label>
+        {tableAttribute.constructor === SecondaryTableAttribute && tableAttribute.nullable ? 
+          <div className="nullableControls">
+            <div className="nullableTag">nullable</div>
+            <FontAwesomeIcon className="resetIcon" icon={faRedoAlt}/>
+          </div> : ''
+        }
+      </div>
+    );
   }
 
   /**
@@ -241,19 +255,50 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       min = '0';
       max = '4294967295';
     }
-    else if (tableAttribute.attributeType === TableAttributeType.FLOAT || tableAttribute.attributeType === TableAttributeType.DECIMAL) {
+    else if (tableAttribute.attributeType === TableAttributeType.FLOAT) {
       return(
-        <div>
-          {this.getAttributeLabelBlock(tableAttribute, 'decimal')}
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+          {this.getAttributeLabelBlock(tableAttribute, 'float')}
           <input type='number' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
-    else if (tableAttribute.attributeType === TableAttributeType.FLOAT_UNSIGNED || tableAttribute.attributeType === TableAttributeType.DECIMAL_UNSIGNED) { // This is depricated in MYSQL 8.0
+    else if (tableAttribute.attributeType === TableAttributeType.FLOAT_UNSIGNED ) {
+      return(
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+          {this.getAttributeLabelBlock(tableAttribute, 'float unsigned')}
+          <input type='number' min='0' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+        </div>
+      );
+    }
+    else if (tableAttribute.attributeType === TableAttributeType.DECIMAL) {
+      // Check that decimalNumdigits, and decimalNumDecimalDigits are not undefined
+      if (tableAttribute.decimalNumDigits === undefined || tableAttribute.decimalNumDecimalDigits === undefined) {
+        throw Error('Decimal attributes of decimalNumDigits or decimalNumDecimalDigits are undefined');
+      }
+
+      // Generate max number input for the given params
+      let maxValueString: string = '';
+      let stepValueString : string = '0.';
+      // Deal with the leading numbers before the decimal point
+      for (let i = 0; i < tableAttribute.decimalNumDigits - tableAttribute.decimalNumDecimalDigits; i++) {
+        maxValueString += '9'
+      }
+      maxValueString += '.'
+      
+      for (let i = 0; i < tableAttribute.decimalNumDecimalDigits; i++) {
+        maxValueString += '9'
+      }
+
+      for (let i = 0; i < tableAttribute.decimalNumDecimalDigits - 1; i++) {
+        stepValueString += '0'
+      }
+      stepValueString += '1'
+
       return(
         <div>
-          {this.getAttributeLabelBlock(tableAttribute, 'decimal unsigned')}
-          <input type='number' min='0' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          {this.getAttributeLabelBlock(tableAttribute, 'decimal(' + tableAttribute.decimalNumDigits + ', ' + tableAttribute.decimalNumDecimalDigits)}
+          <input type='number' step={stepValueString} min={('-' + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -262,7 +307,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         defaultValue = 'false'
       }
       return(
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'bool')}
           <select defaultValue={defaultValue}>
             <option value='false'></option>
@@ -273,7 +318,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
     else if (tableAttribute.attributeType === TableAttributeType.CHAR) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'char(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
           <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
@@ -281,7 +326,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
     else if (tableAttribute.attributeType === TableAttributeType.VAR_CHAR) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'varchar(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
           <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
@@ -289,7 +334,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
     else if (tableAttribute.attributeType === TableAttributeType.UUID) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'UUID')}
           <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
@@ -297,7 +342,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
     else if (tableAttribute.attributeType === TableAttributeType.DATE) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'date')}
           <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
@@ -305,16 +350,18 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
     else if (tableAttribute.attributeType === TableAttributeType.DATETIME) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'date time')}
-          <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-          <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+          <div className="dateTimeFields">
+            <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+            <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+          </div>
         </div>
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIME) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'HH:MM:SS')}
           <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
@@ -322,16 +369,18 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'time stamp')}
-          <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-          <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+          <div className="dateTimeFields">
+            <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+            <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+          </div>
         </div>
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
       return (
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'enum')}
           <select onChange={this.handleChange.bind(this, tableAttribute.attributeName)}> {
             tableAttribute.enumOptions?.map((enumOptionString: string) => {
@@ -345,7 +394,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     // Handle number return types
     if (type === 'number') {
       return (
-      <div>
+      <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
         {this.getAttributeLabelBlock(tableAttribute, typeString)}
         <input type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
       </div>
@@ -362,7 +411,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
   getPrimaryAttributeInputBlock(primaryTableAttribute: PrimaryTableAttribute) {
     if (primaryTableAttribute.autoIncrement === true) {
       return(
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(primaryTableAttribute)}>
           {this.getAttributeLabelBlock(primaryTableAttribute, 'Auto Increment')}
           <input disabled></input>
         </div>
@@ -378,23 +427,29 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       <div>
         <h1>Insert</h1>
         <form onSubmit={this.onSubmit}>
-          {
-            // Deal with primary attirbutes
-            this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
-              return(
-                this.getPrimaryAttributeInputBlock(primaryTableAttribute)
-              )
-            })
-          }
-          {
-            // Deal with secondary attributes 
-            this.props.tableAttributesInfo?.secondaryAttributes.map((secondaryAttribute) => {
-              return(
-                this.getAttributeInputBlock(secondaryAttribute)
-              )
-            })
-          }
-          <input type='submit' value='Submit'></input>
+          <div className="inputRow">
+            <div className="rowControls">
+              <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
+              <FontAwesomeIcon className="addRow icon" icon={faPlusCircle} />
+            </div>
+            {
+              // Deal with primary attirbutes
+              this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
+                return(
+                  this.getPrimaryAttributeInputBlock(primaryTableAttribute)
+                )
+              })
+            }
+            {
+              // Deal with secondary attributes 
+              this.props.tableAttributesInfo?.secondaryAttributes.map((secondaryAttribute) => {
+                return(
+                  this.getAttributeInputBlock(secondaryAttribute)
+                )
+              })
+            }
+          </div>
+          <input className="submitButton" type='submit' value='Submit'></input>
         </form>
         <div>{this.state.errorMessage}</div>
       </div>
