@@ -1,6 +1,6 @@
 {
   "short_name": "DJ GUI",
-  "name": "Open Source Data Viewer for DataJoint Users",
+  "name": "Open Source GUI Application for DataJoint Users",
   "icons": [
     {
       "src": "favicon.ico",
