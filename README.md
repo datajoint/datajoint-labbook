@@ -7,7 +7,7 @@
 
 > :warning: The DJGUI project is still early in its life and the maintainers are currently actively developing with a priority of addressing first critical issues directly related to the deliveries of [Alpha](https://github.com/vathes/DJ-GUI-React/milestone/1) and [Beta](https://github.com/vathes/DJ-GUI-React/milestone/2) milestones. Please be advised that while working through our milestones, we may restructure/refactor the codebase without warning until we issue our [Official Release](https://github.com/vathes/DJ-GUI-React/milestone/3) currently planned as `0.1.0` on `2021-03-31`.
 
-# DJ GUI React Front End
+# DJ GUI React Frontend
 
 Serves as the React frontend for DJGUI project complimented by [REST API backend](https://github.com/vathes/DJ-GUI-API). This repo is the single source of truth for development efforts on DJGUI Frontend.
 
