@@ -87,7 +87,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   }
 
   fetchTableContent() {
-    console.log(this.props.selectedTableName)
     fetch('/api/fetch_tuples', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
@@ -195,6 +194,19 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           primaryAttributeInfoArray[1].substring(5, primaryAttributeInfoArray[1].length - 1).replace(/'/g, '').split(',')
           ));
       }
+      else if (tableAttributeType === TableAttributeType.DECIMAL) {
+        let decimalAttributes = primaryAttributeInfoArray[1].substring(7).replace(/[{()}]/g, '').split(',');
+
+        tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
+          primaryAttributeInfoArray[0], 
+          tableAttributeType, 
+          primaryAttributeInfoArray[4],
+          undefined,
+          undefined,
+          parseInt(decimalAttributes[0]),
+          parseInt(decimalAttributes[1])
+          ));
+      }
       else {
         tableAttributesInfo.primaryAttributes.push(new PrimaryTableAttribute(
           primaryAttributeInfoArray[0], 
@@ -235,6 +247,20 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           secondaryAttributesInfoArray[3],
           undefined,
           secondaryAttributesInfoArray[1].substring(5, secondaryAttributesInfoArray[1].length - 1).replace(/'/g, '').split(',')
+          ));
+      }
+      else if (tableAttributeType === TableAttributeType.DECIMAL) {
+        let decimalAttributes = secondaryAttributesInfoArray[1].substring(7).replace(/[{()}]/g, '').split(',');
+        // Get each enum option and save it under enumOptions
+        tableAttributesInfo.secondaryAttributes.push(new SecondaryTableAttribute(
+          secondaryAttributesInfoArray[0],
+          this.parseTableTypeString(secondaryAttributesInfoArray[1]),
+          secondaryAttributesInfoArray[2],
+          secondaryAttributesInfoArray[3],
+          undefined,
+          undefined,
+          parseInt(decimalAttributes[0]),
+          parseInt(decimalAttributes[1])
           ));
       }
       else {
@@ -285,10 +311,11 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString === 'int unsigned') {
       return TableAttributeType.INT_UNSIGNED;
     }
-    else if (tableTypeString === 'decimal') {
+    else if (tableTypeString.substr(0, 7) === 'decimal') {
       return TableAttributeType.DECIMAL;
     }
-    else if (tableTypeString === 'decimal unsigned') {
+    else if (tableTypeString === 'decimal unsigned') { 
+      // Depricated in SQL 8.0
       return TableAttributeType.DECIMAL_UNSIGNED;
     }
     else if (tableTypeString === 'float') {
@@ -327,7 +354,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString === 'blob' || tableTypeString === 'longblob') {
       return TableAttributeType.BLOB;
     }
-    console.log(tableTypeString)
+    
     throw Error('Unsupported TableAttributeType: ' + tableTypeString);
   }
 

@@ -255,19 +255,50 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       min = '0';
       max = '4294967295';
     }
-    else if (tableAttribute.attributeType === TableAttributeType.FLOAT || tableAttribute.attributeType === TableAttributeType.DECIMAL) {
+    else if (tableAttribute.attributeType === TableAttributeType.FLOAT) {
       return(
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'decimal')}
+          {this.getAttributeLabelBlock(tableAttribute, 'float')}
           <input type='number' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
-    else if (tableAttribute.attributeType === TableAttributeType.FLOAT_UNSIGNED || tableAttribute.attributeType === TableAttributeType.DECIMAL_UNSIGNED) { // This is depricated in MYSQL 8.0
+    else if (tableAttribute.attributeType === TableAttributeType.FLOAT_UNSIGNED ) {
       return(
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'decimal unsigned')}
+          {this.getAttributeLabelBlock(tableAttribute, 'float unsigned')}
           <input type='number' min='0' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+        </div>
+      );
+    }
+    else if (tableAttribute.attributeType === TableAttributeType.DECIMAL) {
+      // Check that decimalNumdigits, and decimalNumDecimalDigits are not undefined
+      if (tableAttribute.decimalNumDigits === undefined || tableAttribute.decimalNumDecimalDigits === undefined) {
+        throw Error('Decimal attributes of decimalNumDigits or decimalNumDecimalDigits are undefined');
+      }
+
+      // Generate max number input for the given params
+      let maxValueString: string = '';
+      let stepValueString : string = '0.';
+      // Deal with the leading numbers before the decimal point
+      for (let i = 0; i < tableAttribute.decimalNumDigits - tableAttribute.decimalNumDecimalDigits; i++) {
+        maxValueString += '9'
+      }
+      maxValueString += '.'
+      
+      for (let i = 0; i < tableAttribute.decimalNumDecimalDigits; i++) {
+        maxValueString += '9'
+      }
+
+      for (let i = 0; i < tableAttribute.decimalNumDecimalDigits - 1; i++) {
+        stepValueString += '0'
+      }
+      stepValueString += '1'
+
+      return(
+        <div>
+          {this.getAttributeLabelBlock(tableAttribute, 'decimal(' + tableAttribute.decimalNumDigits + ', ' + tableAttribute.decimalNumDecimalDigits)}
+          <input type='number' step={stepValueString} min={('-' + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
