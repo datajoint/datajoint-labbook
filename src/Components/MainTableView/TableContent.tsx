@@ -102,7 +102,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
 
     // Reset TableActionview
-    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true});
+    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTableEntries: {}});
     
     // TODO: part of reference for table column width update
     // console.log('cellRef: ', this.cellRef)
@@ -375,7 +375,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       disableInsert = true;
       disableUpdate = true;
     }
-    else if (this.props.selectedTableType === TableType.LOOKUP || this.props.selectedTableType === TableType.PART) {
+    else if (this.props.selectedTableType === TableType.LOOKUP || this.props.selectedTableType === TableType.PART || Object.entries(this.state.selectedTableEntries).length > 1) {
       disableInsert = true;
       disableUpdate = true;
       disableDelete = true;
@@ -510,7 +510,12 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             <tbody>
             {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
               return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}>
-                <td colSpan={1}><input type="checkbox" disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) && !this.checkSelection(entry)} onChange={(event) => this.handleCheckedEntry(event, entry)} /></td>
+                <td colSpan={1}>
+                  <input type="checkbox" 
+                        // disable multiple check for insert mode as well until multiple insert is supported.
+                         disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE || this.state.currentSelectedTableActionMenu === TableActionType.INSERT) && !this.checkSelection(entry)} 
+                         onChange={(event) => this.handleCheckedEntry(event, entry)} />
+                </td>
                 {entry.map((column: any, index: number) => {
                   return (
                     <td key={`${column}-${index}`} className="tableCell" style={this.getCellWidth(index)}>{column} 
