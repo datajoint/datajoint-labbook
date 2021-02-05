@@ -78,7 +78,10 @@ form {
 
 .fieldUnit input,
 .fieldUnit input:focus,
-.fieldUnit input:active {
+.fieldUnit input:active,
+.fieldUnit select,
+.fieldUnit select:focus,
+.fieldUnit select:active {
   box-sizing: border-box;
   border-radius: 0;
   border: none;

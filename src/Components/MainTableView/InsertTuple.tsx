@@ -296,7 +296,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       stepValueString += '1'
 
       return(
-        <div>
+        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'decimal(' + tableAttribute.decimalNumDigits + ', ' + tableAttribute.decimalNumDecimalDigits)}
           <input type='number' step={stepValueString} min={('-' + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
@@ -384,7 +384,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
           {this.getAttributeLabelBlock(tableAttribute, 'enum')}
           <select onChange={this.handleChange.bind(this, tableAttribute.attributeName)}> {
             tableAttribute.enumOptions?.map((enumOptionString: string) => {
-              return(<option value={enumOptionString}>{enumOptionString}</option>);
+              return(<option key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
           })}
           </select>
         </div>
