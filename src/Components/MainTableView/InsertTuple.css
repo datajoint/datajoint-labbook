@@ -17,22 +17,22 @@ form {
   overflow-x: auto;
 }
 
-.rowControlls {
+.rowControls {
   align-self: flex-end;
   display: flex;
 }
 
-.rowControlls .icon {
+.rowControls .icon {
   margin-right: 8px;
   color: rgb(80, 80, 80);
   cursor: pointer;
 }
 
-.rowControlls .icon.deleteRow:hover {
+.rowControls .icon.deleteRow:hover {
   color: rgb(151, 0, 0);
 }
 
-.rowControlls .icon.addRow:hover {
+.rowControls .icon.addRow:hover {
   color: rgb(5, 114, 5);
 }
 

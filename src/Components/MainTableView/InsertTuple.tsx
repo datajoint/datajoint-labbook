@@ -397,7 +397,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         <h1>Insert</h1>
         <form onSubmit={this.onSubmit}>
           <div className="inputRow">
-            <div className="rowControlls">
+            <div className="rowControls">
               <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
               <FontAwesomeIcon className="addRow icon" icon={faPlusCircle} />
             </div>
