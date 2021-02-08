@@ -201,6 +201,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             selectedTableName={this.props.selectedTableName}
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
+            tuplesToInsert = {this.state.selectedTableEntries}
           />
         </div>)
     }

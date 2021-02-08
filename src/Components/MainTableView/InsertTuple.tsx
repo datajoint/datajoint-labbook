@@ -21,8 +21,9 @@ type insertTupleState = {
  * @param selectedTableName Name of selected table
  * @param tableAttributesInfo A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
  * @param fetchTableContent Callback function to tell the parent component to update the contentData
+ * @param tuplesToInsert List of selected tuples to be copied over for quick insert field fill-in. For now, starting with just 1.
  */
-class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, insertTupleState> {
+class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tuplesToInsert?: any,}, insertTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -423,10 +424,12 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
   }
 
   render() {
+    console.log('insert tuple copy: ', Object.values(this.props.tuplesToInsert));
     return (
       <div>
         <h1>Insert</h1>
         <form onSubmit={this.onSubmit}>
+          copy test: {JSON.stringify(this.props.tuplesToInsert)}
           <div className="inputRow">
             <div className="rowControls">
               <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
