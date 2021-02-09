@@ -1,6 +1,6 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faRedoAlt, faTrashAlt, faPlusCircle} from '@fortawesome/free-solid-svg-icons'
+import {faRedoAlt, faTrashAlt, faPlusCircle, faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
@@ -34,9 +34,9 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-/**
- * Handle cases with enums on load by setting the deafult value to the first enum option
- */
+  /**
+   * Handle cases with enums on load by setting the deafult value to the first enum option
+   */
   componentDidMount() {
     // Figure out if any of the attribute is enum type, if so set the state ahead of time
     let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
@@ -64,6 +64,25 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     // Create a copy, update the object, then set state
     let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
+    this.setState({tupleBuffer: tupleBuffer});
+  }
+
+  /**
+   * Helper function to handle copy over of the selected tuple into the insert fields by updating the tupleBuffer state.
+   * TODO: Does not work for date, time, datetime fill at the moment, figure out conversion.
+   * @param tupleToInsert user selected tuple (single entry for now) to be copied over
+   */
+  copyTuple(event: any, tupleToInsert: any) {
+    event.preventDefault();
+    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+    Object.values(tupleToInsert).forEach((columns: any) => {
+      Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+      })
+      Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+      })
+    })
     this.setState({tupleBuffer: tupleBuffer});
   }
 
@@ -177,11 +196,24 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         {tableAttribute.constructor === SecondaryTableAttribute && tableAttribute.nullable ? 
           <div className="nullableControls">
             <div className="nullableTag">nullable</div>
-            <FontAwesomeIcon className="resetIcon" icon={faRedoAlt}/>
+            <FontAwesomeIcon className="resetIcon" icon={faRedoAlt} onClick={() => {this.resetToNull(tableAttribute)}} />
           </div> : ''
         }
       </div>
     );
+  }
+
+  /**
+   * Function dealing with when user clicks on the reset icon for nullable input field. 
+   * TODO: Align behavior with the edge case specs - whether to null, or fill with default
+   * @param tableAttribute Table attribute object so the function can extract the attributeName 
+   */
+  resetToNull(tableAttribute: any) {
+    if (Object.entries(this.state.tupleBuffer).length) {
+      let updatedBuffer = Object.assign({}, this.state.tupleBuffer);
+      updatedBuffer[tableAttribute.attributeName] = tableAttribute.defaulValue; // set to defaulValue for now
+      this.setState({tupleBuffer: updatedBuffer});
+    }
   }
 
   /**
@@ -260,7 +292,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return(
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'float')}
-          <input type='number' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -268,7 +300,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return(
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'float unsigned')}
-          <input type='number' min='0' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} min='0' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -299,7 +331,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return(
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'decimal(' + tableAttribute.decimalNumDigits + ', ' + tableAttribute.decimalNumDecimalDigits)}
-          <input type='number' step={stepValueString} min={('-' + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} step={stepValueString} min={('-' + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -311,8 +343,8 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'bool')}
           <select defaultValue={defaultValue}>
-            <option value='false'></option>
-            <option value='true'></option>
+            <option  selected={!this.state.tupleBuffer[tableAttribute.attributeName]} value='false'></option>
+            <option selected={this.state.tupleBuffer[tableAttribute.attributeName]} value='true'></option>
           </select>
         </div>
       );
@@ -321,7 +353,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'char(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
-          <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -329,7 +361,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'varchar(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
-          <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -337,7 +369,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'UUID')}
-          <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       );
     }
@@ -385,7 +417,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
           {this.getAttributeLabelBlock(tableAttribute, 'enum')}
           <select onChange={this.handleChange.bind(this, tableAttribute.attributeName)}> {
             tableAttribute.enumOptions?.map((enumOptionString: string) => {
-              return(<option key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
+              return(<option selected={this.state.tupleBuffer[tableAttribute.attributeName] === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
           })}
           </select>
         </div>
@@ -397,7 +429,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       return (
       <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
         {this.getAttributeLabelBlock(tableAttribute, typeString)}
-        <input type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+        <input value={this.state.tupleBuffer[tableAttribute.attributeName]} type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
       </div>
       )
     }
@@ -424,17 +456,20 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
   }
 
   render() {
-    console.log('insert tuple copy: ', Object.values(this.props.tuplesToInsert));
     return (
       <div>
         <h1>Insert</h1>
         <form onSubmit={this.onSubmit}>
-          copy test: {JSON.stringify(this.props.tuplesToInsert)}
           <div className="inputRow">
-            <div className="rowControls">
-              <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
-              <FontAwesomeIcon className="addRow icon" icon={faPlusCircle} />
-            </div>
+            { 
+              // only show copy over/delete row icons when ready for multiple insert
+              this.props.tuplesToInsert.length > 1 ?
+              (<div className="rowControls">
+                <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
+                <FontAwesomeIcon className="addRow icon" icon={faPlusCircle} />
+              </div>) : ''
+            }
+            
             {
               // Deal with primary attirbutes
               this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
@@ -452,6 +487,15 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
               })
             }
           </div>
+          {
+            Object.entries(this.props.tuplesToInsert).length ?
+            <div className="copyOverPrompt">
+              <FontAwesomeIcon className="icon" icon={faExclamationCircle}/>
+              <span>Table entry selection detected. Copy over for a quick prefill?</span>
+              <button onClick={(event) => this.copyTuple(event, this.props.tuplesToInsert)}>Copy Over</button>
+            </div> :
+            ''
+          } 
           <input className="submitButton" type='submit' value='Submit'></input>
         </form>
         <div>{this.state.errorMessage}</div>
