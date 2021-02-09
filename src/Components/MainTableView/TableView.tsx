@@ -18,7 +18,7 @@ type TableViewState = {
   tableInfoData: string,
   selectedTable: string,
   errorMessage: string,
-  isFetchingTuples: boolean
+  isLoading: boolean
 }
 
 class TableView extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType}, TableViewState> {
@@ -31,7 +31,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       tableInfoData: '',
       selectedTable: '',
       errorMessage: '',
-      isFetchingTuples: false,
+      isLoading: false,
     }
 
     this.fetchTableContent = this.fetchTableContent.bind(this);
@@ -45,7 +45,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     if (this.props.selectedTableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
       this.setState({selectedTable: this.props.selectedTableName});
       if (this.state.currentView === 'tableContent') {
-        this.setState({isFetchingTuples: true})
+        this.setState({isLoading: true})
         // retrieve table headers
         fetch('/api/get_table_attributes', {
           method: 'POST',
@@ -65,7 +65,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             this.fetchTableContent();
           })
           .catch(error => {
-            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isFetchingTuples: false})
+            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
           })
       }
       if (this.state.currentView === 'tableInfo') {
@@ -125,10 +125,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      this.setState({tableContentData: result.tuples, errorMessage: '', isFetchingTuples: false})
+      this.setState({tableContentData: result.tuples, errorMessage: '', isLoading: false})
     })
     .catch(error => {
-      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isFetchingTuples: false})
+      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
     })
   }
 
@@ -363,7 +363,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
 
   getCurrentView() {
 
-    if (!this.state.isFetchingTuples) {
+    if (!this.state.isLoading) {
       if (this.props.selectedTableName === '') {
         return <div className="errorMessage">Select a Table to see contents</div>
       } 
