@@ -17,7 +17,8 @@ type TableViewState = {
   tableContentData: Array<any>,
   tableInfoData: string,
   selectedTable: string,
-  errorMessage: string
+  errorMessage: string,
+  isFetchingTuples: boolean
 }
 
 class TableView extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType}, TableViewState> {
@@ -29,7 +30,8 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       tableContentData: [],
       tableInfoData: '',
       selectedTable: '',
-      errorMessage: ''
+      errorMessage: '',
+      isFetchingTuples: false,
     }
 
     this.fetchTableContent = this.fetchTableContent.bind(this);
@@ -43,6 +45,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     if (this.props.selectedTableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
       this.setState({selectedTable: this.props.selectedTableName});
       if (this.state.currentView === 'tableContent') {
+        this.setState({isFetchingTuples: true})
         // retrieve table headers
         fetch('/api/get_table_attributes', {
           method: 'POST',
@@ -122,10 +125,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      this.setState({tableContentData: result.tuples, errorMessage: ''})
+      this.setState({tableContentData: result.tuples, errorMessage: '', isFetchingTuples: false})
     })
     .catch(error => {
-      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error})
+      this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isFetchingTuples: false})
     })
   }
 
@@ -359,32 +362,41 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   }
 
   getCurrentView() {
-    if (this.props.selectedTableName === '') {
-      return <div className="errorMessage">Select a Table to see contents</div>
-    } 
-    else if (this.state.errorMessage) {
-      return <div className="errorMessage">{this.state.errorMessage}</div>
-    }
-    else {
-      if (this.state.currentView === 'tableContent') {
-        return (
-          <TableContent 
-              token={this.props.token} 
-              selectedSchemaName={this.props.selectedSchemaName} 
-              selectedTableName={this.state.selectedTable} 
-              selectedTableType={this.props.selectedTableType}
-              contentData={this.state.tableContentData} 
-              tableAttributesInfo={this.state.tableAttributesInfo}
-              fetchTableContent={this.fetchTableContent}
-          />
-        )
-      }
-      else if (this.state.currentView === 'tableInfo') {
-        return <TableInfo infoDefData={this.state.tableInfoData}/>
-      }
 
-      // Error out cause the view selected is not valid
-      throw Error('Invalid View Selected');
+    if (!this.state.isFetchingTuples) {
+      if (this.props.selectedTableName === '') {
+        return <div className="errorMessage">Select a Table to see contents</div>
+      } 
+      else if (this.state.errorMessage) {
+        return <div className="errorMessage">{this.state.errorMessage}</div>
+      }
+      else {
+        if (this.state.currentView === 'tableContent') {
+          return (
+            <TableContent 
+                token={this.props.token} 
+                selectedSchemaName={this.props.selectedSchemaName} 
+                selectedTableName={this.state.selectedTable} 
+                selectedTableType={this.props.selectedTableType}
+                contentData={this.state.tableContentData} 
+                tableAttributesInfo={this.state.tableAttributesInfo}
+                fetchTableContent={this.fetchTableContent}
+            />
+          )
+        }
+        else if (this.state.currentView === 'tableInfo') {
+          return <TableInfo infoDefData={this.state.tableInfoData}/>
+        }
+
+        // Error out cause the view selected is not valid
+        throw Error('Invalid View Selected');
+      }
+    } else {
+      return (
+        <div className="loadingArea">
+          <div className="loadingMessage">Loading...</div>
+        </div>
+      )
     }
   }
 
