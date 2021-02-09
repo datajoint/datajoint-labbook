@@ -528,14 +528,19 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             </tbody>
           </table>
           </div>
-          <div className="paginator">
-            <p>Total Rows: {this.props.contentData.length}</p>
-            <FontAwesomeIcon className={!this.state.atStartPage ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.START)} />
-            <FontAwesomeIcon className={!this.state.atStartPage ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.BACKWARD)} />
-            Currently viewing: {this.state.paginatorState[0] + 1} - {this.state.paginatorState[1]}
-            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.FORWARD)} />
-            <FontAwesomeIcon className={!this.state.atEndPage ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.END)} />
-          </div>
+            <div className="paginator">
+              <p>Total Rows: {this.props.contentData.length}</p>
+
+            { Object.entries(this.props.contentData).length ?
+              <div className="controls">
+                <FontAwesomeIcon className={!this.state.atStartPage ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.START)} />
+                <FontAwesomeIcon className={!this.state.atStartPage ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.BACKWARD)} />
+                Currently viewing: {this.state.paginatorState[0] + 1} - {this.state.paginatorState[1]}
+                <FontAwesomeIcon className={!this.state.atEndPage ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.FORWARD)} />
+                <FontAwesomeIcon className={!this.state.atEndPage ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.END)} />
+              </div>
+            : '' }
+            </div>
         </div>
 
       </div>
