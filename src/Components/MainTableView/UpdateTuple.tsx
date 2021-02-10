@@ -44,6 +44,17 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
         this.setState({tupleBuffer})
       }
     }
+
+    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+      Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
+        Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        })
+        Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        })
+      })
+      this.setState({tupleBuffer: tupleBuffer});
   }
 
   /**
@@ -495,7 +506,6 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
         {this.state.errorMessage ? (
           <div className="errorMessage">{this.state.errorMessage}<button className="dismiss" onClick={() => this.setState({errorMessage: ''})}>dismiss</button></div>
         ) : ''}
-        {/* <div>{this.state.errorMessage}</div> */}
       </div>
     )
   }
