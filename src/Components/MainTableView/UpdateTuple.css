@@ -119,3 +119,17 @@ form {
   background-color: rgb(5, 114, 5);
   color: white;
 }
+
+.updateActionContainer .errorMessage {
+  padding: 0;
+}
+
+.updateActionContainer button.dismiss {
+  margin-left: 8px;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+
+.updateActionContainer button.dismiss:hover {
+  background-color: rgb(212, 212, 212);
+}

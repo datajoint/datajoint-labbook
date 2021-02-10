@@ -492,8 +492,10 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
             <input className="submitButton" type='submit' value='Submit'></input>
           </form>
         } 
-        
-        <div>{this.state.errorMessage}</div>
+        {this.state.errorMessage ? (
+          <div className="errorMessage">{this.state.errorMessage}<button className="dismiss" onClick={() => this.setState({errorMessage: ''})}>dismiss</button></div>
+        ) : ''}
+        {/* <div>{this.state.errorMessage}</div> */}
       </div>
     )
   }
