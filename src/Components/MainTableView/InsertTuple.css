@@ -59,10 +59,12 @@ form {
 .attributeHead .nullableControls {
   display: flex;
   align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+  margin-left: 24px;
 }
 
 .attributeHead .nullableTag {
-  margin-left: 24px;
   border-radius: 2px;
   font-size: 0.7rem;
   background-color: rgb(80, 80, 80);
@@ -78,7 +80,10 @@ form {
 
 .fieldUnit input,
 .fieldUnit input:focus,
-.fieldUnit input:active {
+.fieldUnit input:active,
+.fieldUnit select,
+.fieldUnit select:focus,
+.fieldUnit select:active {
   box-sizing: border-box;
   border-radius: 0;
   border: none;
@@ -109,4 +114,36 @@ form {
 .submitButton:hover {
   background-color: rgb(5, 114, 5);
   color: white;
+}
+
+.copyOverPrompt {
+  display: flex;
+  align-items: center;
+}
+
+.copyOverPrompt button {
+  border: 2px solid rgb(189, 138, 28);
+  color: rgb(189, 138, 28);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.copyOverPrompt button:hover {
+  background-color: rgb(189, 138, 28);
+  color: white;
+}
+
+.copyOverPrompt button:focus,
+.copyOverPrompt button:active {
+  outline: none;
+}
+
+.copyOverPrompt .icon {
+  color: rgb(189, 138, 28);
+}
+
+.copyOverPrompt span {
+  font-size: 0.9rem;
+  margin: 2px 4px 0 4px;
 }
