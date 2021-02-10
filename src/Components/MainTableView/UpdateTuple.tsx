@@ -14,7 +14,7 @@ type updateTupleState = {
   errorMessage: string // Error message string for failed inserts
 }
 
-class UpdateTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tupleToUpdate?: any,}, updateTupleState> {
+class UpdateTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tupleToUpdate?: any, clearEntrySelection: any}, updateTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -46,8 +46,27 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     }
   }
 
-  componentDidUpdate() {
-
+  /**
+   * Checks for any updated table selection, if yes, copies over the selected table entry into the update field
+   * @param prevProps 
+   * @param prevState 
+   */
+  componentDidUpdate(prevProps: any, prevState: any) {
+    // break if there has been no change to the tuple selection 
+    if (this.props.tupleToUpdate === prevProps.tupleToUpdate) {
+      return;
+    } else {
+      let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+      Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
+        Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        })
+        Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        })
+      })
+      this.setState({tupleBuffer: tupleBuffer});
+    }
   }
 
   /**
@@ -59,25 +78,6 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     // Create a copy, update the object, then set state
     let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
-    this.setState({tupleBuffer: tupleBuffer});
-  }
-
-  /**
-   * Helper function to handle copy over of the selected tuple into the insert fields by updating the tupleBuffer state.
-   * TODO: Does not work for date, time, datetime fill at the moment, figure out conversion.
-   * @param tupleToUpdate user selected tuple (single entry for now) to be copied over
-   */
-  copyTuple(event: any, tupleToInsert: any) {
-    event.preventDefault();
-    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
-    Object.values(tupleToInsert).forEach((columns: any) => {
-      Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-      })
-      Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-      })
-    })
     this.setState({tupleBuffer: tupleBuffer});
   }
 
@@ -160,22 +160,33 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     fetch('/api/update_tuple', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple_to_update: tupleBuffer})
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: tupleBuffer})
     })
     .then(result => {
       // Check for error mesage 500, if so throw and error
       if (result.status === 500) {
-        console.log('500 error result: ', result)
-        throw Error(`${result.status} - ${result.statusText}`)
+        result.text()
+        .then(errorMessage => {throw new Error(errorMessage)})
+        .catch(error => {
+          this.setState({errorMessage: error.message});
+        });
       }
       return result.text();
     })
     .then(result => {
-      // Insert was sucessful, tell TableView to fetch the content again
+      console.log('update successful: ', this.props.tupleToUpdate)
+      // clear selection and buffer upon successful delete
+      this.props.clearEntrySelection();
+      console.log('prop tuple cleared?: ', this.props.tupleToUpdate)
+      console.log('state for buffer?: ', this.state.tupleBuffer)
+      this.setState({tupleBuffer: {}})
+      console.log('state for buffer after?: ', this.state.tupleBuffer)
+
+      // Update was sucessful, tell TableView to fetch the content again
       this.props.fetchTableContent();
     })
     .catch((error) => {
-      this.setState({errorMessage: 'error updating - ' + error});
+      this.setState({errorMessage: error.message});
     })
   }
 
@@ -454,35 +465,34 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
   render() {
     return (
       <div className="updateActionContainer">
-        <button onClick={(event)=>this.copyTuple(event, this.props.tupleToUpdate)}>test fill in</button>
-        <form onSubmit={this.onSubmit}>
-          <div className="inputRow">         
-            {
-              // Deal with primary attirbutes
-              this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
-                return(
-                  this.getPrimaryAttributeInputBlock(primaryTableAttribute)
-                )
-              })
-            }
-            {
-              // Deal with secondary attributes 
-              this.props.tableAttributesInfo?.secondaryAttributes.map((secondaryAttribute) => {
-                return(
-                  this.getAttributeInputBlock(secondaryAttribute)
-                )
-              })
-            }
-          </div>
-          {
+        {
             Object.entries(this.props.tupleToUpdate).length === 0 ?
-            <div className="copyOverPrompt">
-              <span>Select a table entry from below to update</span>
-            </div> :
-            ''
-          } 
-          <input className="submitButton" type='submit' value='Submit'></input>
-        </form>
+              <p>Select a table entry from below to update</p>
+            :
+            <form onSubmit={this.onSubmit}>
+            <div className="inputRow">         
+              {
+                // Deal with primary attirbutes
+                this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
+                  return(
+                    this.getPrimaryAttributeInputBlock(primaryTableAttribute)
+                  )
+                })
+              }
+              {
+                // Deal with secondary attributes 
+                this.props.tableAttributesInfo?.secondaryAttributes.map((secondaryAttribute) => {
+                  return(
+                    this.getAttributeInputBlock(secondaryAttribute)
+                  )
+                })
+              }
+            </div>
+            
+            <input className="submitButton" type='submit' value='Submit'></input>
+          </form>
+        } 
+        
         <div>{this.state.errorMessage}</div>
       </div>
     )
