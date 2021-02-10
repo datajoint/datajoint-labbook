@@ -33,15 +33,24 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     this.setState({isGettingDependencies: true})
 
     // TODO: Run api fetch for list of dependencies/permission
-    fetch('/api/list_dependencies', {
-      method: 'POST',
+    // console.log('token: ', this.props.token)
+    fetch(`/api/record/dependency?=schema_name=${this.props.selectedSchemaName}
+                                   &table_name=${this.props.selectedTableName}
+                                   &restriction=${Buffer.from(JSON.stringify(processedEntry)).toString('base64')}`, 
+    {
+      method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: processedEntry})
+      // body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restriction: processedEntry})
     })
       .then(result => {
+        console.log('fetched dependencies: ', result);
         // Check for error mesage 500, if so throw error, but for now, send back dummy
         if (result.status === 500) {
-          // throw new Error(result.statusText);
+          result.text().then(errorMessage => {
+            throw new Error(errorMessage)
+          }).catch(error => {
+            console.error(error.message)
+          })
         }
         
         // set check status to done
@@ -55,7 +64,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
         this.setState({dependencies: result});
       })
       .catch((error) => {
-        console.error('Error: ', error);
+        console.error(error.message);
         this.setState({dependencies: undefined});
       })
   }
@@ -77,6 +86,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restrictionTuple: processedEntry})
     })
       .then(result => {
+        console.log('delete result: ', result)
         // set deleting status to done
         this.setState({isDeletingEntry: false, dependencies: undefined})
 
