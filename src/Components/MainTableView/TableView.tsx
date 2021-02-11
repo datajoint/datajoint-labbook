@@ -10,6 +10,7 @@ import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 import TableAttribute from './DataStorageClasses/TableAttribute';
+import Restriction from './DataStorageClasses/Restriction';
 
 type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,
@@ -89,7 +90,30 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     }
   }
 
-  fetchTableContent() {
+  fetchTableContent(restrictions?: Array<Restriction>) {
+    // Construct restriction base64 restriction from restriction
+    let apiUrl = '/api/fetch_tuples';
+
+    if (restrictions !== undefined) {
+      let restrictionsInAPIFormat = []
+
+      for (let restriction of restrictions) {
+        restrictionsInAPIFormat.push({
+          attributeName: restriction.tableAttribute?.attributeName,
+          operation: restriction.getRestrictionTypeString(),
+          value: restriction.value
+        })
+      }
+
+      // Add ? to url
+      apiUrl += '?'
+
+      // Covert the restrictions to json string then base64 it
+      apiUrl += 'restriction=' + btoa(JSON.stringify(restrictionsInAPIFormat));
+
+      console.log(apiUrl) // Place holder for now until we have the backend
+    }
+    
     fetch('/api/fetch_tuples', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
