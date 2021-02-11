@@ -1,5 +1,6 @@
 import React from 'react';
 import {NavLink} from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import './NavBar.css'
 
@@ -17,6 +18,9 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
   render() {
     return (
       <nav className='top-nav'>
+        <Helmet>
+          <title>DataJoint GUI{this.props.hostname ? " | " + this.props.hostname : ""}</title>
+        </Helmet>
         <div className='nav-logo'>
           <NavLink to='/'><img src={logo} alt='Logo' /></NavLink>
         </div>
