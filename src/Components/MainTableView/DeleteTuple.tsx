@@ -34,8 +34,8 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
 
     // TODO: Run api fetch for list of dependencies/permission
     // console.log('token: ', this.props.token)
-    fetch(`/api/record/dependency?=schema_name=${this.props.selectedSchemaName}
-                                   &table_name=${this.props.selectedTableName}
+    fetch(`/api/record/dependency?=schemaName=${this.props.selectedSchemaName}
+                                   &tableName=${this.props.selectedTableName}
                                    &restriction=${Buffer.from(JSON.stringify(processedEntry)).toString('base64')}`, 
     {
       method: 'GET',
