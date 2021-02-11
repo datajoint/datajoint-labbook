@@ -5,6 +5,7 @@ import './TableContent.css'
 import TableType from '../TableTypeEnum/TableType'
 import Filter from './Filter/Filter'
 import InsertTuple from './InsertTuple'
+import UpdateTuple from './UpdateTuple'
 import DeleteTuple from './DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import TableAttribute from './DataStorageClasses/TableAttribute'
@@ -211,7 +212,15 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
       return (<div className="actionMenuContainer">
         <h1>Update</h1>
-        <p>Replace with Update Component</p>
+        <UpdateTuple 
+            token={this.props.token}
+            selectedSchemaName={this.props.selectedSchemaName}
+            selectedTableName={this.props.selectedTableName}
+            tableAttributesInfo={this.props.tableAttributesInfo}
+            fetchTableContent={this.props.fetchTableContent}
+            tupleToUpdate = {this.state.selectedTableEntries}
+            clearEntrySelection={() => this.handleSelectionClearRequest()}
+          />
       </div>)
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
