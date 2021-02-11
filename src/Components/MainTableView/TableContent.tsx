@@ -385,7 +385,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       disableInsert = true;
       disableUpdate = true;
     }
-    else if (this.props.selectedTableType === TableType.LOOKUP || this.props.selectedTableType === TableType.PART || Object.entries(this.state.selectedTableEntries).length > 1) {
+    else if (this.props.selectedTableType === TableType.PART || Object.entries(this.state.selectedTableEntries).length > 1) {
       disableInsert = true;
       disableUpdate = true;
       disableDelete = true;
