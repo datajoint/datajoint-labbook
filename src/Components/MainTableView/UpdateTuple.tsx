@@ -185,13 +185,9 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       return result.text();
     })
     .then(result => {
-      console.log('update successful: ', this.props.tupleToUpdate)
       // clear selection and buffer upon successful delete
       this.props.clearEntrySelection();
-      console.log('prop tuple cleared?: ', this.props.tupleToUpdate)
-      console.log('state for buffer?: ', this.state.tupleBuffer)
       this.setState({tupleBuffer: {}})
-      console.log('state for buffer after?: ', this.state.tupleBuffer)
 
       // Update was sucessful, tell TableView to fetch the content again
       this.props.fetchTableContent();
