@@ -4,7 +4,8 @@ import Restriction from '../DataStorageClasses/Restriction'
 import TableAttribute from '../DataStorageClasses/TableAttribute'
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo'
 import TableAttributeType from '../enums/TableAttributeType';
-import { faUnderline } from '@fortawesome/free-solid-svg-icons';
+
+import './FilterCard.css'
 
 type FilterCardState = {
   tableAttributes: Array<TableAttribute>,
@@ -21,7 +22,8 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     this.getAttributeNameSelectBlock = this.getAttributeNameSelectBlock.bind(this);
     this.handleAttributeSelection = this.handleAttributeSelection.bind(this);
     this.handleOperatorSelection = this.handleOperatorSelection.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handleValueChange = this.handleValueChange.bind(this);
+    this.handleEnableChange = this.handleEnableChange.bind(this);
   }
 
   componentDidMount() {
@@ -38,6 +40,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
       filterableAttributes.push(tableAttribute);
     }
     this.setState({tableAttributes: filterableAttributes});
+    console.log(this.props.restriction)
   }
 
   handleAttributeSelection(event: any) {
@@ -52,7 +55,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     this.props.updateRestriction(this.props.index, restriction);
   }
 
-  handleChange(attributeName: string, event: any) {
+  handleValueChange(attributeName: string, event: any) {
     let restriction = Object.assign({}, this.props.restriction);
     
     // Handle speical case with DateTime
@@ -82,6 +85,12 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     this.props.updateRestriction(this.props.index, restriction)
   }
 
+  handleEnableChange(event: any) {
+    let restriction = Object.assign({}, this.props.restriction);
+    restriction.isEnable = event.target.checked;
+    this.props.updateRestriction(this.props.index, restriction);
+  }
+
   getAttributeNameSelectBlock() {
     if (this.props.tableAttributesInfo === undefined) {
       return(<div></div>)
@@ -91,7 +100,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
       <select defaultValue='' onChange={this.handleAttributeSelection}>
         <option value='' disabled></option>
         {this.state.tableAttributes.map((tableAttribute, index) => {
-          return(<option value={index}>{tableAttribute.attributeName}</option>)
+          return(<option value={index} key={tableAttribute.attributeName}>{tableAttribute.attributeName}</option>)
         })}
       </select>
     )
@@ -113,17 +122,18 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
 
   getInputBlock() {
     // Check if tableAttribute is undefined, if so return disable input
-    if (this.props.restriction.tableAttribute === undefined) {
+    if (this.props.restriction.tableAttribute === undefined || this.props.restriction.restrictionType === undefined) {
       return(<input disabled></input>);
     }
     // Get the input block by using the tableAttribute helper funcition
-    return (TableAttribute.getAttributeInputBlock(this.props.restriction.tableAttribute, this.props.restriction.value, undefined, this.handleChange))
+    return (TableAttribute.getAttributeInputBlock(this.props.restriction.tableAttribute, this.props.restriction.value, undefined, this.handleValueChange))
   }
 
   render() {
     return(
-      <div>
-        <form>
+      <div className="filterCardDiv">
+        <form className="filterCardForm">
+          <input type="checkbox" checked={this.props.restriction.isEnable} onChange={this.handleEnableChange}></input>
           <label>Attribute Name</label>
           {this.getAttributeNameSelectBlock()}
           <label>Operator</label>

@@ -1,0 +1,8 @@
+.filterCardForm {
+    display: flex;
+    flex-direction: column;
+    box-shadow: 3px 3px 6px 3px gray;
+    padding: 2%;
+    margin: 2%;
+    width: 10%;
+}

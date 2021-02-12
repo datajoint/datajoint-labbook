@@ -5,11 +5,13 @@ class Restriction {
   tableAttribute?: TableAttribute
   restrictionType?: RestrictionType
   value?: any
+  isEnable: boolean
 
-  constructor(tableAttribute?: TableAttribute, restrictionType?: RestrictionType, value?: any) {
+  constructor(tableAttribute?: TableAttribute, restrictionType?: RestrictionType, value?: any, isEnable: boolean = true) {
     this.tableAttribute = tableAttribute;
     this.restrictionType = restrictionType;
     this.value = value;
+    this.isEnable = isEnable;
   }
 
   static getRestrictionTypeString(restrictionType?: RestrictionType) {

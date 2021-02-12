@@ -30,6 +30,7 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
     restrictions[index] = restriction;
     this.setState({restrictions: restrictions})
+    console.log(restrictions)
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -41,7 +42,7 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     // Check if any of the restrictions are valid, if so then send them to TableView fetchTuples
     let validRestrictions: Array<Restriction> = []
     for (let restriction of this.state.restrictions) {
-      if (restriction.tableAttribute !== undefined && restriction.restrictionType !== undefined && restriction.value !== undefined) {
+      if (restriction.tableAttribute !== undefined && restriction.restrictionType !== undefined && restriction.value !== undefined && restriction.isEnable === true) {
 
         // Check if it is of date time varient
         if (restriction.tableAttribute.attributeType === TableAttributeType.DATETIME) {
@@ -49,7 +50,6 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
             // Not completed yet thus break out
             continue;
           }
-
         }
 
         // Valid restriction, thus add it to the list
