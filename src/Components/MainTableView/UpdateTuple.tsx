@@ -8,10 +8,13 @@ import TableAttributeType from './enums/TableAttributeType';
 import './UpdateTuple.css'
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 
+import CheckDependency from './CheckDependency';
 
 type updateTupleState = {
-  tupleBuffer: any // Object to stored the values typed in by the user
-  errorMessage: string // Error message string for failed inserts
+  tupleBuffer: any, // Object to stored the values typed in by the user
+  errorMessage: string, // Error message string for failed inserts
+  dependencies: Array<any>, // list of dependencies pushed from checkDependency Component
+  updateAccessible: boolean // disables submit button if any of the dependencies are inaccessible
 }
 
 class UpdateTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tupleToUpdate?: any, clearEntrySelection: any}, updateTupleState> {
@@ -19,7 +22,9 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     super(props);
     this.state = {
       tupleBuffer: {},
-      errorMessage: ''
+      errorMessage: '',
+      dependencies: [],
+      updateAccessible: false
     }
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -97,7 +102,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
    * based upon the info provided by this.props.tableAttributeInfo such as nullable? autoIncrement?, etc.
    * @param event Event object from the standard OnSubmit function
    */
-  onSubmit(event: any) {
+  onSubmit(event?: any) {
     event.preventDefault();
     // Check that tableAttirbutesInfo is not undefined
     if (this.props.tableAttributesInfo === undefined) {
@@ -185,13 +190,9 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       return result.text();
     })
     .then(result => {
-      console.log('update successful: ', this.props.tupleToUpdate)
       // clear selection and buffer upon successful delete
       this.props.clearEntrySelection();
-      console.log('prop tuple cleared?: ', this.props.tupleToUpdate)
-      console.log('state for buffer?: ', this.state.tupleBuffer)
       this.setState({tupleBuffer: {}})
-      console.log('state for buffer after?: ', this.state.tupleBuffer)
 
       // Update was sucessful, tell TableView to fetch the content again
       this.props.fetchTableContent();
@@ -473,6 +474,10 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     }
   }
 
+  handleDependencies(list: Array<any>) {
+    this.setState({dependencies: list})
+  }
+
   render() {
     return (
       <div className="updateActionContainer">
@@ -499,8 +504,24 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                 })
               }
             </div>
-            
-            <input className="submitButton" type='submit' value='Submit'></input>
+            <CheckDependency token={this.props.token} 
+                             selectedSchemaName={this.props.selectedSchemaName}
+                             selectedTableName={this.props.selectedTableName}
+                             tupleToCheckDependency={Object.values(this.props.tupleToUpdate)}
+                             clearList={!Object.entries(this.state.dependencies).length}
+                             dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
+                             allAccessible={(bool: boolean) => this.setState({updateAccessible: bool})} />
+
+            {Object.entries(this.state.dependencies).length ? (
+              <div>
+                <p>Are you sure you want to submit form to update this entry?</p>
+                <div className="actionButtons">
+                  <input className="submitButton" type="submit" value="Submit" disabled={!this.state.updateAccessible}/>
+                  <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+                </div>
+              </div>
+            ): ''}
+    
           </form>
         } 
         {this.state.errorMessage ? (
