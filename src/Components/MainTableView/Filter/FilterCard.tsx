@@ -4,6 +4,7 @@ import Restriction from '../DataStorageClasses/Restriction'
 import TableAttribute from '../DataStorageClasses/TableAttribute'
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo'
 import TableAttributeType from '../enums/TableAttributeType';
+import { faUnderline } from '@fortawesome/free-solid-svg-icons';
 
 type FilterCardState = {
   tableAttributes: Array<TableAttribute>,
@@ -53,7 +54,31 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
 
   handleChange(attributeName: string, event: any) {
     let restriction = Object.assign({}, this.props.restriction);
-    restriction.value = event.target.value;
+    
+    // Handle speical case with DateTime
+    if (restriction.tableAttribute?.attributeType === TableAttributeType.DATETIME) {
+      // Defined the value attribute if it is undefined as an array
+      if (restriction.value === undefined) {
+        restriction.value = ['', ''];
+      }
+
+      // Figure out if it is date or time and put it in the value as ['date', 'time']
+      const subComponentName = attributeName.substr(attributeName.length - 6)
+
+      if (subComponentName === '__date') {
+        restriction.value[0] = event.target.value;
+      }
+      else if (subComponentName === '__time') {
+        restriction.value[1] = event.target.value;
+      }
+      else {
+        throw Error('Unknown Component for date time attribute')
+      }
+    }
+    else {
+      restriction.value = event.target.value;
+    }
+    
     this.props.updateRestriction(this.props.index, restriction)
   }
 

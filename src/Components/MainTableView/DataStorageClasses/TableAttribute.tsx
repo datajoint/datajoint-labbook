@@ -27,6 +27,35 @@ class TableAttribute {
       this.decimalNumDecimalDigits = decimalNumDecimalDigits
     }
 
+    /**
+     * Function to covert epoch time string back to datajoint time format
+     * @param timeString 
+     */
+    static parseTimeString(timeString: string) {
+      const timeNumber = parseInt(timeString)
+      let date = new Date(timeNumber * 1000);
+      return Math.floor(timeNumber / 86400) * 24 + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds();
+    }
+
+    /**
+     * Helper function for converting dateTime string back to string format for table view
+     * @param dateTimeString 
+     */
+    static parseDateTime(dateTimeString: string) {
+      let date = new Date(parseInt(dateTimeString) * 1000);
+      return date.toUTCString();
+    }
+
+    /**
+     * Helper function for converting date to Date String
+     * @param dateTimeString 
+     */
+    static parseDate(dateTimeString: string) {
+      let date = new Date(parseInt(dateTimeString) * 1000);
+      return date.toDateString();
+    }
+
+
     static getAttributeInputBlock(tableAttribute: TableAttribute, currentValue: any, defaultValue: string = '', handleChange: any) {
       let type: string = ''
       let typeString: string = ''

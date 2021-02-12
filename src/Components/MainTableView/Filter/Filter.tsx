@@ -2,6 +2,7 @@ import React from 'react';
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo'
 import Restriction from '../DataStorageClasses/Restriction'
 import FilterCard from './FilterCard'
+import TableAttributeType from '../enums/TableAttributeType';
 
 type FilterState = {
   restrictions: Array<Restriction>,
@@ -29,7 +30,6 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
     restrictions[index] = restriction;
     this.setState({restrictions: restrictions})
-    console.log(restriction)
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -42,6 +42,16 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     let validRestrictions: Array<Restriction> = []
     for (let restriction of this.state.restrictions) {
       if (restriction.tableAttribute !== undefined && restriction.restrictionType !== undefined && restriction.value !== undefined) {
+
+        // Check if it is of date time varient
+        if (restriction.tableAttribute.attributeType === TableAttributeType.DATETIME) {
+          if (restriction.value[0] === '' || restriction.value[1] === '') {
+            // Not completed yet thus break out
+            continue;
+          }
+
+        }
+
         // Valid restriction, thus add it to the list
         validRestrictions.push(restriction);
       }

@@ -11,6 +11,8 @@ import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
+import RestrictionType from './enums/RestrictionType';
+import { faUnderline } from '@fortawesome/free-solid-svg-icons';
 
 type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,
@@ -98,20 +100,28 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       let restrictionsInAPIFormat = []
 
       for (let restriction of restrictions) {
-        restrictionsInAPIFormat.push({
-          attributeName: restriction.tableAttribute?.attributeName,
-          operation: Restriction.getRestrictionTypeString(restriction.restrictionType),
-          value: restriction.value
-        })
+
+        if (restriction.tableAttribute?.attributeType === TableAttributeType.DATETIME) {
+          restrictionsInAPIFormat.push({
+            attributeName: restriction.tableAttribute?.attributeName,
+            operation: Restriction.getRestrictionTypeString(restriction.restrictionType),
+            value: restriction.value[0] + ' ' + restriction.value[1]
+          })
+        }
+        else {
+          restrictionsInAPIFormat.push({
+            attributeName: restriction.tableAttribute?.attributeName,
+            operation: Restriction.getRestrictionTypeString(restriction.restrictionType),
+            value: restriction.value
+          })
+        }
       }
-      console.log(restrictionsInAPIFormat)
 
       // Add ? to url
       apiUrl += '?'
 
       // Covert the restrictions to json string then base64 it
       apiUrl += 'restriction=' + encodeURIComponent(btoa(JSON.stringify(restrictionsInAPIFormat)));
-      console.log( btoa(JSON.stringify(restrictionsInAPIFormat)))
 
     }
     
@@ -135,17 +145,17 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       for (let i = 0; i < tableAttributes.length; i++) {
         if (tableAttributes[i].attributeType === TableAttributeType.TIME) {
           for (let tuple of result.tuples) {
-            tuple[i] = this.parseTimeString(tuple[i]);
+            tuple[i] = TableAttribute.parseTimeString(tuple[i]);
           }
         }
         else if (tableAttributes[i].attributeType === TableAttributeType.TIMESTAMP || tableAttributes[i].attributeType === TableAttributeType.DATETIME) {
           for (let tuple of result.tuples) {
-            tuple[i] = this.parseDateTime(tuple[i]);
+            tuple[i] = TableAttribute.parseDateTime(tuple[i]);
           }
         }
         else if (tableAttributes[i].attributeType === TableAttributeType.DATE) {
           for (let tuple of result.tuples) {
-            tuple[i] = this.parseDate(tuple[i]);
+            tuple[i] = TableAttribute.parseDate(tuple[i]);
           }
         }
       }
@@ -156,35 +166,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
     })
   }
-
-  /**
-   * Function to covert epoch time string back to datajoint time format
-   * @param timeString 
-   */
-  parseTimeString(timeString: string) {
-    const timeNumber = parseInt(timeString)
-    let date = new Date(timeNumber * 1000);
-    return Math.floor(timeNumber / 86400) * 24 + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds();
-  }
-
-  /**
-   * Helper function for converting dateTime string back to string format for table view
-   * @param dateTimeString 
-   */
-  parseDateTime(dateTimeString: string) {
-    let date = new Date(parseInt(dateTimeString) * 1000);
-    return date.toUTCString();
-  }
-
-  /**
-   * Helper function for converting date to Date String
-   * @param dateTimeString 
-   */
-  parseDate(dateTimeString: string) {
-    let date = new Date(parseInt(dateTimeString) * 1000);
-    return date.toDateString();
-  }
-
+ 
   /**
    * Function to convert the api return json to produce a TableAttributeInfo
    * @param jsonResult 
