@@ -43,7 +43,7 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
     // set status true for isGettingDependencies, switch to false once api responds
     this.setState({isGettingDependencies: true})
 
-    fetch(`/api/record/dependency?schema_name=${this.props.selectedSchemaName}&table_name=${this.props.selectedTableName}&restriction=${Buffer.from(JSON.stringify(processedEntry)).toString('base64')}`, 
+    fetch(`/api/record/dependency?schemaName=${this.props.selectedSchemaName}&tableName=${this.props.selectedTableName}&restriction=${Buffer.from(JSON.stringify(processedEntry)).toString('base64')}`, 
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
