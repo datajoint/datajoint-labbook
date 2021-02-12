@@ -2,7 +2,6 @@ import React from 'react';
 import RestrictionType from '../enums/RestrictionType'
 import Restriction from '../DataStorageClasses/Restriction'
 import TableAttribute from '../DataStorageClasses/TableAttribute'
-import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo'
 import TableAttributeType from '../enums/TableAttributeType';
 
 import './FilterCard.css'
@@ -10,13 +9,12 @@ import './FilterCard.css'
 type FilterCardState = {
 }
 
+/**
+ * Component to handle creation of the input forms require for each restriction
+ */
 class FilterCard extends React.Component<{index: number, restriction: Restriction, tableAttributes: Array<TableAttribute>, updateRestriction: any, deleteFilterCard: any}, FilterCardState> {
   constructor(props: any) {
     super(props);
-
-    this.state = {
-      tableAttributes: [],
-    }
 
     this.getAttributeNameSelectBlock = this.getAttributeNameSelectBlock.bind(this);
     this.handleAttributeSelection = this.handleAttributeSelection.bind(this);
@@ -25,22 +23,32 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     this.handleEnableChange = this.handleEnableChange.bind(this);
   }
 
-  componentDidMount() {
-    
-  }
-
+  /**
+   * Handle attribute selection by making a copy of the restriction object, updating it, then send it to parent updateRestriction method
+   * @param event 
+   */
   handleAttributeSelection(event: any) {
     let restriction = Object.assign({}, this.props.restriction);
     restriction.tableAttribute = this.props.tableAttributes[event.target.value];
     this.props.updateRestriction(this.props.index, restriction);
   }
 
+  /**
+   * Handle operator selection by making a copy of the restriction object, updating it, then send it to parent updateRestriction method
+   * @param event 
+   */
   handleOperatorSelection(event: any) {
     let restriction = Object.assign({}, this.props.restriction);
     restriction.restrictionType = parseInt(event.target.value);
     this.props.updateRestriction(this.props.index, restriction);
   }
 
+  /**
+   * Handle value of input field by making a copy of the restriction object, updating it, then send it to parent updateRestriction method
+   * NOTE: This should be passed into TableAttribute getInputField static function which use this as a call back
+   * @param attributeName
+   * @param event 
+   */
   handleValueChange(attributeName: string, event: any) {
     let restriction = Object.assign({}, this.props.restriction);
     
@@ -71,14 +79,20 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     this.props.updateRestriction(this.props.index, restriction)
   }
 
+  /**
+   * Deals with the user wanting to enable or disable a restriction, same logic as a attribute selection and so on
+   * @param event 
+   */
   handleEnableChange(event: any) {
     let restriction = Object.assign({}, this.props.restriction);
     restriction.isEnable = event.target.checked;
     this.props.updateRestriction(this.props.index, restriction);
   }
 
+  /**
+   * Helper function for getting the select block for all avaliable attributes for restriction
+   */
   getAttributeNameSelectBlock() {
-    console.log(this.props.tableAttributes)
     return(
       <select defaultValue='' onChange={this.handleAttributeSelection}>
         <option value='' disabled></option>
@@ -89,6 +103,9 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     )
   }
 
+  /**
+   * Helper function for getting the operator selection block
+   */
   getOperatorSelectBlock() {
     return(
       <select defaultValue='' onChange={this.handleOperatorSelection}>
@@ -103,6 +120,9 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     )
   }
 
+  /**
+   * Helper function for getting the input block by taking advantage of TableAttribute.getAttributeInputBlock
+   */
   getInputBlock() {
     // Check if tableAttribute is undefined, if so return disable input
     if (this.props.restriction.tableAttribute === undefined || this.props.restriction.restrictionType === undefined) {

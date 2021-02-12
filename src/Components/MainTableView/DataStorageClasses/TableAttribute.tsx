@@ -55,7 +55,13 @@ class TableAttribute {
       return date.toDateString();
     }
 
-
+    /**
+     * Helper function to handle the creation of input block based on the corresponding table attribute
+     * @param tableAttribute TableAttribute object to be used for extracting type 
+     * @param currentValue Current value of the input block
+     * @param defaultValue Any default value for input blocks that support it
+     * @param handleChange Call back function for when the user make a change to the input block
+     */
     static getAttributeInputBlock(tableAttribute: TableAttribute, currentValue: any, defaultValue: string = '', handleChange: any) {
       let type: string = ''
       let typeString: string = ''

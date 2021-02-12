@@ -92,6 +92,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     }
   }
 
+  /**
+   * Utility function for refeshing the table view of tuples
+   * @param restrictions Array of valid restrictions used to query the back end to prevent it sending back everything
+   */
   fetchTableContent(restrictions?: Array<Restriction>) {
     // Construct restriction base64 restriction from restriction
     let apiUrl = '/api/fetch_tuples';

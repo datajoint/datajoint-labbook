@@ -8,10 +8,13 @@ import './Filter.css'
 
 type FilterState = {
   restrictions: Array<Restriction>, // Array of Restrictions objects
-  tableAttributes: Array<TableAttribute>,
-  currentRestrictionIDCount: number
+  tableAttributes: Array<TableAttribute>, // List of TableAttributes which is derive from primary_attribute + secondary_attributes
+  currentRestrictionIDCount: number // Used to give a unique ID to each restriction object to allow react to keep track of what is being deleted
 }
 
+/**
+ * Filter component that is in charge of managing one to many FilterCards as well as the data store beind them
+ */
 class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, FilterState> {
   constructor(props: any) {
     super(props);
@@ -25,24 +28,39 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     this.deleteFilterCard = this.deleteFilterCard.bind(this);
   }
 
+  /**
+   * Add a restriction with the currentRestrictionIDCount as its ID then increment and update the state
+   */
   addRestriction() {
     let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
     restrictions.push(new Restriction(this.state.currentRestrictionIDCount));
     this.setState({restrictions: restrictions, currentRestrictionIDCount: this.state.currentRestrictionIDCount + 1});
   }
 
+  /**
+   * 
+   * @param index Location of the data in the restriction array to be modified
+   * @param restriction The new restriction to replace the old restriction object
+   */
   updateRestriction(index: number, restriction: Restriction) {
     let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
     restrictions[index] = restriction;
     this.setState({restrictions: restrictions});
   }
 
+  /**
+   * 
+   * @param index Location of the restriction object to be deleted
+   */
   deleteFilterCard(index: number) {
     let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
     restrictions.splice(index, 1)
     this.setState({restrictions: restrictions});
   }
 
+  /**
+   * Handles computing the tableAttributes array given the primary and secondary attributes
+   */
   componentDidMount() {
     // Update the tableAttribute list
     let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
@@ -59,9 +77,14 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     this.setState({tableAttributes: filterableAttributes});
   }
 
+  /**
+   * Upon state change of restrictions, check if any of them are valid, if so then call the fetchTableContent function appropriately
+   * @param prevProps 
+   * @param prevState 
+   */
   componentDidUpdate(prevProps: any, prevState: any) {
     // If state didn't change then don't do anything
-    if (prevState === this.state) {
+    if (prevState.restrictions === this.state.restrictions) {
       return;
     }
 
