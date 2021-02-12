@@ -8,10 +8,9 @@ import TableAttributeType from '../enums/TableAttributeType';
 import './FilterCard.css'
 
 type FilterCardState = {
-  tableAttributes: Array<TableAttribute>,
 }
 
-class FilterCard extends React.Component<{index: number, restriction: Restriction, tableAttributesInfo?: TableAttributesInfo, updateRestriction: any, deleteFilterCard: any}, FilterCardState> {
+class FilterCard extends React.Component<{index: number, restriction: Restriction, tableAttributes: Array<TableAttribute>, updateRestriction: any, deleteFilterCard: any}, FilterCardState> {
   constructor(props: any) {
     super(props);
 
@@ -27,25 +26,12 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
   }
 
   componentDidMount() {
-    // Update the tableAttribute list
-    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
-    tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
-
-    let filterableAttributes = []
-
-    for (let tableAttribute of tableAttributes) {
-      if (tableAttribute.attributeType === TableAttributeType.BLOB) {
-        continue;
-      }
-      filterableAttributes.push(tableAttribute);
-    }
-    this.setState({tableAttributes: filterableAttributes});
-    console.log(this.props.restriction)
+    
   }
 
   handleAttributeSelection(event: any) {
     let restriction = Object.assign({}, this.props.restriction);
-    restriction.tableAttribute = this.state.tableAttributes[event.target.value];
+    restriction.tableAttribute = this.props.tableAttributes[event.target.value];
     this.props.updateRestriction(this.props.index, restriction);
   }
 
@@ -92,14 +78,11 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
   }
 
   getAttributeNameSelectBlock() {
-    if (this.props.tableAttributesInfo === undefined) {
-      return(<div></div>)
-    }
-
+    console.log(this.props.tableAttributes)
     return(
       <select defaultValue='' onChange={this.handleAttributeSelection}>
         <option value='' disabled></option>
-        {this.state.tableAttributes.map((tableAttribute, index) => {
+        {this.props.tableAttributes.map((tableAttribute, index) => {
           return(<option value={index} key={tableAttribute.attributeName}>{tableAttribute.attributeName}</option>)
         })}
       </select>

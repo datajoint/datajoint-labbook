@@ -1,8 +1,8 @@
 .filterCardDiv{
   box-shadow: 3px 3px 6px 3px gray;
-  padding: 2%;
+  padding: 1%;
   margin: 0.7%;
-  width: 10%;
+  background-color: white;
 }
 
 .filterCardForm {

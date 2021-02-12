@@ -2,12 +2,14 @@ import RestrictionType from '../enums/RestrictionType'
 import TableAttribute from './TableAttribute'
 
 class Restriction {
+  id: number
   tableAttribute?: TableAttribute
   restrictionType?: RestrictionType
   value?: any
   isEnable: boolean
 
-  constructor(tableAttribute?: TableAttribute, restrictionType?: RestrictionType, value?: any, isEnable: boolean = true) {
+  constructor(id:number, tableAttribute?: TableAttribute, restrictionType?: RestrictionType, value?: any, isEnable: boolean = true) {
+    this.id = id;
     this.tableAttribute = tableAttribute;
     this.restrictionType = restrictionType;
     this.value = value;
