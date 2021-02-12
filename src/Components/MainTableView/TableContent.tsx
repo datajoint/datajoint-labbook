@@ -524,7 +524,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
                   <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.
                          disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE || this.state.currentSelectedTableActionMenu === TableActionType.INSERT) && !this.checkSelection(entry)} 
-                         onChange={(event) => this.handleCheckedEntry(event, entry)} />
+                         onChange={(event) => this.handleCheckedEntry(event, entry)} 
+                         checked={this.checkSelection(entry)}/>
                 </td>
                 {entry.map((column: any, index: number) => {
                   return (

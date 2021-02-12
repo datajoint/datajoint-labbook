@@ -8,10 +8,12 @@ import TableAttributeType from './enums/TableAttributeType';
 import './UpdateTuple.css'
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 
+import CheckDependency from './CheckDependency';
 
 type updateTupleState = {
-  tupleBuffer: any // Object to stored the values typed in by the user
-  errorMessage: string // Error message string for failed inserts
+  tupleBuffer: any, // Object to stored the values typed in by the user
+  errorMessage: string, // Error message string for failed inserts
+  dependencies: Array<any> // list of dependencies pushed from checkDependency Component
 }
 
 class UpdateTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tupleToUpdate?: any, clearEntrySelection: any}, updateTupleState> {
@@ -19,7 +21,8 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     super(props);
     this.state = {
       tupleBuffer: {},
-      errorMessage: ''
+      errorMessage: '',
+      dependencies: []
     }
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -97,7 +100,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
    * based upon the info provided by this.props.tableAttributeInfo such as nullable? autoIncrement?, etc.
    * @param event Event object from the standard OnSubmit function
    */
-  onSubmit(event: any) {
+  onSubmit(event?: any) {
     event.preventDefault();
     // Check that tableAttirbutesInfo is not undefined
     if (this.props.tableAttributesInfo === undefined) {
@@ -469,6 +472,11 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     }
   }
 
+  handleDependencies(list: Array<any>) {
+    console.log('updating list of dependencies returned from checkDep component');
+    this.setState({dependencies: list})
+  }
+
   render() {
     return (
       <div className="updateActionContainer">
@@ -495,8 +503,23 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                 })
               }
             </div>
-            
-            <input className="submitButton" type='submit' value='Submit'></input>
+            <CheckDependency token={this.props.token} 
+                             selectedSchemaName={this.props.selectedSchemaName}
+                             selectedTableName={this.props.selectedTableName}
+                             tupleToCheckDependency={Object.values(this.props.tupleToUpdate)}
+                             clearList={!Object.entries(this.state.dependencies).length}
+                             dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} />
+
+            {Object.entries(this.state.dependencies).length ? (
+              <div>
+                <p>Are you sure you want to submit form to update this entry?</p>
+                <div className="actionButtons">
+                  <input className="submitButton" type="submit" value="Submit" />
+                  <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+                </div>
+              </div>
+            ): ''}
+    
           </form>
         } 
         {this.state.errorMessage ? (

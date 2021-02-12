@@ -7,7 +7,7 @@ import CheckDependency from './CheckDependency';
  * list of allowed states on this delete tuple component
  */
 type deleteTupleState = {
-  dependencies: any, // list of dependencies fetched from API
+  dependencies: Array<any>, // list of dependencies fetched from API
   deleteStatusMessage: string, // for GUI to show
   isGettingDependencies: boolean, // for loading animation status
   isDeletingEntry: boolean // for loading animation status
@@ -17,7 +17,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
   constructor(props: any) {
     super(props);
     this.state = {
-      dependencies: undefined,
+      dependencies: [],
       deleteStatusMessage: '',
       isGettingDependencies: false,
       isDeletingEntry: false
@@ -57,7 +57,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     })
       .then(result => {
         // set deleting status to done
-        this.setState({isDeletingEntry: false, dependencies: undefined})
+        this.setState({isDeletingEntry: false, dependencies: []})
 
         // Check for error mesage 500, if so throw error - shouldn't happen as often once real dependency check is in place
         if (result.status === 500) {
@@ -81,6 +81,13 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
         console.error(error);
         this.setState({deleteStatusMessage: error.message});
       })
+  }
+
+  /** store the returned list of dependencies
+   *  @param list // list of dependencies that CheckDependency component returns
+   */
+  handleDependencies(list: Array<any>) {
+    this.setState({dependencies: list})
   }
 
   render() {
@@ -118,15 +125,25 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
           })}
         </div>
 
-        {Object.entries(this.props.tupleToDelete).length === 0 && !this.state.dependencies ? <p>Select a table entry to delete.</p> :
+        {Object.entries(this.props.tupleToDelete).length === 0 && !Object.entries(this.state.dependencies).length ? <p>Select a table entry to delete.</p> :
           <CheckDependency token={this.props.token} 
                           selectedSchemaName={this.props.selectedSchemaName}
                           selectedTableName={this.props.selectedTableName}
                           tupleToCheckDependency={Object.values(this.props.tupleToDelete)}
-                          confirmAction={()=>this.handleTupleDeletion(Object.values(this.props.tupleToDelete))} />
+                          clearList={!Object.entries(this.state.dependencies).length} 
+                          dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} />
         }
+        {this.state.dependencies.length ? (
+          <div>
+            <p>Are you sure you want to delete this entry?</p>
+            <div className="actionButtons">
+              <button className="confirmAction" onClick={()=>this.handleTupleDeletion(Object.values(this.props.tupleToDelete))} >Confirm Delete</button>
+              <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+            </div>
+          </div>
+        ): ''}
         <div className="deleting">
-        {this.state.isDeletingEntry ? <p>Deleting entry might take a while...(replace with wheel)</p>: '' } {/* TODO: replace with proper animation */}
+        {this.state.isDeletingEntry ? <p>Deleting entry might take a while...</p>: '' } {/* TODO: replace with proper animation */}
         {this.state.deleteStatusMessage ? (
           <div className="errorMessage">{this.state.deleteStatusMessage}<button className="dismiss" onClick={() => this.setState({deleteStatusMessage: ''})}>dismiss</button></div>
         ) : ''}

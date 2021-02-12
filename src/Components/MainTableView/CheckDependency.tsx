@@ -7,18 +7,29 @@ import "./CheckDependency.css";
  * list of allowed states on this check dependency component
  */
 type checkDependencyState = {
-  dependencies: any, // list of dependencies fetched from API
+  dependencies: Array<any>, // list of dependencies fetched from API
   checkDependencyStatusMessage: string, // for GUI to show
   isGettingDependencies: boolean, // for loading animation status
 }
 
-class CheckDependency extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToCheckDependency?: any, confirmAction: any}, checkDependencyState> {
+class CheckDependency extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToCheckDependency?: any, clearList: boolean, dependenciesReady: any}, checkDependencyState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      dependencies: undefined,
+      dependencies: [],
       checkDependencyStatusMessage: '',
       isGettingDependencies: false,
+    }
+  }
+
+  /**
+   * Checks whether parent component asked to clear the list of dependencies
+   * @param prevProps 
+   * @param prevState 
+   */
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (prevProps.clearList !== this.props.clearList && this.props.clearList) {
+      this.setState({dependencies: []})
     }
   }
 
@@ -62,23 +73,28 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
       .then(result => {
         console.log('received result: ', result.dependencies)
         this.setState({dependencies: result.dependencies});
+        this.props.dependenciesReady(result.dependencies)
       })
       .catch((error) => {
         console.error(error.message);
-        this.setState({dependencies: undefined});
+        this.setState({dependencies: []});
       })
   
   }
-  
+
+  clearDependencies() {
+    this.setState({dependencies: []})
+  }
+
   render() {
     return(
     <div className="checkDependencyContainer">
       {/* TODO: replace with proper animation */}
       {this.state.isGettingDependencies ? <p>Checking dependency...(imagine a wheel turning)...</p>: '' }
-      {!this.state.dependencies ? 
-      <button className="checkDependencies" onClick={() => this.getDependencies(Object.values(this.props.tupleToCheckDependency))}>Check Dependencies</button>
+      {!Object.entries(this.state.dependencies).length ? 
+      <button className="checkDependencies" onClick={(event) => {event.preventDefault(); this.getDependencies(Object.values(this.props.tupleToCheckDependency))}}>Check Dependencies</button>
       : (<div className="dependencies">
-          <h5 className="depedencyWarning">Deleting this entry will affect the following tables: </h5>
+          <h5 className="depedencyWarning">Manipulating this entry will affect the following tables: </h5>
           <ul className="dependencyList">
           {this.state.dependencies.map((item: any) => {
             return (
@@ -89,11 +105,7 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
             )
           })}
           </ul>
-          <p>Are you sure you want to delete this entry?</p>
-          <div className="actionButtons">
-            <button className="confirmAction" onClick={() => this.props.confirmAction()}>Confirm</button>
-            <button className="cancelAction" onClick={() => this.setState({dependencies: undefined})}>Cancel</button>
-          </div>
+     
           {this.state.checkDependencyStatusMessage ? (
             <div className="errorMessage">{this.state.checkDependencyStatusMessage}<button className="dismiss" onClick={() => this.setState({checkDependencyStatusMessage: ''})}>dismiss</button></div>
           ): ''}
