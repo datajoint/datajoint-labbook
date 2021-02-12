@@ -162,8 +162,9 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
    * @param timeString 
    */
   parseTimeString(timeString: string) {
-    let date = new Date(parseInt(timeString) * 1000);
-    return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    const timeNumber = parseInt(timeString)
+    let date = new Date(timeNumber * 1000);
+    return Math.floor(timeNumber / 86400) * 24 + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCSeconds();
   }
 
   /**
@@ -172,7 +173,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
    */
   parseDateTime(dateTimeString: string) {
     let date = new Date(parseInt(dateTimeString) * 1000);
-    return date.toString();
+    return date.toUTCString();
   }
 
   /**
