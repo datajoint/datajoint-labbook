@@ -56,6 +56,24 @@ class TableAttribute {
     }
 
     /**
+     * Helper function for converting view purpose dateTime string back to datajoint dateTime format
+     * @param UTCdateTimeString 
+     */
+    static parseDateTimeToDJ(UTCdateTimeString: string) {
+      let djDateTime = new Date(UTCdateTimeString).toISOString().split('T').join(' ').split('.')[0]
+      return djDateTime;
+    }
+
+    /**
+     * Helper function for converting view purpose Date String back to datajoint date format
+     * @param viewDateString
+     */
+    static parseDateToDJ(viewDateString: string) {
+      let djDate = new Date(viewDateString).toISOString().split('T')[0]
+      return djDate;
+    }
+
+    /**
      * Helper function to handle the creation of input block based on the corresponding table attribute
      * @param tableAttribute TableAttribute object to be used for extracting type 
      * @param currentValue Current value of the input block
@@ -264,6 +282,7 @@ class TableAttribute {
   
       throw Error('Unsupported Type found for attribute: ' + tableAttribute.attributeName);
     }
+
   }
 
 export default TableAttribute;
