@@ -3,6 +3,7 @@ import RestrictionType from '../enums/RestrictionType'
 import Restriction from '../DataStorageClasses/Restriction'
 import TableAttribute from '../DataStorageClasses/TableAttribute'
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo'
+import TableAttributeType from '../enums/TableAttributeType';
 
 type FilterCardState = {
   tableAttributes: Array<TableAttribute>,
@@ -27,7 +28,15 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
     tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
 
-    this.setState({tableAttributes: tableAttributes});
+    let filterableAttributes = []
+
+    for (let tableAttribute of tableAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.BLOB) {
+        continue;
+      }
+      filterableAttributes.push(tableAttribute);
+    }
+    this.setState({tableAttributes: filterableAttributes});
   }
 
   handleAttributeSelection(event: any) {
