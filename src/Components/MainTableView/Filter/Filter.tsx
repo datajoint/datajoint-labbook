@@ -11,10 +11,12 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
   constructor(props: any) {
     super(props);
     this.state = {
-      restrictions: [],
+      restrictions: [new Restriction()],
     }
     this.addRestriction = this.addRestriction.bind(this);
     this.updateRestriction = this.updateRestriction.bind(this);
+
+    // Add one restriction by default
   }
 
   addRestriction() {
@@ -27,11 +29,12 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
     restrictions[index] = restriction;
     this.setState({restrictions: restrictions})
+    console.log(restriction)
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
     // If state didn't change then don't do anything
-    if (prevState == this.state) {
+    if (prevState === this.state) {
       return;
     }
 

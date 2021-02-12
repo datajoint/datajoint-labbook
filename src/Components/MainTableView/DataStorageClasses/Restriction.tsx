@@ -10,32 +10,32 @@ class Restriction {
     this.tableAttribute = tableAttribute;
     this.restrictionType = restrictionType;
     this.value = value;
-
-    this.getRestrictionTypeString = this.getRestrictionTypeString.bind(this);
   }
 
-  getRestrictionTypeString() {
-    if (this.restrictionType === undefined) {
+  static getRestrictionTypeString(restrictionType?: RestrictionType) {
+    if (restrictionType === undefined) {
       return '';
     }
-    else if (this.restrictionType === RestrictionType.EQUAL) {
+    else if (restrictionType === RestrictionType.EQUAL) {
       return '=';
     }
-    else if (this.restrictionType === RestrictionType.NOT_EQUAL) {
+    else if (restrictionType === RestrictionType.NOT_EQUAL) {
       return '!='
     }
-    else if (this.restrictionType === RestrictionType.LESS_THAN) {
+    else if (restrictionType === RestrictionType.LESS_THAN) {
       return '<';
     }
-    else if (this.restrictionType === RestrictionType.LESS_THAN_AND_EQUAL_TO) {
+    else if (restrictionType === RestrictionType.LESS_THAN_AND_EQUAL_TO) {
       return '<='
     }
-    else if (this.restrictionType === RestrictionType.GREATER_THAN) {
+    else if (restrictionType === RestrictionType.GREATER_THAN) {
       return '>'
     }
-    else if (this.restrictionType === RestrictionType.GREATER_THAN_AND_EQUAL_TO) {
+    else if (restrictionType === RestrictionType.GREATER_THAN_AND_EQUAL_TO) {
       return '>='
     }
+
+    throw Error('Unsupported Restriction Type for translation')
   }
 }
 

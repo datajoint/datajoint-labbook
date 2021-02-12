@@ -100,21 +100,22 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       for (let restriction of restrictions) {
         restrictionsInAPIFormat.push({
           attributeName: restriction.tableAttribute?.attributeName,
-          operation: restriction.getRestrictionTypeString(),
+          operation: Restriction.getRestrictionTypeString(restriction.restrictionType),
           value: restriction.value
         })
       }
+      console.log(restrictionsInAPIFormat)
 
       // Add ? to url
       apiUrl += '?'
 
       // Covert the restrictions to json string then base64 it
-      apiUrl += 'restriction=' + btoa(JSON.stringify(restrictionsInAPIFormat));
+      apiUrl += 'restriction=' + encodeURIComponent(btoa(JSON.stringify(restrictionsInAPIFormat)));
+      console.log( btoa(JSON.stringify(restrictionsInAPIFormat)))
 
-      console.log(apiUrl) // Place holder for now until we have the backend
     }
     
-    fetch('/api/fetch_tuples', {
+    fetch(apiUrl, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})

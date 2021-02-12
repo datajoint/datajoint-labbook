@@ -38,7 +38,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
 
   handleOperatorSelection(event: any) {
     let restriction = Object.assign({}, this.props.restriction);
-    restriction.restrictionType = event.target.value;
+    restriction.restrictionType = parseInt(event.target.value);
     this.props.updateRestriction(this.props.index, restriction);
   }
 
