@@ -8,7 +8,6 @@ services:
       - ./package.json:/home/node/package.json
       - ./package-lock.json:/home/node/package-lock.json
       - ./tsconfig.json:/home/node/tsconfig.json
-      - ./yarn.lock:/home/node/yarn.lock
       - ./public:/home/node/public
       - ./src:/home/node/src
     networks:
