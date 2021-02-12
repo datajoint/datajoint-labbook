@@ -11,7 +11,7 @@ type FilterCardState = {
   tableAttributes: Array<TableAttribute>,
 }
 
-class FilterCard extends React.Component<{index: number, restriction: Restriction, tableAttributesInfo?: TableAttributesInfo, updateRestriction: any}, FilterCardState> {
+class FilterCard extends React.Component<{index: number, restriction: Restriction, tableAttributesInfo?: TableAttributesInfo, updateRestriction: any, deleteFilterCard: any}, FilterCardState> {
   constructor(props: any) {
     super(props);
 
@@ -141,6 +141,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
           <label>Value</label>
           {this.getInputBlock()}
         </form>
+        <button className="filterCardDeleteButton" type="button" onClick={() => this.props.deleteFilterCard(this.props.index)}>Delete</button>
       </div>
     )
   }

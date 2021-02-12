@@ -1,0 +1,7 @@
+.filterComponentDiv {
+  display: inline;
+}
+
+.filterCardsDiv {
+  display: flex;
+}

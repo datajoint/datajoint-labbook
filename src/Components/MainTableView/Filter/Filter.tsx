@@ -3,7 +3,7 @@ import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo'
 import Restriction from '../DataStorageClasses/Restriction'
 import FilterCard from './FilterCard'
 import TableAttributeType from '../enums/TableAttributeType';
-
+import './Filter.css'
 type FilterState = {
   restrictions: Array<Restriction>,
 }
@@ -16,8 +16,7 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     }
     this.addRestriction = this.addRestriction.bind(this);
     this.updateRestriction = this.updateRestriction.bind(this);
-
-    // Add one restriction by default
+    this.deleteFilterCard = this.deleteFilterCard.bind(this);
   }
 
   addRestriction() {
@@ -30,7 +29,12 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
     restrictions[index] = restriction;
     this.setState({restrictions: restrictions})
-    console.log(restrictions)
+  }
+
+  deleteFilterCard(index: number) {
+    let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
+    restrictions.splice(index, 1)
+    this.setState({restrictions: restrictions})
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -65,14 +69,14 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
 
   render() {
     return(
-      <div>
-        <div>Filter Component</div>
-        <button onClick={this.addRestriction}>+</button>
-        <div>
-          {this.state.restrictions.map((restriction, index) => {
-            return(<FilterCard index={index} restriction={restriction} tableAttributesInfo={this.props.tableAttributesInfo} updateRestriction={this.updateRestriction}></FilterCard>)
-          })}
-        </div>
+      <div className="filterComponentDiv">
+        <div >Filter Component</div>
+          <div className="filterCardsDiv">
+            {this.state.restrictions.map((restriction, index) => {
+              return(<FilterCard index={index} restriction={restriction} tableAttributesInfo={this.props.tableAttributesInfo} updateRestriction={this.updateRestriction} deleteFilterCard={this.deleteFilterCard}></FilterCard>)
+            })}
+          </div>
+          <button onClick={this.addRestriction}>+</button>
       </div>
     )
   }
