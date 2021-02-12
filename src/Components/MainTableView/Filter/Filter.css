@@ -1,0 +1,27 @@
+.filterComponentDiv {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.filterCardsDiv {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow: scroll;
+  flex-basis: 90%;
+}
+
+.filterComponentFilterCardAddDiv {
+  display: flex;
+  width: 100%;
+  flex-basis: 10%;
+  justify-content: flex-end;
+}
+
+.filterComponentFilterCardAddDiv button {
+  background-color: #399E5A;
+  font-size: 30px;
+  border: none;
+  color: white;
+}

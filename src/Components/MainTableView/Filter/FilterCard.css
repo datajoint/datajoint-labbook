@@ -1,0 +1,11 @@
+.filterCardDiv{
+  box-shadow: 3px 3px 6px 3px gray;
+  padding: 1%;
+  margin: 0.7%;
+  background-color: white;
+}
+
+.filterCardForm {
+  display: flex;
+  flex-direction: column;
+}
