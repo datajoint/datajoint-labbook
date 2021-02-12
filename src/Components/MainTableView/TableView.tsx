@@ -302,10 +302,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString === 'tinyint unsigned') {
       return TableAttributeType.TINY_UNSIGNED;
     }
-    else if (tableTypeString === 'small') {
+    else if (tableTypeString === 'small int') {
       return TableAttributeType.SMALL;
     }
-    else if (tableTypeString === 'small unsigned') {
+    else if (tableTypeString === 'smallint unsigned') {
       return TableAttributeType.SMALL_UNSIGNED;
     }
     else if (tableTypeString === 'medium') {
