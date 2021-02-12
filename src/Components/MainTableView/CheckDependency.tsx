@@ -38,15 +38,11 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
    * @param entry
    */
   getDependencies(entry: any) {
-    console.log("entry[0]: ", entry[0])
     let processedEntry = entry[0]?.primaryEntries // TODO: make sure deleteTuple component only gets one entry staged for deletion to begin with
 
     // set status true for isGettingDependencies, switch to false once api responds
     this.setState({isGettingDependencies: true})
 
-    // TODO: Run api fetch for list of dependencies/permission
-    console.log('token: ', this.props.token)
-    console.log('print base64: ', Buffer.from(JSON.stringify(processedEntry)).toString('base64'))
     fetch(`/api/record/dependency?schema_name=${this.props.selectedSchemaName}&table_name=${this.props.selectedTableName}&restriction=${Buffer.from(JSON.stringify(processedEntry)).toString('base64')}`, 
     {
       method: 'GET',
@@ -54,7 +50,6 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
       // body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restriction: processedEntry})
     })
       .then(result => {
-        console.log("result: ", result)
         // Check for error mesage 500, if so throw error, but for now, send back dummy
         if (result.status === 500) {
           result.text().then(errorMessage => {
@@ -71,13 +66,11 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
         return result.json()
       })
       .then(result => {
-        console.log('received result: ', result.dependencies)
         this.setState({dependencies: result.dependencies});
         this.props.dependenciesReady(result.dependencies)
       })
       .catch((error) => {
-        console.error(error.message);
-        this.setState({dependencies: []});
+        this.setState({dependencies: [], checkDependencyStatusMessage: error.message});
       })
   
   }

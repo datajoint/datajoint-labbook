@@ -473,7 +473,6 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
   }
 
   handleDependencies(list: Array<any>) {
-    console.log('updating list of dependencies returned from checkDep component');
     this.setState({dependencies: list})
   }
 

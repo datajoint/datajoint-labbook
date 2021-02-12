@@ -78,7 +78,6 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
 
       })
       .catch(error => {
-        console.error(error);
         this.setState({deleteStatusMessage: error.message});
       })
   }
