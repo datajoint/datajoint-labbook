@@ -13,7 +13,8 @@ import CheckDependency from './CheckDependency';
 type updateTupleState = {
   tupleBuffer: any, // Object to stored the values typed in by the user
   errorMessage: string, // Error message string for failed inserts
-  dependencies: Array<any> // list of dependencies pushed from checkDependency Component
+  dependencies: Array<any>, // list of dependencies pushed from checkDependency Component
+  updateAccessible: boolean // disables submit button if any of the dependencies are inaccessible
 }
 
 class UpdateTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tupleToUpdate?: any, clearEntrySelection: any}, updateTupleState> {
@@ -22,7 +23,8 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     this.state = {
       tupleBuffer: {},
       errorMessage: '',
-      dependencies: []
+      dependencies: [],
+      updateAccessible: false
     }
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -507,13 +509,14 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                              selectedTableName={this.props.selectedTableName}
                              tupleToCheckDependency={Object.values(this.props.tupleToUpdate)}
                              clearList={!Object.entries(this.state.dependencies).length}
-                             dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} />
+                             dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
+                             allAccessible={(bool: boolean) => this.setState({updateAccessible: bool})} />
 
             {Object.entries(this.state.dependencies).length ? (
               <div>
                 <p>Are you sure you want to submit form to update this entry?</p>
                 <div className="actionButtons">
-                  <input className="submitButton" type="submit" value="Submit" />
+                  <input className="submitButton" type="submit" value="Submit" disabled={!this.state.updateAccessible}/>
                   <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
                 </div>
               </div>

@@ -11,6 +11,7 @@ type deleteTupleState = {
   deleteStatusMessage: string, // for GUI to show
   isGettingDependencies: boolean, // for loading animation status
   isDeletingEntry: boolean // for loading animation status
+  deleteAccessible: boolean // valdiation result of accessibility from check dependency component
 }
 
 class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToDelete?: any, fetchTableContent: any, clearEntrySelection: any}, deleteTupleState> {
@@ -20,7 +21,8 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
       dependencies: [],
       deleteStatusMessage: '',
       isGettingDependencies: false,
-      isDeletingEntry: false
+      isDeletingEntry: false,
+      deleteAccessible: false
     }
   }
 
@@ -130,13 +132,14 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
                           selectedTableName={this.props.selectedTableName}
                           tupleToCheckDependency={Object.values(this.props.tupleToDelete)}
                           clearList={!Object.entries(this.state.dependencies).length} 
-                          dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} />
+                          dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
+                          allAccessible={(bool: boolean) => this.setState({deleteAccessible: bool})} />
         }
         {this.state.dependencies.length ? (
           <div>
             <p>Are you sure you want to delete this entry?</p>
             <div className="actionButtons">
-              <button className="confirmAction" onClick={()=>this.handleTupleDeletion(Object.values(this.props.tupleToDelete))} >Confirm Delete</button>
+              <button className="confirmAction" disabled={!this.state.deleteAccessible} onClick={()=>this.handleTupleDeletion(Object.values(this.props.tupleToDelete))} >Confirm Delete</button>
               <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
             </div>
           </div>

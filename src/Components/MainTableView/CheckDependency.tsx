@@ -12,7 +12,7 @@ type checkDependencyState = {
   isGettingDependencies: boolean, // for loading animation status
 }
 
-class CheckDependency extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToCheckDependency?: any, clearList: boolean, dependenciesReady: any}, checkDependencyState> {
+class CheckDependency extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToCheckDependency?: any, clearList: boolean, dependenciesReady: any, allAccessible: any}, checkDependencyState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -66,8 +66,14 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
         return result.json()
       })
       .then(result => {
+        let accessibleValidation: Array<boolean> = []
+        result.dependencies.forEach((dependency: any) => {
+          accessibleValidation.push(dependency.accessible)
+        })
         this.setState({dependencies: result.dependencies});
-        this.props.dependenciesReady(result.dependencies)
+
+        this.props.dependenciesReady(result.dependencies);
+        this.props.allAccessible(accessibleValidation.every(Boolean));
       })
       .catch((error) => {
         this.setState({dependencies: [], checkDependencyStatusMessage: error.message});
@@ -84,8 +90,8 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
     <div className="checkDependencyContainer">
       {/* TODO: replace with proper animation */}
       {this.state.isGettingDependencies ? <p>Checking dependency...(imagine a wheel turning)...</p>: '' }
-      {!Object.entries(this.state.dependencies).length ? 
-      <button className="checkDependencies" onClick={(event) => {event.preventDefault(); this.getDependencies(Object.values(this.props.tupleToCheckDependency))}}>Check Dependencies</button>
+      {Object.entries(this.state.dependencies).length === 0 ? 
+      (<button className="checkDependencies" onClick={(event) => {event.preventDefault(); this.getDependencies(Object.values(this.props.tupleToCheckDependency))}}>Check Dependencies</button>)
       : (<div className="dependencies">
           <h5 className="depedencyWarning">Manipulating this entry will affect the following tables: </h5>
           <ul className="dependencyList">
