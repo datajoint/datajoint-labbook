@@ -231,6 +231,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           tupleToDelete={this.state.selectedTableEntries}
           selectedSchemaName={this.props.selectedSchemaName} 
           selectedTableName={this.props.selectedTableName} 
+          tableAttributesInfo={this.props.tableAttributesInfo}
           fetchTableContent={this.props.fetchTableContent}
           clearEntrySelection={() => this.handleSelectionClearRequest()}
         />

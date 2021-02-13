@@ -60,7 +60,7 @@ class TableAttribute {
      * @param UTCdateTimeString 
      */
     static parseDateTimeToDJ(UTCdateTimeString: string) {
-      let djDateTime = new Date(UTCdateTimeString).toISOString().split('T').join(' ').split('.')[0]
+      let djDateTime = new Date(UTCdateTimeString)?.toISOString()?.split('T').join(' ').split('.')[0]
       return djDateTime;
     }
 

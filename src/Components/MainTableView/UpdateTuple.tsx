@@ -396,7 +396,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'date')}
-          <input type='date' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} value={TableAttribute.parseDateToDJ(this.state.tupleBuffer[tableAttribute.attributeName])} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          <input type='date' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
         </div>
       )
     }
@@ -412,13 +412,17 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'date time')}
           <div className="dateTimeFields">
-            <input type='date' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} value={dateFieldValue} defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} value={timeFieldValue} step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            <input type='date' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} step="1" id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
           </div>
         </div>
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIME) {
+      let timeFieldValue = ''
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        timeFieldValue = TableAttribute.parseTimeString(this.state.tupleBuffer[tableAttribute.attributeName])
+      }
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'HH:MM:SS')}
@@ -427,12 +431,18 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
+      let dateFieldValue = ''
+      let timeFieldValue = ''
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        dateFieldValue = TableAttribute.parseDateTimeToDJ(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[0]
+        timeFieldValue = TableAttribute.parseDateTimeToDJ(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[1]
+      }
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'time stamp')}
           <div className="dateTimeFields">
             <input type='date' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} step="1" id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
           </div>
         </div>
       );

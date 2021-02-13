@@ -1,5 +1,9 @@
 import React from 'react';
 import "./DeleteTuple.css";
+import TableAttribute from './DataStorageClasses/TableAttribute';
+import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
+import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
+import TableAttributeType from './enums/TableAttributeType';
 
 import CheckDependency from './CheckDependency';
 
@@ -14,7 +18,7 @@ type deleteTupleState = {
   deleteAccessible: boolean // valdiation result of accessibility from check dependency component
 }
 
-class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToDelete?: any, fetchTableContent: any, clearEntrySelection: any}, deleteTupleState> {
+class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, tupleToDelete?: any, fetchTableContent: any, clearEntrySelection: any}, deleteTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -46,7 +50,27 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
    * @param entry
    */
   handleTupleDeletion(entry: any) {
-    let processedEntry = entry[0]?.primaryEntries // TODO: again, assuming component is only assuming 1 staged entry
+
+    // Check that tableAttirbutesInfo is not undefined
+    if (this.props.tableAttributesInfo === undefined) {
+      return;
+    }
+
+    // Copy the current state of processedEntry for processing for submission
+    let processedEntry = Object.assign({}, entry[0]?.primaryEntries);
+
+    // Loop through and deal with date, datetime, and timestamp formats
+    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
+    for (let tableAttribute of tableAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.DATE) {
+        // Convert date to DJ date format
+        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateToDJ(processedEntry[tableAttribute.attributeName])
+      }
+      else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
+        // Convert to DJ friendly datetime format
+        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateTimeToDJ(processedEntry[tableAttribute.attributeName])
+      }
+    }
 
     // set status true for deleting entry, switch to false once api responds
     this.setState({isDeletingEntry: true})
@@ -130,6 +154,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
           <CheckDependency token={this.props.token} 
                           selectedSchemaName={this.props.selectedSchemaName}
                           selectedTableName={this.props.selectedTableName}
+                          tableAttributesInfo={this.props.tableAttributesInfo}
                           tupleToCheckDependency={Object.values(this.props.tupleToDelete)}
                           clearList={!Object.entries(this.state.dependencies).length} 
                           dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
