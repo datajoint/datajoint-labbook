@@ -71,10 +71,9 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      // body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restriction: processedEntry})
     })
       .then(result => {
-        // Check for error mesage 500, if so throw error, but for now, send back dummy
+        // Check for error message 500, if so throw and display error, stop loading animation
         if (result.status === 500) {
           result.text().then(errorMessage => {
             throw new Error(errorMessage)
@@ -102,7 +101,6 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
       .catch((error) => {
         this.setState({dependencies: [], checkDependencyStatusMessage: error.message});
       })
-  
   }
 
   clearDependencies() {
@@ -128,7 +126,6 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
             )
           })}
           </ul>
-     
           {this.state.checkDependencyStatusMessage ? (
             <div className="errorMessage">{this.state.checkDependencyStatusMessage}<button className="dismiss" onClick={() => this.setState({checkDependencyStatusMessage: ''})}>dismiss</button></div>
           ): ''}

@@ -56,8 +56,7 @@ class TableAttribute {
     }
 
     /**
-     * Helper function for converting view purpose dateTime string back to datajoint dateTime format
-     * @param UTCdateTimeString 
+     * Helper function for converting view purpose dateTime string back to datajoint dateTime YYYY-MM-DD HH:MM:SS
      */
     static parseDateTimeToDJ(UTCdateTimeString: string) {
       let djDateTime = new Date(UTCdateTimeString)?.toISOString()?.split('T').join(' ').split('.')[0]
@@ -65,7 +64,7 @@ class TableAttribute {
     }
 
     /**
-     * Helper function for converting view purpose Date String back to datajoint date format
+     * Helper function for converting view purpose Date String back to datajoint date YYYY-MM-DD
      * @param viewDateString
      */
     static parseDateToDJ(viewDateString: string) {
@@ -282,7 +281,6 @@ class TableAttribute {
   
       throw Error('Unsupported Type found for attribute: ' + tableAttribute.attributeName);
     }
-
   }
 
 export default TableAttribute;
