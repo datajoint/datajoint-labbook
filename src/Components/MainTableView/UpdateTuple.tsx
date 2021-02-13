@@ -223,7 +223,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
   getAttributeLabelBlock(tableAttribute: any, typeString: string) {
     return (
       <div className="attributeHead">
-        <label style={tableAttribute.constructor === PrimaryTableAttribute ? {color: '#399E5A'} : {color: 'inherit'}} htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + ')'}</label>
+        <label style={tableAttribute.constructor === PrimaryTableAttribute ? {color: '#399E5A', fontWeight: 'bolder'} : {color: 'inherit', fontWeight: 'normal'}} htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + ')'}</label>
         {tableAttribute.constructor === SecondaryTableAttribute && tableAttribute.nullable ? 
           <div className="nullableControls">
             <div className="nullableTag">nullable</div>
@@ -503,6 +503,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
               <p>Select a table entry from below to update</p>
             :
             <form onSubmit={this.onSubmit}>
+            <p className="confirmationText">Update this entry?</p>
             <div className="inputRow">         
               {
                 // Deal with primary attirbutes
