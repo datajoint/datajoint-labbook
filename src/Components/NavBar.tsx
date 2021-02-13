@@ -24,6 +24,7 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
         <div className='nav-logo'>
           <NavLink to='/'><img src={logo} alt='Logo' /></NavLink>
         </div>
+        <div className='version-number'>Version 0.0.0-a1</div>
         <ul className='right-nav'>
           {this.props.isLoggedIn ?
             (
@@ -40,7 +41,6 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
               </li>
             ) : <li className='right-nav-li'><a href="/login">Log In</a></li>
           }
-          <div>Version 0.0.0-a1</div>
         </ul>
       </nav>
     );
