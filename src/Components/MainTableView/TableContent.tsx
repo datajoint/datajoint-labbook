@@ -231,6 +231,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           tupleToDelete={this.state.selectedTableEntries}
           selectedSchemaName={this.props.selectedSchemaName} 
           selectedTableName={this.props.selectedTableName} 
+          tableAttributesInfo={this.props.tableAttributesInfo}
           fetchTableContent={this.props.fetchTableContent}
           clearEntrySelection={() => this.handleSelectionClearRequest()}
         />
@@ -527,7 +528,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
                   <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.
                          disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE || this.state.currentSelectedTableActionMenu === TableActionType.INSERT) && !this.checkSelection(entry)} 
-                         onChange={(event) => this.handleCheckedEntry(event, entry)} />
+                         onChange={(event) => this.handleCheckedEntry(event, entry)} 
+                         checked={this.checkSelection(entry)}/>
                 </td>
                 {entry.map((column: any, index: number) => {
                   return (

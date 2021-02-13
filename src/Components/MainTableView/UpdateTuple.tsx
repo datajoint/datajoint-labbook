@@ -8,10 +8,13 @@ import TableAttributeType from './enums/TableAttributeType';
 import './UpdateTuple.css'
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 
+import CheckDependency from './CheckDependency';
 
 type updateTupleState = {
-  tupleBuffer: any // Object to stored the values typed in by the user
-  errorMessage: string // Error message string for failed inserts
+  tupleBuffer: any, // Object to stored the values typed in by the user
+  errorMessage: string, // Error message string for failed inserts
+  dependencies: Array<any>, // list of dependencies pushed from checkDependency Component
+  updateAccessible: boolean // disables submit button if any of the dependencies are inaccessible
 }
 
 class UpdateTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tupleToUpdate?: any, clearEntrySelection: any}, updateTupleState> {
@@ -19,7 +22,9 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     super(props);
     this.state = {
       tupleBuffer: {},
-      errorMessage: ''
+      errorMessage: '',
+      dependencies: [],
+      updateAccessible: false
     }
 
     this.onSubmit = this.onSubmit.bind(this);
@@ -97,7 +102,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
    * based upon the info provided by this.props.tableAttributeInfo such as nullable? autoIncrement?, etc.
    * @param event Event object from the standard OnSubmit function
    */
-  onSubmit(event: any) {
+  onSubmit(event?: any) {
     event.preventDefault();
     // Check that tableAttirbutesInfo is not undefined
     if (this.props.tableAttributesInfo === undefined) {
@@ -143,7 +148,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
       // Check if attribute exist, if not then complain
       if (!tupleBuffer.hasOwnProperty(primaryAttribute.attributeName) && primaryAttribute.autoIncrement === false) {
-        this.setState({errorMessage: 'Missing require field: ' + primaryAttribute.attributeName});
+        this.setState({errorMessage: 'Missing required field: ' + primaryAttribute.attributeName});
         return;
       }
     }
@@ -396,17 +401,28 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       )
     }
     else if (tableAttribute.attributeType === TableAttributeType.DATETIME) {
+      let dateFieldValue = ''
+      let timeFieldValue = ''
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        dateFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[0]
+        timeFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[1]
+      }
+      
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'date time')}
           <div className="dateTimeFields">
             <input type='date' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} step="1" id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
           </div>
         </div>
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIME) {
+      let timeFieldValue = ''
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        timeFieldValue = TableAttribute.parseTimeString(this.state.tupleBuffer[tableAttribute.attributeName])
+      }
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'HH:MM:SS')}
@@ -415,12 +431,18 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       );
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
+      let dateFieldValue = ''
+      let timeFieldValue = ''
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        dateFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[0]
+        timeFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[1]
+      }
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'time stamp')}
           <div className="dateTimeFields">
             <input type='date' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            <input type='time' disabled={tableAttribute.constructor === PrimaryTableAttribute ? true: false} defaultValue={defaultValue} step="1" id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
           </div>
         </div>
       );
@@ -469,6 +491,10 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     }
   }
 
+  handleDependencies(list: Array<any>) {
+    this.setState({dependencies: list})
+  }
+
   render() {
     return (
       <div className="updateActionContainer">
@@ -495,8 +521,23 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                 })
               }
             </div>
-            
-            <input className="submitButton" type='submit' value='Submit'></input>
+            <CheckDependency token={this.props.token} 
+                             selectedSchemaName={this.props.selectedSchemaName}
+                             selectedTableName={this.props.selectedTableName}
+                             tableAttributesInfo={this.props.tableAttributesInfo}
+                             tupleToCheckDependency={Object.values(this.props.tupleToUpdate)}
+                             clearList={!Object.entries(this.state.dependencies).length}
+                             dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
+                             allAccessible={(bool: boolean) => this.setState({updateAccessible: bool})} />
+            {Object.entries(this.state.dependencies).length ? (
+              <div>
+                <p>Are you sure you want to submit form to update this entry?</p>
+                <div className="actionButtons">
+                  <input className="submitButton" type="submit" value="Submit" disabled={!this.state.updateAccessible}/>
+                  <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+                </div>
+              </div>
+            ): ''}
           </form>
         } 
         {this.state.errorMessage ? (

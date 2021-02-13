@@ -30,36 +30,6 @@ table.tupleToDelete thead {
   background-color: rgb(212, 212, 212);
 }
 
-button.checkDependencies,
-button.confirmDeletion {
-  position: relative;
-  display: inline-flex;
-  justify-self: flex-end;
-  margin-top: 16px;
-  border: 2px solid rgb(151, 0, 0);
-  padding: 8px 20px;
-  border-radius: 4px;
-  color: rgb(151, 0, 0);
-  cursor: pointer;
-}
-
-button.checkDependencies:hover {
-  background-color: rgb(151, 0, 0);
-  color: white;
-}
-
-button.confirmDeletion {
-  margin-bottom: 24px;
-}
-
-div.dependencies p {
-  margin: 0;
-}
-
-div.deleting {
-
-}
-
 .deleting .errorMessage {
   padding: 0;
 }

@@ -56,6 +56,23 @@ class TableAttribute {
     }
 
     /**
+     * Helper function for converting view purpose dateTime string back to datajoint dateTime YYYY-MM-DD HH:MM:SS
+     */
+    static parseDateTimeToDJFormat(UTCdateTimeString: string) {
+      let djDateTime = new Date(UTCdateTimeString)?.toISOString()?.split('T').join(' ').split('.')[0]
+      return djDateTime;
+    }
+
+    /**
+     * Helper function for converting view purpose Date String back to datajoint date YYYY-MM-DD
+     * @param viewDateString
+     */
+    static parseDateToDJFormat(viewDateString: string) {
+      let djDate = new Date(viewDateString).toISOString().split('T')[0]
+      return djDate;
+    }
+
+    /**
      * Helper function to handle the creation of input block based on the corresponding table attribute
      * @param tableAttribute TableAttribute object to be used for extracting type 
      * @param currentValue Current value of the input block

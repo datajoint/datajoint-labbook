@@ -1,0 +1,64 @@
+.checkDependencyContainer {
+  padding: 0 16px;
+}
+
+button.checkDependencies,
+button.confirmAction,
+button.cancelAction {
+  position: relative;
+  display: inline-flex;
+  justify-self: flex-end;
+  margin-top: 16px;
+  border: 2px solid rgb(151, 0, 0);
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: rgb(151, 0, 0);
+  cursor: pointer;
+}
+
+button.checkDependencies:hover,
+button.confirmAction:hover {
+  background-color: rgb(151, 0, 0);
+  color: white;
+}
+
+.actionButtons {
+  margin-bottom: 24px;
+}
+
+button.cancelAction {
+  margin-left: 8px;
+  color: gray;
+  border: 2px solid gray;
+}
+
+button.cancelAction:hover {
+  color: white;
+  background-color: gray;
+}
+
+div.dependencies p {
+  margin: 0;
+}
+
+ul.dependencyList {
+  list-style-type: none;
+  padding-inline-start: 0px;
+}
+
+.dependencyItem {
+  display: flex;
+  align-items: center;
+}
+
+.dependencyItem .icon {
+  margin-right: 4px;
+}
+
+.dependencyItem .icon.accessible {
+  color: rgb(5, 114, 5);
+}
+
+.dependencyItem .icon.inaccessible {
+  color: rgb(151, 0, 0);
+}
