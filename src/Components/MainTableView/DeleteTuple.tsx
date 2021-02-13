@@ -64,11 +64,11 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     for (let tableAttribute of tableAttributes) {
       if (tableAttribute.attributeType === TableAttributeType.DATE) {
         // Convert date to DJ date format
-        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateToDJ(processedEntry[tableAttribute.attributeName])
+        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateToDJFormat(processedEntry[tableAttribute.attributeName])
       }
       else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         // Convert to DJ friendly datetime format
-        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateTimeToDJ(processedEntry[tableAttribute.attributeName])
+        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateTimeToDJFormat(processedEntry[tableAttribute.attributeName])
       }
     }
 
