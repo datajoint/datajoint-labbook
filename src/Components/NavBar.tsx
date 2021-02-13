@@ -1,6 +1,7 @@
 import React from 'react';
 import {NavLink} from 'react-router-dom';
 import {Helmet} from 'react-helmet';
+import {version} from '../../package.json';
 
 import './NavBar.css'
 
@@ -8,11 +9,38 @@ import './NavBar.css'
 import logo from '../images/logo_default.svg'
 
 type DJGUINavBarState = {
+  backendVersion: string
 }
 
 class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJGUINavBarState> {
   constructor(props: any) {
     super(props);
+
+    this.state = {
+      backendVersion: ''
+    }
+  }
+
+  componentDidMount() {
+    fetch('/api/version', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then(result => {
+      // Check for error mesage 500, if so throw and error
+      if (result.status === 500) {
+        throw new Error('Unable to get version number');
+      }
+
+      return result.text();
+    })
+    .then(result => {
+      console.log(result)
+      this.setState({backendVersion: result});
+    })
+    .catch(error => {
+      console.log(error);
+    })
   }
   
   render() {
@@ -24,6 +52,11 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
         <div className='nav-logo'>
           <NavLink to='/'><img src={logo} alt='Logo' /></NavLink>
         </div>
+        <div className='version-info-div'>
+          <div className='version-number'>Front End Version: {version}</div>
+          <div className='version-number'>Back End Version: {this.state.backendVersion}</div>
+        </div>
+        
         <ul className='right-nav'>
           {this.props.isLoggedIn ?
             (
@@ -31,7 +64,8 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
                 <label>Currently connected</label>
                 <h5>{this.props.hostname}</h5>
               </li>
-            ) : ''}
+            ) : ''
+          }
           {this.props.isLoggedIn ?
             (
               <li className='right-nav-li'>
