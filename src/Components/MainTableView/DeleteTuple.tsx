@@ -149,7 +149,6 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
             )
           })}
         </div>
-
         {Object.entries(this.props.tupleToDelete).length === 0 && !Object.entries(this.state.dependencies).length ? <p>Select a table entry to delete.</p> :
           <CheckDependency token={this.props.token} 
                           selectedSchemaName={this.props.selectedSchemaName}

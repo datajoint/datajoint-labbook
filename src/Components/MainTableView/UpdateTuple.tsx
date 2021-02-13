@@ -529,7 +529,6 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                              clearList={!Object.entries(this.state.dependencies).length}
                              dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
                              allAccessible={(bool: boolean) => this.setState({updateAccessible: bool})} />
-
             {Object.entries(this.state.dependencies).length ? (
               <div>
                 <p>Are you sure you want to submit form to update this entry?</p>
@@ -539,7 +538,6 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                 </div>
               </div>
             ): ''}
-    
           </form>
         } 
         {this.state.errorMessage ? (
