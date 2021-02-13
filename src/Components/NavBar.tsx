@@ -31,7 +31,8 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
                 <label>Currently connected</label>
                 <h5>{this.props.hostname}</h5>
               </li>
-            ) : ''}
+            ) : ''
+          }
           {this.props.isLoggedIn ?
             (
               <li className='right-nav-li'>
@@ -39,6 +40,7 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
               </li>
             ) : <li className='right-nav-li'><a href="/login">Log In</a></li>
           }
+          <div>Version 0.0.0-a1</div>
         </ul>
       </nav>
     );
