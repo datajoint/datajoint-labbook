@@ -8,19 +8,24 @@ import {faSearch, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
  */
 type SchemaListState = {
   schemaList: Array<string>,
+  restrictiedSchemaList: Array<string>,
+  searchString: string,
   selectedSchemaIndex: number
 }
 
-class SchemaList extends React.Component<{token: string, handleSchemaSelection: (schemaName: string) => void}, SchemaListState> {
+class SchemaList extends React.Component<{token: string, currentlySelectedSchema: string, handleSchemaSelection: (schemaName: string) => void}, SchemaListState> {
   constructor(props: any) {
     super(props);
     this.state = {
       schemaList: [],
+      restrictiedSchemaList: [],
+      searchString: '',
       selectedSchemaIndex: -1
     }
 
     this.flipSchemaOrder = this.flipSchemaOrder.bind(this);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
+    this.handleSearchStringChange = this.handleSearchStringChange.bind(this);
   }
 
   /**
@@ -33,7 +38,7 @@ class SchemaList extends React.Component<{token: string, handleSchemaSelection: 
     })
       .then(result => result.json())
       .then(result => {
-        this.setState({schemaList: result.schemaNames});
+        this.setState({schemaList: result.schemaNames, restrictiedSchemaList: result.schemaNames});
       })
       .catch(error => {
         console.error('Error: ', error);
@@ -47,8 +52,8 @@ class SchemaList extends React.Component<{token: string, handleSchemaSelection: 
    */
   flipSchemaOrder() {
     this.setState({
-      schemaList: this.state.schemaList.reverse(), 
-      selectedSchemaIndex: this.state.schemaList.length - this.state.selectedSchemaIndex - 1
+      restrictiedSchemaList: this.state.restrictiedSchemaList.reverse(),
+      selectedSchemaIndex: this.state.restrictiedSchemaList.length - this.state.selectedSchemaIndex - 1
     });
   }
 
@@ -59,10 +64,28 @@ class SchemaList extends React.Component<{token: string, handleSchemaSelection: 
    */
   handleSchemaSelection(schemaIndex: number) {
     // Check if the schema is already selected, if so do nothing
-    if (schemaIndex !== this.state.selectedSchemaIndex) {
+    if (this.state.restrictiedSchemaList[schemaIndex] !== this.props.currentlySelectedSchema) {
       // Schema selected was different thus we need to udpate the selected schema index and call the parent handleSchemaSelection with the name
       this.setState({selectedSchemaIndex: schemaIndex});
-      this.props.handleSchemaSelection(this.state.schemaList[schemaIndex]);
+      this.props.handleSchemaSelection(this.state.restrictiedSchemaList[schemaIndex]);
+    }
+  }
+
+  handleSearchStringChange(event: any) {
+    // Filter our the results based on the search string, assuming it is not empty
+    let restrictiedSchemaList = [];
+
+    if (event.target.value !== '') {
+      for (let schemaName of this.state.schemaList) {
+        if (schemaName.includes(event.target.value)) {
+          restrictiedSchemaList.push(schemaName);
+        }
+      }
+
+      this.setState({searchString: event.target, restrictiedSchemaList: restrictiedSchemaList});
+    }
+    else {
+      this.setState({restrictiedSchemaList: this.state.schemaList});
     }
   }
 
@@ -70,8 +93,8 @@ class SchemaList extends React.Component<{token: string, handleSchemaSelection: 
     return (
       <div className="schema-menu">
         <div className="search-schema-field">
-          <input type="text" placeholder="Search Schema" />
-          <FontAwesomeIcon className="search-icon" icon={faSearch} />
+          <input type="text" onChange={this.handleSearchStringChange} placeholder="Search Schema"/>
+          <FontAwesomeIcon className="search-icon" icon={faSearch}/>
         </div>
         <div className="sort-schema-field">
           <div className="sort-field-head"><FontAwesomeIcon className="sort-icon" icon={faSortAmountDown} /><label>Sort<br />Schema</label></div>
@@ -81,7 +104,7 @@ class SchemaList extends React.Component<{token: string, handleSchemaSelection: 
           </select>
         </div>
         <div className="schema-listing">
-          {this.state.schemaList.map((schema: string, schemaIndex: number) => {
+          {this.state.restrictiedSchemaList.map((schema: string, schemaIndex: number) => {
             return (
               <div className={this.state.selectedSchemaIndex === schemaIndex ? 'schema-name selected' : 'schema-name'} key={schemaIndex} onClick={() => this.handleSchemaSelection(schemaIndex)} >{schema}</div>
             )

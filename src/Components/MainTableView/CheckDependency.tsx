@@ -3,6 +3,11 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheckCircle, faStopCircle} from '@fortawesome/free-solid-svg-icons'
 import "./CheckDependency.css";
 
+import TableAttribute from './DataStorageClasses/TableAttribute';
+import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
+import TableAttributeType from './enums/TableAttributeType';
+
+
 /**
  * list of allowed states on this check dependency component
  */
@@ -12,7 +17,7 @@ type checkDependencyState = {
   isGettingDependencies: boolean, // for loading animation status
 }
 
-class CheckDependency extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tupleToCheckDependency?: any, clearList: boolean, dependenciesReady: any, allAccessible: any}, checkDependencyState> {
+class CheckDependency extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, tupleToCheckDependency?: any, clearList: boolean, dependenciesReady: any, allAccessible: any}, checkDependencyState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -38,12 +43,31 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
    * @param entry
    */
   getDependencies(entry: any) {
-    let processedEntry = entry[0]?.primaryEntries // TODO: make sure deleteTuple component only gets one entry staged for deletion to begin with
-
     // set status true for isGettingDependencies, switch to false once api responds
     this.setState({isGettingDependencies: true})
 
-    fetch(`/api/record/dependency?schemaName=${this.props.selectedSchemaName}&tableName=${this.props.selectedTableName}&restriction=${Buffer.from(JSON.stringify(processedEntry)).toString('base64')}`, 
+    // Check that tableAttirbutesInfo is not undefined
+    if (this.props.tableAttributesInfo === undefined) {
+      return;
+    }
+
+    // Copy the current state of processedEntry for processing for submission
+    let processedEntry = Object.assign({}, entry[0]?.primaryEntries);
+
+    // Loop through and deal with date, datetime, and timestamp formats
+    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
+    for (let tableAttribute of tableAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.DATE) {
+        // Convert date to DJ date format
+        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateToDJ(processedEntry[tableAttribute.attributeName])
+      }
+      else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
+        // Convert to DJ friendly datetime format
+        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateTimeToDJ(processedEntry[tableAttribute.attributeName])
+      }
+    }
+
+    fetch(`/api/record/dependency?schemaName=${this.props.selectedSchemaName}&tableName=${this.props.selectedTableName}&restriction=${encodeURIComponent(btoa(JSON.stringify(processedEntry)))}`, 
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },

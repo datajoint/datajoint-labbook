@@ -3,6 +3,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
 import TableType from '../TableTypeEnum/TableType'
+import Filter from './Filter/Filter'
 import InsertTuple from './InsertTuple'
 import UpdateTuple from './UpdateTuple'
 import DeleteTuple from './DeleteTuple'
@@ -190,8 +191,10 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   getCurrentTableActionMenuComponent() {
     if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
       return (<div className="actionMenuContainer">
-          <h1>Filter</h1>
-          <p>Replace with Filter Component</p>
+          <Filter 
+            tableAttributesInfo={this.props.tableAttributesInfo}
+            fetchTableContent={this.props.fetchTableContent}
+          />
         </div>)
     }
     else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
@@ -228,6 +231,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           tupleToDelete={this.state.selectedTableEntries}
           selectedSchemaName={this.props.selectedSchemaName} 
           selectedTableName={this.props.selectedTableName} 
+          tableAttributesInfo={this.props.tableAttributesInfo}
           fetchTableContent={this.props.fetchTableContent}
           clearEntrySelection={() => this.handleSelectionClearRequest()}
         />
