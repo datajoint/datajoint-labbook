@@ -509,13 +509,13 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
               <th className="buffer"><input type="checkbox" /></th>
               {this.getPrimaryKeys().map((attributeName, index) => {
                 return (<th key={attributeName} className="headings" style={this.getCellWidth(index)}>
-                  <div className="headerContent" style={{color: '#4A9F5A'}}>{attributeName}</div>
+                  <div className="headerContent primary" style={{color: '#4A9F5A'}}>{attributeName}</div>
                   <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
                 </th>)
               })}
               {this.getSecondaryKeys().map((attributeName, index) => {
                 return (<th key={attributeName} className="headings" style={this.getCellWidth(index + this.getPrimaryKeys().length)}>
-                  <div className="headerContent" style={{color: 'inherit'}}>{attributeName}</div>
+                  <div className="headerContent secondary" style={{color: 'inherit'}}>{attributeName}</div>
                   <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index + this.getPrimaryKeys().length)}}></div>
                 </th>)
               })}
