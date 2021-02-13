@@ -120,11 +120,11 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
           <img className="login-top-logo" src={logo} alt="datajoint gui logo"/>
           <form className='login-form'>
             <label className='login-input-label'>Host/Database Address</label>
-            <input className='login-input' type='text' value={this.state.databaseAddress} onChange={this.onDatabaseAddressChange}></input>
+            <input className='login-input' type='text' id='database-server' value={this.state.databaseAddress} onChange={this.onDatabaseAddressChange}></input>
             <label className='login-input-label'>Username</label>
-            <input className='login-input' type='text' value={this.state.username} onChange={this.onUsernameChange}></input>
+            <input className='login-input' type='text' id='username' value={this.state.username} onChange={this.onUsernameChange}></input>
             <label className='login-input-label'>Password</label>
-            <input className='login-input' type='password' value={this.state.password} onChange={this.onPasswordChange}></input>
+            <input className='login-input' type='password' id='password' value={this.state.password} onChange={this.onPasswordChange}></input>
             <div className='login-interaction-div'>
               <div>
                 <input className='remember-me-checkbox' type='checkbox' id='remember-me-checkbox' checked={this.state.rememberMe} onChange={this.onRememberMeChange}></input>
