@@ -71,7 +71,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
   render() {
     return (
       <div className="side-full-menu">
-        <SchemaList token={this.props.token} handleSchemaSelection={(val: string) => this.handleSchemaSelection(val)} />
+        <SchemaList token={this.props.token} currentlySelectedSchema={this.state.selectedSchemaBuffer} handleSchemaSelection={(val: string) => this.handleSchemaSelection(val)} />
         <TableList
           token={this.props.token} 
           tableListDict={this.state.tableDict} 
