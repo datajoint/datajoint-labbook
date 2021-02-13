@@ -162,7 +162,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
             </div>
             <select className="sort-table-options">
               <option value="tier">Tier</option>
-              <option value="az">Alphabetical (A-Z)</option>
+              {/* <option value="az">Alphabetical (A-Z)</option> */}
               {/* <option value="za">Alphabetical (Z-A)</option> */}
               {/* <option value="tb">Topological (top-bottom)</option> */}
               {/* <option value="bt">Topological (bottom-top)</option> */}
