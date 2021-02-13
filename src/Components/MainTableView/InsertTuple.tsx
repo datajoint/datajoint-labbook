@@ -231,7 +231,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     if (tableAttribute.attributeType === TableAttributeType.TINY) {
       type = 'number';
       typeString = 'tiny';
-      min = '128';
+      min = '-128';
       max = '127';
     }
     else if (tableAttribute.attributeType === TableAttributeType.TINY_UNSIGNED) {
@@ -343,7 +343,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
           {this.getAttributeLabelBlock(tableAttribute, 'bool')}
           <select defaultValue={defaultValue}>
-            <option  selected={!this.state.tupleBuffer[tableAttribute.attributeName]} value='false'></option>
+            <option selected={!this.state.tupleBuffer[tableAttribute.attributeName]} value='false'></option>
             <option selected={this.state.tupleBuffer[tableAttribute.attributeName]} value='true'></option>
           </select>
         </div>
