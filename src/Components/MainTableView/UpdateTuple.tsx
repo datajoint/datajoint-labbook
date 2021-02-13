@@ -404,8 +404,8 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       let dateFieldValue = ''
       let timeFieldValue = ''
       if (this.state.tupleBuffer[tableAttribute.attributeName]) {
-        dateFieldValue = TableAttribute.parseDateTimeToDJ(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[0]
-        timeFieldValue = TableAttribute.parseDateTimeToDJ(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[1]
+        dateFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[0]
+        timeFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[1]
       }
       
       return (
@@ -434,8 +434,8 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       let dateFieldValue = ''
       let timeFieldValue = ''
       if (this.state.tupleBuffer[tableAttribute.attributeName]) {
-        dateFieldValue = TableAttribute.parseDateTimeToDJ(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[0]
-        timeFieldValue = TableAttribute.parseDateTimeToDJ(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[1]
+        dateFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[0]
+        timeFieldValue = TableAttribute.parseDateTimeToDJFormat(this.state.tupleBuffer[tableAttribute.attributeName]).split(' ')[1]
       }
       return (
         <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>

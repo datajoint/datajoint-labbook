@@ -58,7 +58,7 @@ class TableAttribute {
     /**
      * Helper function for converting view purpose dateTime string back to datajoint dateTime YYYY-MM-DD HH:MM:SS
      */
-    static parseDateTimeToDJ(UTCdateTimeString: string) {
+    static parseDateTimeToDJFormat(UTCdateTimeString: string) {
       let djDateTime = new Date(UTCdateTimeString)?.toISOString()?.split('T').join(' ').split('.')[0]
       return djDateTime;
     }
@@ -67,7 +67,7 @@ class TableAttribute {
      * Helper function for converting view purpose Date String back to datajoint date YYYY-MM-DD
      * @param viewDateString
      */
-    static parseDateToDJ(viewDateString: string) {
+    static parseDateToDJFormat(viewDateString: string) {
       let djDate = new Date(viewDateString).toISOString().split('T')[0]
       return djDate;
     }
