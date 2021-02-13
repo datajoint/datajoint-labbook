@@ -116,17 +116,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
     tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
     for (let tableAttribute of tableAttributes) {
-      if (tableAttribute.attributeType === TableAttributeType.DATE) {
-        // Check if attribute exists, if not break
-        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName)) {
-          break;
-        }
-
-        // Covert date to UTC
-        let date = new Date(tupleBuffer[tableAttribute.attributeName])
-        tupleBuffer[tableAttribute.attributeName] = date.getUTCFullYear() + ':' + date.getUTCMonth() + ':' + date.getUTCDay()
-      }
-      else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
+      if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         // Check if attribute exists, if not break
         if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + 'time')) {
           break;
