@@ -4,30 +4,42 @@ div.deleting {
   width: 100%;
   position: relative;
   box-sizing: border-box;
-  padding: 0px 16px;
 }
 
 table.tupleToDelete {
   text-align: left;
   border-collapse: collapse;
+  margin-bottom: 12px;
 }
 
 table.tupleToDelete thead tr th,
 table.tupleToDelete tbody tr td {
-  border: 1px solid gray;
+  border: 0.5px solid gray;
   padding: 4px;
   white-space: nowrap;
   width: auto;
+  font-size: 0.9rem;
+}
+
+table.tupleToDelete thead tr th{
+  background-color: rgb(228, 228, 228);
+  font-size: 0.8rem;
+}
+
+table.tupleToDelete thead tr th.primaryKey {
+  color: #399E5A;
+  font-weight: bolder;
+}
+
+table.tupleToDelete thead tr th.secondaryKey {
+  font-weight: normal;
 }
 
 table.tupleToDelete thead tr,
 table.tupleToDelete tbody tr {
   width: 100%;
   overflow-x: auto;
-}
-
-table.tupleToDelete thead {
-  background-color: rgb(212, 212, 212);
+  line-height: 1rem;
 }
 
 .deleting .errorMessage {

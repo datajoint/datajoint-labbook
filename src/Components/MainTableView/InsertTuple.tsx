@@ -1,6 +1,6 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faRedoAlt, faTrashAlt, faPlusCircle, faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
+import {faRedoAlt, faTrashAlt, faPlusCircle, faExclamationCircle, faWeight} from '@fortawesome/free-solid-svg-icons'
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
@@ -182,7 +182,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
   getAttributeLabelBlock(tableAttribute: any, typeString: string) {
     return (
       <div className="attributeHead">
-        <label style={tableAttribute.constructor === PrimaryTableAttribute ? {color: '#399E5A'} : {color: 'inherit'}} htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + ')'}</label>
+        <label style={tableAttribute.constructor === PrimaryTableAttribute ? {color: '#399E5A', fontWeight: 'bolder'} : {color: 'inherit', fontWeight: 'normal'}} htmlFor={tableAttribute.attributeName}>{tableAttribute.attributeName + ' (' + typeString + ')'}</label>
         {tableAttribute.constructor === SecondaryTableAttribute && tableAttribute.nullable ? 
           <div className="nullableControls">
             <div className="nullableTag">nullable</div>

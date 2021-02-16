@@ -129,12 +129,20 @@ table.table {
   /* height: 60%; */
   overflow: auto;
   width: 100%;
+  padding-bottom: 8px;
 }
 
 .content-view-area .table .headerRow {
   border-bottom: 1px solid rgb(0, 0, 0);
   display: flex;
-  font-weight: 600;
+}
+
+.content-view-area .table .headerRow .headings .headerContent.primary {
+  font-weight: bolder;
+}
+
+.content-view-area .table .headerRow .headings .headerContent.secondary {
+  font-weight: normal;
 }
 
 .content-view-area .table .tableRow {
