@@ -52,7 +52,7 @@ class TableAttribute {
      */
     static parseDate(dateTimeString: string) {
       let date = new Date(parseInt(dateTimeString) * 1000);
-      return date.toDateString();
+      return (date.getUTCMonth() + 1) + '-' + date.getUTCDate() + '-' + date.getUTCFullYear();
     }
 
     /**
