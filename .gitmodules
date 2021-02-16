@@ -1,0 +1,4 @@
+[submodule "pharus"]
+	path = pharus
+	url = git@pharus:guzman-raphael/pharus.git
+	branch = alpha-release
