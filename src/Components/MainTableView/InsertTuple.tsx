@@ -1,6 +1,6 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faRedoAlt, faTrashAlt, faPlusCircle, faExclamationCircle, faWeight} from '@fortawesome/free-solid-svg-icons'
+import {faRedoAlt, faTrashAlt, faPlusCircle, faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
@@ -110,16 +110,12 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + 'time')) {
           break;
         }
-
-        // Covert date time to UTC
-        let date = new Date(tupleBuffer[tableAttribute.attributeName + '__date'] + 'T' + tupleBuffer[tableAttribute.attributeName + '__time']);
+        // Construct the insert string 
+        tupleBuffer[tableAttribute.attributeName] = tupleBuffer[tableAttribute.attributeName + '__date'] + ' ' + tupleBuffer[tableAttribute.attributeName + '__time'];
 
         // Delete extra fields from tuple
         delete tupleBuffer[tableAttribute.attributeName + '__date'];
         delete tupleBuffer[tableAttribute.attributeName + '__time'];
-
-        // Construct the insert string 
-        tupleBuffer[tableAttribute.attributeName] = date.getUTCFullYear() + ':' + date.getUTCMonth() + ':' + date.getUTCDay() + ' ' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCMinutes();
       }
     }
     
