@@ -1,4 +1,4 @@
 [submodule "pharus"]
 	path = pharus
-	url = git@github.com:guzman-raphael/pharus.git
-	branch = alpha-release
+	url = git@github.com:datajoint/pharus.git
+	branch = master
