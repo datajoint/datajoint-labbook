@@ -51,7 +51,7 @@ jobs:
           retention-days: 1
   publish-release:
     if: github.event_name == 'push'
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     outputs:
       release_upload_url: ${{steps.create_gh_release.outputs.upload_url}}
