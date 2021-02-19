@@ -35,7 +35,7 @@ jobs:
       COMPOSE_HTTP_TIMEOUT: "120"
     steps:
       - uses: actions/checkout@v2
-      - name: Compile image
+      - name: Compile static artifacts
         run: |
           export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
             awk -F\" '{print $4}')

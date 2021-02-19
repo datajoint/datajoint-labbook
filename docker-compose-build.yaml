@@ -18,4 +18,9 @@ services:
       - ./public:/home/node/public
       - ./src:/home/node/src
       - ./build:/home/node/build
-    command: npm run-script build
+    command:
+      - bash
+      - -c
+      - |
+        id
+        npm run-script build
