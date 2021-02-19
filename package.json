@@ -3,7 +3,6 @@
   "version": "0.1.0-alpha.0",
   "description": "A frontend with graphical user interface for DataJoint pipelines built using React.",
   "private": false,
-  "homepage": "https://github.com/datajoint/datajoint-labbook#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/datajoint/datajoint-labbook.git"

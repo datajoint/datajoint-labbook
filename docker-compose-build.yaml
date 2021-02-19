@@ -8,8 +8,7 @@ services:
     build: .
     image: datajoint/datajoint-labbook:${DJLABBOOK_VERSION}
     environment:
-      - DJLABBOOK_BACKEND_PREFIX=/bernie
-      # - REACT_APP_DJLABBOOK_BACKEND_PREFIX=/bernie
+      - DJLABBOOK_BACKEND_PREFIX=/api
     user: ${HOST_UID}:node
     volumes:
       - ./package.json:/home/node/package.json
@@ -18,10 +17,4 @@ services:
       - ./public:/home/node/public
       - ./src:/home/node/src
       - ./build:/home/node/build
-    command:
-      - bash
-      - -c
-      - |
-        id
-        ls -la public
-        npm run-script build
+    command: npm run-script build

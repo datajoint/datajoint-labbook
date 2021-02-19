@@ -16,3 +16,5 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Delete single record. Corresponding dependencies shown as warning to user.
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
+
+[0.1.0-alpha.0]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.0

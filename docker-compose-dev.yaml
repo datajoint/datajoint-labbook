@@ -1,7 +1,11 @@
-# PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | awk -F\' '{print $2}') DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}') HOST_UID=$(id -u) docker-compose -f docker-compose-dev.yaml up
+# PY_VER=3.8 IMAGE=djbase DISTRO=alpine PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | awk -F\' '{print $2}') DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}') HOST_UID=$(id -u) docker-compose -f docker-compose-dev.yaml up
 #
 # Intended for normal development. Supports hot/live reloading.
-# Note: If requirements or Dockerfile change, will need to add --build flag
+# Note: If `package.json` dependencies or Dockerfile change, will need to add --build flag to
+# docker-compose. Make sure to add an entry into your /etc/hosts file as
+# `127.0.0.1 fakeservices.datajoint.io`. This serves as an alias for the domain to resolve
+# locally. With this config and the configuration below in NGINX, you should be able to verify
+# it is running properly by navigating in your browser to `https://fakeservices.datajoint.io`.
 version: "2.4"
 x-net: &net
   networks:
@@ -38,7 +42,7 @@ services:
       - ADD_zlabbook_PREFIX=/
       - ADD_pharus_TYPE=REST
       - ADD_pharus_ENDPOINT=pharus:5000
-      - ADD_pharus_PREFIX=/bernie
+      - ADD_pharus_PREFIX=/api
       - HTTPS_PASSTHRU=TRUE
     ports:
       - "443:443"

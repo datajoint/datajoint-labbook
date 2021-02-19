@@ -54,8 +54,6 @@ jobs:
     if: github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
-    outputs:
-      release_upload_url: ${{steps.create_gh_release.outputs.upload_url}}
     steps:
       - uses: actions/checkout@v2
       - name: Determine package version
@@ -76,7 +74,7 @@ jobs:
       - name: Create GH release
         uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           tag_name: ${{steps.changelog_reader.outputs.version}}
           name: Release ${{steps.changelog_reader.outputs.version}}

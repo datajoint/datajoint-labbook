@@ -1,8 +1,12 @@
-# docker-compose -f docker-compose-deploy.yaml pull
-# docker-compose -f docker-compose-deploy.yaml up -d
+# PHARUS_VERSION=0.1.0a4 DJLABBOOK_VERSION=0.1.0-alpha.0 docker-compose -f docker-compose-deploy.yaml pull
+# PHARUS_VERSION=0.1.0a4 DJLABBOOK_VERSION=0.1.0-alpha.0 docker-compose -f docker-compose-deploy.yaml up -d
 #
 # Intended for production deployment.
-# Note: You must run both commands above
+# Note: You must run both commands above for minimal outage.
+# Make sure to add an entry into your /etc/hosts file as `127.0.0.1 fakeservices.datajoint.io`
+# This serves as an alias for the domain to resolve locally.
+# With this config and the configuration below in NGINX, you should be able to verify it is
+# running properly by navigating in your browser to `https://fakeservices.datajoint.io`.
 version: "2.4"
 x-net: &net
   networks:
@@ -21,7 +25,7 @@ services:
       - ADD_zlabbook_PREFIX=/
       - ADD_pharus_TYPE=REST
       - ADD_pharus_ENDPOINT=pharus:5000
-      - ADD_pharus_PREFIX=/bernie
+      - ADD_pharus_PREFIX=/api
       - HTTPS_PASSTHRU=TRUE
     volumes:
       - ./build:/usr/share/nginx/html:ro

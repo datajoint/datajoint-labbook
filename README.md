@@ -13,7 +13,8 @@ A frontend with graphical user interface for DataJoint pipelines built using Rea
 
 This repo is the single source of truth for development efforts on DataJoint LabBook frontend development.
 
-Requirements:
+## Requirements for Preferred Setup
+
 - [Docker](https://docs.docker.com/get-docker/  )
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
@@ -23,20 +24,27 @@ For now, development observes the following policy for branches:
 - `dev`: Feature-complete, DEMO-ready progress. Might be a bit rough around the edges or lacking in docs, tests but functional. Demonstrates latest features that have been completed.
 - `master`: Polished, release-ready source with relevant docs, tests. More stable and less likely to undergo any refactoring/restructuring.
 
-## Run Locally
+## Run Locally w/ Docker
 
-1) Copy `local-docker-compose.yaml` to `docker-compose.yaml`. This file is untracked so feel free to modify as necessary. Idea is to commit anything generic but system/setup dependent should go on 'your' version i.e. local UID/GID, etc.
-2) `docker-compose pull` to ensure images are cached before taking an outage.
-3) Check the first comment which will provide best instruction on how to start the service.
+1) Copy a `*-docker-compose.yaml` file corresponding to your usage to `docker-compose.yaml`. This file is untracked so feel free to modify as necessary. Idea is to commit anything generic but system/setup dependent should go on 'your' version i.e. local UID/GID, etc.
+2) Check the first comment which will provide the best instruction on how to start the service; yes, it is a bit long. Note: Any of the keyword arguments prepended to the `docker-compose` command can be safely moved into a dedicated `.env` and read automatically if they are not evaluated i.e. `$(...)`. Below is a brief description of the non-evaluated environment variables:
 
-## Git Submodule Notes
+```shell
+PY_VER=3.8    # (pharus) Python version: 3.6|3.7|3.8
+IMAGE=djtest  # (pharus) Image type:     djbase|djtest|djlab|djlabhub
+DISTRO=alpine # (pharus) Distribution:   alpine|debian
+```
 
-To initialize submodule for the first time:
+## Working with git submodule dependency
 
-To update submodules to tip:
+`pharus` is treated as a backend dependency managed by git's builtin submodules. It allows us to nest entire git repos with separate history and easy access. Below are some helpful commands to be used after cloning the source repo.
+
+### Update submodules to latest
+
 `git submodule foreach git pull`
 
-To create a new submodule:
+### Create a new submodule
+
 `git submodule add -b master git@github.com:datajoint/pharus.git`
 
 
