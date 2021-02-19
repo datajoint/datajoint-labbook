@@ -40,6 +40,7 @@ jobs:
           export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
             awk -F\" '{print $4}')
           export HOST_UID=$(id -u)
+          mkdir build
           docker-compose -f docker-compose-build.yaml up \
             --exit-code-from datajoint-labbook --build
           echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
