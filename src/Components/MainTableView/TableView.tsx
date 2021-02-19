@@ -50,7 +50,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       if (this.state.currentView === 'tableContent') {
         this.setState({isLoading: true})
         // retrieve table headers
-        fetch('/api/get_table_attributes', {
+        fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_attributes`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
           body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
@@ -72,7 +72,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           })
       }
       if (this.state.currentView === 'tableInfo') {
-        fetch('/api/get_table_definition', {
+        fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_definition`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
           body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
@@ -98,7 +98,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
    */
   fetchTableContent(restrictions?: Array<Restriction>) {
     // Construct restriction base64 restriction from restriction
-    let apiUrl = '/api/fetch_tuples';
+    let apiUrl = `${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/fetch_tuples`;
 
     if (restrictions !== undefined) {
       let restrictionsInAPIFormat = []

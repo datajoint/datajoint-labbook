@@ -22,7 +22,7 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
   }
 
   componentDidMount() {
-    fetch('/api/version', {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/version`, {
       method: 'GET',
       headers: {'Content-Type': 'application/json'}
     })
@@ -47,7 +47,7 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
     return (
       <nav className='top-nav'>
         <Helmet>
-          <title>DataJoint GUI{this.props.hostname ? " | " + this.props.hostname : ""}</title>
+          <title>DataJoint LabBook{this.props.hostname ? " | " + this.props.hostname : ""}</title>
         </Helmet>
         <div className='nav-logo'>
           <NavLink to='/'><img src={logo} alt='Logo' /></NavLink>

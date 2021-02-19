@@ -1,0 +1,35 @@
+# docker-compose -f docker-compose-deploy.yaml pull
+# docker-compose -f docker-compose-deploy.yaml up -d
+#
+# Intended for production deployment.
+# Note: You must run both commands above
+version: "2.4"
+x-net: &net
+  networks:
+      - main
+services:
+  pharus:
+    <<: *net
+    image: datajoint/pharus:${PHARUS_VERSION}
+    environment:
+      - PHARUS_PORT=5000
+  fakeservices.datajoint.io:
+    <<: *net
+    image: raphaelguzman/nginx:v0.0.15
+    environment:
+      - ADD_zlabbook_TYPE=STATIC
+      - ADD_zlabbook_PREFIX=/
+      - ADD_pharus_TYPE=REST
+      - ADD_pharus_ENDPOINT=pharus:5000
+      - ADD_pharus_PREFIX=/bernie
+      - HTTPS_PASSTHRU=TRUE
+    volumes:
+      - ./build:/usr/share/nginx/html:ro
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      pharus:
+        condition: service_healthy
+networks:
+  main:

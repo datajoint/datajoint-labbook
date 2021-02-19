@@ -1,0 +1,21 @@
+# DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}') HOST_UID=$(id -u) docker-compose -f docker-compose-build.yaml up --exit-code-from datajoint-labbook --build
+#
+# Intended for updating dependencies and docker image.
+# Used to build release artifacts.
+version: "2.4"
+services:
+  datajoint-labbook:
+    build: .
+    image: datajoint/datajoint-labbook:${DJLABBOOK_VERSION}
+    environment:
+      - DJLABBOOK_BACKEND_PREFIX=/bernie
+      # - REACT_APP_DJLABBOOK_BACKEND_PREFIX=/bernie
+    user: ${HOST_UID}:node
+    volumes:
+      - ./package.json:/home/node/package.json
+      - ./package-lock.json:/home/node/package-lock.json
+      - ./tsconfig.json:/home/node/tsconfig.json
+      - ./public:/home/node/public
+      - ./src:/home/node/src
+      - ./build:/home/node/build
+    command: npm run-script build

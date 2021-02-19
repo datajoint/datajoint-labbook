@@ -148,7 +148,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     }
 
     // All checks passed thus attempt insert
-    fetch('/api/insert_tuple', {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/insert_tuple`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: tupleBuffer})

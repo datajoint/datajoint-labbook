@@ -72,7 +72,7 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     }
 
     // Attempt to authenticate
-    const response = await fetch('/api/login', {
+    const response = await fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/login`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

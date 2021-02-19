@@ -38,7 +38,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
     this.setState({selectedSchemaBuffer: schema})
     
     // Run api fetch for list tables and deal with result
-    fetch('/api/list_tables', {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/list_tables`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
       body: JSON.stringify({schemaName: schema})

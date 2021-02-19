@@ -67,7 +67,7 @@ class CheckDependency extends React.Component<{token: string, selectedSchemaName
       }
     }
 
-    fetch(`/api/record/dependency?schemaName=${this.props.selectedSchemaName}&tableName=${this.props.selectedTableName}&restriction=${encodeURIComponent(btoa(JSON.stringify(processedEntry)))}`, 
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/record/dependency?schemaName=${this.props.selectedSchemaName}&tableName=${this.props.selectedTableName}&restriction=${encodeURIComponent(btoa(JSON.stringify(processedEntry)))}`, 
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },

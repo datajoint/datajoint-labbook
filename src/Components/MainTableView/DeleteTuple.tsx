@@ -76,7 +76,7 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     this.setState({isDeletingEntry: true})
 
     // TODO: Run api fetch for list of dependencies/permission
-    fetch('/api/delete_tuple', {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/delete_tuple`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restrictionTuple: processedEntry})
