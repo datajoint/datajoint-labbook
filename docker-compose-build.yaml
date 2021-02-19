@@ -23,4 +23,5 @@ services:
       - -c
       - |
         id
+        ls -la public
         npm run-script build
