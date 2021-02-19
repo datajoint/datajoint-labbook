@@ -14,14 +14,12 @@ services:
   pharus:
     <<: *net
     extends:
-      file: ./pharus/docker-compose-build.yaml
+      file: ./pharus/docker-compose-dev.yaml
       service: pharus
     environment:
-      - FLASK_ENV=development # enables logging to console from Flask
       - PHARUS_PORT=5000
     volumes:
       - ./pharus/pharus:/opt/conda/lib/python3.8/site-packages/pharus
-    command: pharus
   datajoint-labbook:
     <<: *net
     extends:
