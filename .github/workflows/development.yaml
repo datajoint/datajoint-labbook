@@ -1,36 +1,121 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the action will run. 
+name: Development
 on:
-  # Triggers the workflow on push or pull request events but only for the dev branch
-  push:
-    branches: [ dev ]
   pull_request:
-    branches: [ dev ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  push:
+    tags:
+      - '*.*.*'
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  test-changelog:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Get changelog entry
+        id: changelog_reader
+        uses: guzman-raphael/changelog-reader-action@v5
+        with:
+          path: ./CHANGELOG.md
+      - name: Verify changelog parsing
+        env:
+          TAG_NAME: ${{steps.changelog_reader.outputs.version}}
+          RELEASE_NAME: Release ${{steps.changelog_reader.outputs.version}}
+          BODY: ${{steps.changelog_reader.outputs.changes}}
+          PRERELEASE: ${{steps.changelog_reader.outputs.status == 'prereleased'}}
+          DRAFT: ${{steps.changelog_reader.outputs.status == 'unreleased'}}
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo "TAG_NAME=${TAG_NAME}"
+          echo "RELEASE_NAME=${RELEASE_NAME}"
+          echo "BODY=${BODY}"
+          echo "PRERELEASE=${PRERELEASE}"
+          echo "DRAFT=${DRAFT}"
+  build:
+    needs: test-changelog
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CLIENT_TIMEOUT: "120"
+      COMPOSE_HTTP_TIMEOUT: "120"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Compile static artifacts
+        run: |
+          export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
+            awk -F\" '{print $4}')
+          export HOST_UID=$(id -u)
+          mkdir build
+          docker-compose -f docker-compose-build.yaml up \
+            --exit-code-from datajoint-labbook --build
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Add static artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
+          path: build
+          retention-days: 1
+  publish-release:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Determine package version
+        run: |
+          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Get changelog entry
+        id: changelog_reader
+        uses: guzman-raphael/changelog-reader-action@v5
+        with:
+          path: ./CHANGELOG.md
+          version: ${{env.DJLABBOOK_VERSION}}
+      - name: Fetch static artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
+          path: build
+      - name: Create GH release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{steps.changelog_reader.outputs.version}}
+          name: Release ${{steps.changelog_reader.outputs.version}}
+          body: ${{steps.changelog_reader.outputs.changes}}
+          prerelease: ${{steps.changelog_reader.outputs.status == 'prereleased'}}
+          draft: ${{steps.changelog_reader.outputs.status == 'unreleased'}}
+          files: |
+            build
+  # publish-docs:
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - name: Build docs
+  #       uses: ammaraskar/sphinx-action@master
+  #       with:
+  #         docs-folder: "docs/"
+  #     # - name: Upload docs artifact
+  #     #   uses: actions/upload-artifact@v1
+  #     #   with:
+  #     #     name: docs-html
+  #     #     path: docs/_build/html/
+  #     #     retention-days: 1
+  #     - name: Commit documentation changes
+  #       run: |
+  #         git clone https://github.com/${GITHUB_REPOSITORY}.git \
+  #             --branch gh-pages --single-branch gh-pages
+  #         rm -R gh-pages/*
+  #         cp -r docs/_build/html/* gh-pages/
+  #         cp .gitignore gh-pages/
+  #         touch gh-pages/.nojekyll
+  #         cd gh-pages
+  #         git config --local user.email "action@github.com"
+  #         git config --local user.name "GitHub Action"
+  #         git add . --all
+  #         git commit -m "Update documentation" -a || true
+  #         # The above command will fail if no changes were present, so we ignore
+  #         # the return code.
+  #     - name: Push changes
+  #       uses: ad-m/github-push-action@master
+  #       with:
+  #         branch: gh-pages
+  #         directory: gh-pages
+  #         github_token: ${{secrets.GITHUB_TOKEN}}

@@ -1,7 +1,13 @@
 {
-  "name": "dj-gui-react",
+  "name": "datajoint-labbook",
   "version": "0.1.0-alpha.0",
-  "private": true,
+  "description": "A frontend with graphical user interface for DataJoint pipelines built using React.",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datajoint/datajoint-labbook.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-brands-svg-icons": "^5.15.1",
@@ -28,8 +34,8 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "PORT=${DJLABBOOK_PORT} REACT_APP_DJLABBOOK_BACKEND_PREFIX=${DJLABBOOK_BACKEND_PREFIX} react-scripts start",
+    "build": "REACT_APP_DJLABBOOK_BACKEND_PREFIX=${DJLABBOOK_BACKEND_PREFIX} react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -54,6 +60,5 @@
   "devDependencies": {
     "@types/react": "^16.14.2",
     "@types/react-router-dom": "^5.1.6"
-  },
-  "proxy": "http://dj-gui-api:5000"
+  }
 }
