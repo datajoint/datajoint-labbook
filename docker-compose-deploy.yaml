@@ -8,7 +8,7 @@
 # With this config and the configuration below in NGINX, you should be able to verify it is
 # running properly by navigating in your browser to `https://fakeservices.datajoint.io`.
 # If you don't update your hosts file, you will still have access at `https://localhost`
-# however it should simply display 'Not secure' since the certs won't be invalid.
+# however it should simply display 'Not secure' since the cert will be invalid.
 version: "2.4"
 x-net: &net
   networks:
