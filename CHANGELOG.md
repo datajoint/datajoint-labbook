@@ -2,7 +2,7 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
-## [0.1.0-alpha.0] - 2021-02-19
+## [0.1.0-alpha.1] - 2021-02-19
 ### Added
 - Provide a database server login/logout interface. Page refresh also triggers logout.
 - View, sort, and substring search on schemas.
@@ -17,4 +17,4 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
-[0.1.0-alpha.0]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.0
+[0.1.0-alpha.1]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.1
