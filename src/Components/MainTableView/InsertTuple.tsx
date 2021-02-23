@@ -156,7 +156,11 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     .then(result => {
       // Check for error mesage 500, if so throw and error
       if (result.status === 500) {
-        result.text().then(errorMessage => {throw new Error(errorMessage)});
+        result.text()
+        .then(errorMessage => {throw new Error(errorMessage)})
+        .catch((error) => {
+          this.setState({errorMessage: error.message});
+        });
       }
       return result.text();
     })
@@ -165,7 +169,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       this.props.fetchTableContent();
     })
     .catch((error) => {
-      this.setState({errorMessage: error});
+      this.setState({errorMessage: error.message});
     })
 
   }
