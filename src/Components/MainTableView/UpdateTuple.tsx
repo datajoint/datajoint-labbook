@@ -28,6 +28,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     }
 
     this.onSubmit = this.onSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
    /**
@@ -499,7 +500,10 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                 // Deal with primary attirbutes
                 this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
                   return(
-                    this.getPrimaryAttributeInputBlock(primaryTableAttribute)
+                    <div className='fieldUnit' key={primaryTableAttribute.attributeName}>
+                      {PrimaryTableAttribute.getAttributeLabelBlock(primaryTableAttribute)}
+                      {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], undefined, this.handleChange)}
+                    </div>
                   )
                 })
               }
@@ -507,7 +511,10 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                 // Deal with secondary attributes 
                 this.props.tableAttributesInfo?.secondaryAttributes.map((secondaryAttribute) => {
                   return(
-                    this.getAttributeInputBlock(secondaryAttribute)
+                    <div className='fieldUnit' key={secondaryAttribute.attributeName}>
+                      {SecondaryTableAttribute.getAttributeLabelBlock(secondaryAttribute, this.resetToNull)}
+                      {SecondaryTableAttribute.getAttributeInputBlock(secondaryAttribute, this.state.tupleBuffer[secondaryAttribute.attributeName], undefined, this.handleChange)}
+                    </div>
                   )
                 })
               }

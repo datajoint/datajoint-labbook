@@ -339,6 +339,9 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString === 'float unsigned') {
       return TableAttributeType.FLOAT_UNSIGNED;
     }
+    else if (tableTypeString === 'double') {
+      return TableAttributeType.DOUBLE;
+    }
     else if (tableTypeString === 'bool') {
       return TableAttributeType.BOOL;
     }
