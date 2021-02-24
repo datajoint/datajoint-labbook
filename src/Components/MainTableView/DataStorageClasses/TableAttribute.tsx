@@ -35,7 +35,8 @@ class TableAttribute {
     static parseTimeString(timeString: string) {
       const timeNumber = parseInt(timeString)
       let date = new Date(timeNumber * 1000);
-      return Math.floor(timeNumber / 86400) * 24 + date.getUTCHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds();
+      const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
+      return Math.floor(timeNumber / 86400) * 24 + date.getUTCHours() + ":" + zeroPad(date.getUTCMinutes(), 2) + ":" + zeroPad(date.getUTCSeconds(), 2);
     }
 
     /**
@@ -158,7 +159,6 @@ class TableAttribute {
      * @param handleChange Call back function for when the user make a change to the input block
      */
     static getAttributeInputBlock(tableAttribute: TableAttribute, currentValue: any, defaultValue: string = "", handleChange: any) {
-      console.log(handleChange);
       let type: string = ""
       let min: string = "0";
       let max: string = "0";
