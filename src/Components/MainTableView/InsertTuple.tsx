@@ -23,7 +23,7 @@ type insertTupleState = {
  * @param fetchTableContent Callback function to tell the parent component to update the contentData
  * @param tuplesToInsert List of selected tuples to be copied over for quick insert field fill-in. For now, starting with just 1.
  */
-class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tuplesToInsert?: any,}, insertTupleState> {
+class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tuplesToInsert?: any, clearEntrySelection: any}, insertTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -74,13 +74,73 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
    */
   copyTuple(event: any, tupleToInsert: any) {
     event.preventDefault();
-    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+    let tupleBuffer: any = {};
     Object.values(tupleToInsert).forEach((columns: any) => {
-      Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+      Object.values(columns.tableAttributesInfo).forEach((attributes: any) => {
+        attributes.forEach((attr: any) => {
+          if (attr.attributeType === TableAttributeType.DATE) {
+            if (attr.constructor === PrimaryTableAttribute) {
+              Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+                if (attributeKeyVal[0] === attr.attributeName) { // attributeKeyVal[0] is the key
+                  let dateFormat = new Date(attributeKeyVal[1])
+                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
+                }
+              })
+            }
+            else if (attr.constructor === SecondaryTableAttribute) {
+              Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+                if (attributeKeyVal[0] === attr.attributeName) {
+                  let dateFormat = new Date(attributeKeyVal[1])
+                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
+                }
+              })
+            }
+          }
+          else if (attr.attributeType === TableAttributeType.DATETIME || attr.attributeType === TableAttributeType.TIMESTAMP) {
+            if (attr.constructor === PrimaryTableAttribute) {
+              Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+                if (attributeKeyVal[0] === attr.attributeName) {
+                  let dateFormat = new Date(attributeKeyVal[1])
+                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
+                }
+              })
+            }
+            else if (attr.constructor === SecondaryTableAttribute) {
+              Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+                if (attributeKeyVal[0] === attr.attributeName) {
+                  let dateFormat = new Date(attributeKeyVal[1])
+                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
+                }
+              })
+            }
+          }
+          else if (attr.attributeType === TableAttributeType.TIME) {
+            if (attr.constructor === PrimaryTableAttribute) {
+              Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+                if (attributeKeyVal[0] === attr.attributeName) {
+                  tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+                }
+              })
+            }
+            else if (attr.constructor === SecondaryTableAttribute) {
+              Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+                if (attributeKeyVal[0] === attr.attributeName) {
+                  tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+                }
+              })
+            }
+          }
+        })
+      });
+      Object.entries(columns.primaryEntries).forEach((attributeKeyVal: Array<any>) => {
+        if (!tupleBuffer[attributeKeyVal[0]]) {
+          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        }
       })
-      Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+      Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: Array<any>) => {
+        if (!tupleBuffer[attributeKeyVal[0]]) {
+          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        }
       })
     })
     this.setState({tupleBuffer: tupleBuffer});
@@ -141,7 +201,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         }
         else {
           // Missing attribute, set error and return
-          this.setState({errorMessage: 'Missing require field: ' + secondaryAttribute.attributeName});
+          this.setState({errorMessage: 'Missing required field: ' + secondaryAttribute.attributeName});
           return;
         }
       }
@@ -166,6 +226,8 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     })
     .then(result => {
       // Insert was sucessful, tell TableView to fetch the content again
+      this.setState({tupleBuffer: {}})
+      this.props.clearEntrySelection();
       this.props.fetchTableContent();
     })
     .catch((error) => {
@@ -279,20 +341,42 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       max = '4294967295';
     }
     else if (tableAttribute.attributeType === TableAttributeType.FLOAT) {
-      return(
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'float')}
-          <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'float')}
+            <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      else {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'float')}
+            <input type='number' value={defaultValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.FLOAT_UNSIGNED ) {
-      return(
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'float unsigned')}
-          <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} min='0' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'float unsigned')}
+            <input type='number' min='0' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      else {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'float unsigned')}
+            <input type='number' min='0' value={defaultValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.DECIMAL) {
       // Check that decimalNumdigits, and decimalNumDecimalDigits are not undefined
@@ -318,110 +402,242 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
       }
       stepValueString += '1'
 
-      return(
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'decimal(' + tableAttribute.decimalNumDigits + ', ' + tableAttribute.decimalNumDecimalDigits)}
-          <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} step={stepValueString} min={('-' + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'decimal(' + tableAttribute.decimalNumDigits + ', ' + tableAttribute.decimalNumDecimalDigits)}
+            <input type='number' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} step={stepValueString} min={('-' + maxValueString)} max={maxValueString} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      } 
+      else {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'decimal(' + tableAttribute.decimalNumDigits + ', ' + tableAttribute.decimalNumDecimalDigits)}
+            <input type='number' value={defaultValue} defaultValue={defaultValue} step={stepValueString} min={('-' + maxValueString)} max={maxValueString} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.BOOL) {
       if (defaultValue === '') {
         defaultValue = 'false'
       }
-      return(
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'bool')}
-          <select defaultValue={defaultValue}>
-            <option selected={!this.state.tupleBuffer[tableAttribute.attributeName]} value='false'></option>
-            <option selected={this.state.tupleBuffer[tableAttribute.attributeName]} value='true'></option>
-          </select>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'bool')}
+            <select value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]}>
+              <option selected={!this.state.tupleBuffer[tableAttribute.attributeName]} value='false'></option>
+              <option selected={this.state.tupleBuffer[tableAttribute.attributeName]} value='true'></option>
+            </select>
+          </div>
+        );
+      } else {
+        return(
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'bool')}
+            <select value={defaultValue} defaultValue={defaultValue}>
+              <option selected={defaultValue === 'false'} value='false'></option>
+              <option selected={defaultValue !== 'false'} value='true'></option>
+            </select>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.CHAR) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'char(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
-          <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'char(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
+            <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'char(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
+            <input type='text' value={defaultValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.VAR_CHAR) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'varchar(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
-          <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'varchar(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
+            <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      } 
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'varchar(' + tableAttribute.stringTypeAttributeLengthInfo + ')')}
+            <input type='text' value={defaultValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+     
     }
     else if (tableAttribute.attributeType === TableAttributeType.UUID) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'UUID')}
-          <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'UUID')}
+            <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      } 
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'UUID')}
+            <input type='text' value={defaultValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.DATE) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'date')}
-          <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      )
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'date')}
+            <input type='date' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        )
+      } 
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'date')}
+            <input type='date' value={defaultValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        )
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.DATETIME) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'date time')}
-          <div className="dateTimeFields">
-            <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-            <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'date time')}
+            <div className="dateTimeFields">
+              <input type='date' defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]?.split(' ')[0]} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+              <input type='time' step="1" defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]?.split(' ')[1]} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            </div>
           </div>
-        </div>
-      );
+        );
+      } 
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'date time')}
+            <div className="dateTimeFields">
+              <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+              <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            </div>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIME) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'HH:MM:SS')}
-          <input type='text' defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-        </div>
-      );
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'HH:MM:SS')}
+            <input type='text' value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'HH:MM:SS')}
+            <input type='text' value={defaultValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'time stamp')}
-          <div className="dateTimeFields">
-            <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
-            <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) { 
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'time stamp')}
+            <div className="dateTimeFields">
+              <input type='date' defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]?.split(' ')[0]} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+              <input type='time' step="1" defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]?.split(' ')[1]} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'time stamp')}
+            <div className="dateTimeFields">
+              <input type='date' defaultValue={defaultValue} id={tableAttribute.attributeName + '__date'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + '__date')}></input>
+              <input type='time' step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + '__time'} onChange={this.handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            </div>
+          </div>
+        );
+      }
+      
     }
     else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
-      return (
-        <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-          {this.getAttributeLabelBlock(tableAttribute, 'enum')}
-          <select onChange={this.handleChange.bind(this, tableAttribute.attributeName)}> {
-            tableAttribute.enumOptions?.map((enumOptionString: string) => {
-              return(<option selected={this.state.tupleBuffer[tableAttribute.attributeName] === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
-          })}
-          </select>
-        </div>
-      )
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'enum')}
+            <select value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}> {
+              tableAttribute.enumOptions?.map((enumOptionString: string) => {
+                return(<option selected={this.state.tupleBuffer[tableAttribute.attributeName] === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
+            })}
+            </select>
+          </div>
+        )
+      }
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, 'enum')}
+            <select value={defaultValue} defaultValue={defaultValue} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}> {
+              tableAttribute.enumOptions?.map((enumOptionString: string) => {
+                return(<option selected={defaultValue === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
+            })}
+            </select>
+          </div>
+        )
+      }
     }
 
     // Handle number return types
     if (type === 'number') {
-      return (
-      <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
-        {this.getAttributeLabelBlock(tableAttribute, typeString)}
-        <input value={this.state.tupleBuffer[tableAttribute.attributeName]} type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
-      </div>
-      )
+      if (this.state.tupleBuffer[tableAttribute.attributeName]) {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, typeString)}
+            <input value={this.state.tupleBuffer[tableAttribute.attributeName]} defaultValue={this.state.tupleBuffer[tableAttribute.attributeName]} type={type} min={min} max={max} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+          )
+      }
+      else {
+        return (
+          <div className="fieldUnit" key={JSON.stringify(tableAttribute)}>
+            {this.getAttributeLabelBlock(tableAttribute, typeString)}
+            <input value={defaultValue} defaultValue={defaultValue} type={type} min={min} max={max} id={tableAttribute.attributeName} onChange={this.handleChange.bind(this, tableAttribute.attributeName)}></input>
+          </div>
+          )
+      }
+      
     }
 
     throw Error('Unsupported Type found for attribute: ' + tableAttribute.attributeName);

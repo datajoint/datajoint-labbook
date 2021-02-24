@@ -206,6 +206,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
             tuplesToInsert = {this.state.selectedTableEntries}
+            clearEntrySelection={() => this.handleSelectionClearRequest()}
           />
         </div>)
     }
