@@ -11,8 +11,6 @@ import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
-import RestrictionType from './enums/RestrictionType';
-import { faUnderline } from '@fortawesome/free-solid-svg-icons';
 
 type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,

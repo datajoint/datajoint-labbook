@@ -1,6 +1,4 @@
 import React from 'react';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faRedoAlt} from '@fortawesome/free-solid-svg-icons'
 import TableAttribute from '../DataStorageClasses/TableAttribute';
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';

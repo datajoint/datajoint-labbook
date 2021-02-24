@@ -7,7 +7,6 @@ import TableAttribute from './DataStorageClasses/TableAttribute';
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import TableAttributeType from './enums/TableAttributeType';
 
-
 /**
  * list of allowed states on this check dependency component
  */
