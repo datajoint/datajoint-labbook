@@ -61,10 +61,8 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
    * @param attributeName Attribute name of the change, this is used to access the tupleBuffer object members to set the value
    * @param event Event object that come from the onChange function
    */
-  handleChange(attributeName: string, event: any) {
+  handleChange(event: any, attributeName: string) {
     // Create a copy, update the object, then set state
-    console.log(this.state.tupleBuffer)
-    console.log(event)
     let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
     this.setState({tupleBuffer: tupleBuffer});
