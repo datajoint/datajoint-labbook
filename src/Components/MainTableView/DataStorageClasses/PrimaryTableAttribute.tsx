@@ -36,6 +36,14 @@ class PrimaryTableAttribute extends TableAttribute {
       </th>
     )
   }
+
+  static getAttributeInputBlock(tableAttribute: PrimaryTableAttribute, currentValue: any, handleChange: any) {
+    if (tableAttribute.autoIncrement) {
+      return <input disabled></input>
+    }
+    
+    return super.getAttributeInputBlock(tableAttribute, currentValue, undefined, handleChange)
+  }
 }
 
 export default PrimaryTableAttribute;

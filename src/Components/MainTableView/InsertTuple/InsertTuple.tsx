@@ -1,12 +1,12 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faRedoAlt, faTrashAlt, faPlusCircle, faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
-import TableAttribute from './DataStorageClasses/TableAttribute';
-import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
-import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
-import TableAttributeType from './enums/TableAttributeType';
+import TableAttribute from '../DataStorageClasses/TableAttribute';
+import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
+import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
+import TableAttributeType from '../enums/TableAttributeType';
 import './InsertTuple.css'
-import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
+import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
 type insertTupleState = {
   tupleBuffer: any // Object to stored the values typed in by the user
@@ -63,6 +63,8 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
    */
   handleChange(attributeName: string, event: any) {
     // Create a copy, update the object, then set state
+    console.log(this.state.tupleBuffer)
+    console.log(event)
     let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
     this.setState({tupleBuffer: tupleBuffer});
@@ -204,7 +206,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
                 return(
                   <div className='fieldUnit' key={primaryTableAttribute.attributeName}>
                     {PrimaryTableAttribute.getAttributeLabelBlock(primaryTableAttribute)}
-                    {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], undefined, this.handleChange)}
+                    {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], this.handleChange)}
                   </div>
                 )
               })

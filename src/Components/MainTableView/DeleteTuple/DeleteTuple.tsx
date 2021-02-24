@@ -1,11 +1,10 @@
 import React from 'react';
 import "./DeleteTuple.css";
-import TableAttribute from './DataStorageClasses/TableAttribute';
-import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
-import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
-import TableAttributeType from './enums/TableAttributeType';
+import TableAttribute from '../DataStorageClasses/TableAttribute';
+import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
+import TableAttributeType from '../enums/TableAttributeType';
 
-import CheckDependency from './CheckDependency';
+import CheckDependency from '../CheckDependency';
 
 /**
  * list of allowed states on this delete tuple component

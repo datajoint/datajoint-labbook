@@ -1,14 +1,14 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faRedoAlt} from '@fortawesome/free-solid-svg-icons'
-import TableAttribute from './DataStorageClasses/TableAttribute';
-import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
-import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
-import TableAttributeType from './enums/TableAttributeType';
+import TableAttribute from '../DataStorageClasses/TableAttribute';
+import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
+import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
+import TableAttributeType from '../enums/TableAttributeType';
 import './UpdateTuple.css'
-import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
+import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
-import CheckDependency from './CheckDependency';
+import CheckDependency from '../CheckDependency';
 
 type updateTupleState = {
   tupleBuffer: any, // Object to stored the values typed in by the user
@@ -226,7 +226,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                   return(
                     <div className='fieldUnit' key={primaryTableAttribute.attributeName}>
                       {PrimaryTableAttribute.getAttributeLabelBlock(primaryTableAttribute)}
-                      {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], undefined, this.handleChange)}
+                      {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], this.handleChange)}
                     </div>
                   )
                 })

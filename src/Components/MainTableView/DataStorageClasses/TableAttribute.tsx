@@ -158,6 +158,7 @@ class TableAttribute {
      * @param handleChange Call back function for when the user make a change to the input block
      */
     static getAttributeInputBlock(tableAttribute: TableAttribute, currentValue: any, defaultValue: string = "", handleChange: any) {
+      console.log(handleChange);
       let type: string = ""
       let min: string = "0";
       let max: string = "0";
@@ -215,17 +216,17 @@ class TableAttribute {
       }
       else if (tableAttribute.attributeType === TableAttributeType.FLOAT) {
         return(
-          <input type="number" value={currentValue} step="any" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+          <input type="number" value={currentValue} step="any" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
         );
       }
       else if (tableAttribute.attributeType === TableAttributeType.FLOAT_UNSIGNED ) {
         return(
-          <input type="number" value={currentValue} step="any" min="0" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+          <input type="number" value={currentValue} step="any" min="0" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
         );
       }
       else if (tableAttribute.attributeType === TableAttributeType.DOUBLE) {
         return(
-          <input type="number" value={currentValue} step="any" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+          <input type="number" value={currentValue} step="any" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
         );
       }
       else if (tableAttribute.attributeType === TableAttributeType.DECIMAL) {
@@ -253,7 +254,7 @@ class TableAttribute {
         stepValueString += "1"
   
         return(
-          <input type="number" value={currentValue} step={stepValueString} min={("-" + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+          <input type="number" value={currentValue} step={stepValueString} min={("-" + maxValueString)} max={maxValueString} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
         );
       }
       else if (tableAttribute.attributeType === TableAttributeType.BOOL) {
@@ -268,42 +269,34 @@ class TableAttribute {
         );
       }
       else if (tableAttribute.attributeType === TableAttributeType.CHAR) {
-        return <input type="text" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+        return <input type="text" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
 
       }
       else if (tableAttribute.attributeType === TableAttributeType.VAR_CHAR) {
-        return <input type="text" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+        return <input type="text" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
       }
       else if (tableAttribute.attributeType === TableAttributeType.UUID) {
-        return <input type="text" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+        return <input type="text" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
 
       }
       else if (tableAttribute.attributeType === TableAttributeType.DATE) {
-        return <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+        return <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
       }
-      else if (tableAttribute.attributeType === TableAttributeType.DATETIME) {
+      else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         return(
           <div className="dateTimeFields">
-            <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName + "__date"} onChange={handleChange.bind(this, tableAttribute.attributeName + "__date")}></input>
-            <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
+            <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
+            <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "time")}></input>
           </div>
         );
       }
       else if (tableAttribute.attributeType === TableAttributeType.TIME) {
-        return <input type="text" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+        return <input type="text" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
 
-      }
-      else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
-        return(
-          <div className="dateTimeFields">
-            <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName + "__date"} onChange={handleChange.bind(this, tableAttribute.attributeName + "__date")}></input>
-            <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={handleChange.bind(this, tableAttribute.attributeName + "__time")}></input>
-          </div>
-        );
       }
       else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
         return(
-            <select onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}> {
+            <select onChange={(e) => handleChange(e, tableAttribute.attributeName)}> {
               tableAttribute.enumOptions?.map((enumOptionString: string) => {
                 return(<option selected={currentValue === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
               })}
@@ -313,7 +306,7 @@ class TableAttribute {
   
       // Handle number return types
       if (type === "number") {
-        return <input value={currentValue} type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange.bind(e, tableAttribute.attributeName)}></input>
+        return <input value={currentValue} type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
       }
       console.log(tableAttribute.attributeType)
       throw Error("Unsupported Type found for attribute: " + tableAttribute.attributeName);
