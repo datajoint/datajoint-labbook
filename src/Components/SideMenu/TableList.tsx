@@ -1,7 +1,8 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEye, faEyeSlash, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
-import TableType from '../TableTypeEnum/TableType'
+import {faEye, faEyeSlash, faSearch, faSortAmountDown} from '@fortawesome/free-solid-svg-icons';
+import TableType from '../TableTypeEnum/TableType';
+import './TableList.css';
 
 /**
  * Parent Class for all table entry which mainly contains name and type of each table
@@ -42,7 +43,9 @@ type TableListState = {
   viewAllPartTables: boolean,
   tablesToSort: any,
   hidePartTable: Array<string>,
-  tableList: Array<ParentTableListEntry>
+  tableList: Array<ParentTableListEntry>,
+  restrictedTableList: Array<ParentTableListEntry>,
+  searchString: string
 }
 
 class TableList extends React.Component<{token: string, tableListDict: any, selectedTableName: string, selectedTableType: TableType, onTableSelection: any}, TableListState> {
@@ -54,7 +57,11 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
       tablesToSort: this.props.tableListDict,
       hidePartTable: [],
       tableList: [],
+      restrictedTableList: [],
+      searchString: ''
     }
+
+    this.onSearchStringChange = this.onSearchStringChange.bind(this);
   }
 
   toggleAllPartTableView() {
@@ -76,7 +83,6 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     }
 
     this.setState({hidePartTable: updatedList})
-    
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -148,12 +154,41 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     }
 
      // Update the state
-     this.setState({tableList: tableList});
+     this.setState({tableList: tableList, restrictedTableList: tableList, searchString: ''});
+  }
+
+  onSearchStringChange(event: any) {
+    // Filter our the results based on the search string, assuming it is not empty
+    let restrictedTableList: Array<ParentTableListEntry> = [];
+
+    if (event.target.value !== '') {
+      for (let parentTableListEntry of this.state.tableList) {
+        if (parentTableListEntry.tableName.includes(event.target.value)) {
+          restrictedTableList.push(parentTableListEntry);
+        }
+        else {
+          for (let partTableListEntry of parentTableListEntry.partTables) {
+            if (partTableListEntry.tableName.includes(event.target.value)) {
+              restrictedTableList.push(parentTableListEntry);
+            }
+          }
+        }
+      }
+
+      this.setState({searchString: event.target.value, restrictedTableList: restrictedTableList});
+    }
+    else {
+      this.setState({searchString: event.target.value, restrictedTableList: this.state.tableList});
+    }
   }
 
   render() {
     return(
       <div className="table-menu">
+         <div className="search-table-field">
+          <input type="text" onChange={this.onSearchStringChange} value={this.state.searchString} placeholder="Search Table"/>
+          <FontAwesomeIcon className="search-icon" icon={faSearch}/>
+        </div>
         <div className="table-view-controls">
           <div className="sort-table-field">
             <div className="sort-field-head">
@@ -179,7 +214,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
         </div>
         <div className="table-listing">
           {
-            this.state.tableList.map((table: ParentTableListEntry) => {
+            this.state.restrictedTableList.map((table: ParentTableListEntry) => {
               return(
                 <div key={`${table.tableName}-${table.tableType}`}>
                   <div className={this.props.selectedTableName === table.tableName && this.props.selectedTableType === table.tableType ? 'table-entry selected' : 'table-entry'} key={`${table.tableName}-${table.tableType}`} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
