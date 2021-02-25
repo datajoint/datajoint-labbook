@@ -12,7 +12,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Changed Insert and Update component code to share common form generation code, still need to do for delete (#54) PR #86
 
 ### Fixed
-- Fixed issue with input fields for decimal, floats, and double not having the correct step settings. #81 PR #86
+- Fixed issue with input fields for decimal, floats, and double not having the correct step settings. (#81) PR #86
 - Fixed formating for time to match HH:MM:SS, before it would chop off MM and SS if was less then 10 (#74) PR #86
 
 
