@@ -301,7 +301,7 @@ class TableAttribute {
         return(
           <div className="dateTimeFields">
             <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
-            <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "time")}></input>
+            <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
           </div>
         );
       }
