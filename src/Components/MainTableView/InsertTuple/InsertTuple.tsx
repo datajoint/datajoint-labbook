@@ -144,7 +144,6 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         }
       })
     })
-    console.log('tupleBuffer copied: ', tupleBuffer)
     this.setState({tupleBuffer: tupleBuffer});
   }
 

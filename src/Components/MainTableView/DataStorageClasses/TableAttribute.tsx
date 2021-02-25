@@ -328,7 +328,6 @@ class TableAttribute {
       if (type === "number") {
         return <input value={currentValue} type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
       }
-      console.log(tableAttribute.attributeType)
       throw Error("Unsupported Type found for attribute: " + tableAttribute.attributeName);
     }
   }
