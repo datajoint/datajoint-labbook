@@ -73,13 +73,83 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     if (this.props.tupleToUpdate === prevProps.tupleToUpdate) {
       return;
     } else {
-      let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+      // let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+      // Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
+      //   Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+      //     tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+      //   })
+      //   Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+      //     tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+      //   })
+      // })
+      // this.setState({tupleBuffer: tupleBuffer});
+      let tupleBuffer: any = {};
       Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
-        Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        Object.values(columns.tableAttributesInfo).forEach((attributes: any) => {
+          attributes.forEach((attr: any) => {
+            if (attr.attributeType === TableAttributeType.DATE) {
+              if (attr.constructor === PrimaryTableAttribute) {
+                Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+                  if (attributeKeyVal[0] === attr.attributeName) { // attributeKeyVal[0] is the key
+                    let dateFormat = new Date(attributeKeyVal[1])
+                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
+                  }
+                })
+              }
+              else if (attr.constructor === SecondaryTableAttribute) {
+                Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+                  if (attributeKeyVal[0] === attr.attributeName) {
+                    let dateFormat = new Date(attributeKeyVal[1])
+                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
+                  }
+                })
+              }
+            }
+            else if (attr.attributeType === TableAttributeType.DATETIME || attr.attributeType === TableAttributeType.TIMESTAMP) {
+              if (attr.constructor === PrimaryTableAttribute) {
+                Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+                  if (attributeKeyVal[0] === attr.attributeName) {
+                    let dateFormat = new Date(attributeKeyVal[1])
+                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
+                  }
+                })
+              }
+              else if (attr.constructor === SecondaryTableAttribute) {
+                Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+                  if (attributeKeyVal[0] === attr.attributeName) {
+                    let dateFormat = new Date(attributeKeyVal[1])
+                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
+                  }
+                })
+              }
+            }
+            else if (attr.attributeType === TableAttributeType.TIME) {
+              if (attr.constructor === PrimaryTableAttribute) {
+                Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
+                  if (attributeKeyVal[0] === attr.attributeName) {
+                    tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+                  }
+                })
+              }
+              else if (attr.constructor === SecondaryTableAttribute) {
+                Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
+                  if (attributeKeyVal[0] === attr.attributeName) {
+                    tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+                  }
+                })
+              }
+            }
+          })
+        });
+        Object.entries(columns.primaryEntries).forEach((attributeKeyVal: Array<any>) => {
+          if (!tupleBuffer[attributeKeyVal[0]]) {
+            tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+          }
         })
-        Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+        Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: Array<any>) => {
+          if (!tupleBuffer[attributeKeyVal[0]]) {
+            tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
+          }
         })
       })
       this.setState({tupleBuffer: tupleBuffer});
@@ -91,7 +161,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
    * @param attributeName Attribute name of the change, this is used to access the tupleBuffer object members to set the value
    * @param event Event object that come from the onChange function
    */
-  handleChange(attributeName: string, event: any) {
+  handleChange(event: any, attributeName: string) {
     // Create a copy, update the object, then set state
     let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
