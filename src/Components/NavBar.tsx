@@ -35,7 +35,6 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
       return result.text();
     })
     .then(result => {
-      console.log(result)
       this.setState({backendVersion: result});
     })
     .catch(error => {

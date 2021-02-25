@@ -1,0 +1,73 @@
+form {
+  width: 100%;
+  position: relative;
+}
+
+.inputRow:hover {
+  overflow-x: auto;
+}
+
+.rowControls {
+  align-self: flex-end;
+  display: flex;
+}
+
+.rowControls .icon {
+  margin-right: 8px;
+  color: rgb(80, 80, 80);
+  cursor: pointer;
+}
+
+.rowControls .icon.deleteRow:hover {
+  color: rgb(151, 0, 0);
+}
+
+.rowControls .icon.addRow:hover {
+  color: rgb(5, 114, 5);
+}
+
+.submitButton {
+  margin-top: 16px;
+  border: 2px solid rgb(5, 114, 5);
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: rgb(5, 114, 5);
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: rgb(5, 114, 5);
+  color: white;
+}
+
+.copyOverPrompt {
+  display: flex;
+  align-items: center;
+}
+
+.copyOverPrompt button {
+  border: 2px solid rgb(189, 138, 28);
+  color: rgb(189, 138, 28);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.copyOverPrompt button:hover {
+  background-color: rgb(189, 138, 28);
+  color: white;
+}
+
+.copyOverPrompt button:focus,
+.copyOverPrompt button:active {
+  outline: none;
+}
+
+.copyOverPrompt .icon {
+  color: rgb(189, 138, 28);
+}
+
+.copyOverPrompt span {
+  font-size: 0.9rem;
+  margin: 2px 4px 0 4px;
+}

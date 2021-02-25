@@ -4,9 +4,9 @@ import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@for
 import './TableContent.css'
 import TableType from '../TableTypeEnum/TableType'
 import Filter from './Filter/Filter'
-import InsertTuple from './InsertTuple'
-import UpdateTuple from './UpdateTuple'
-import DeleteTuple from './DeleteTuple'
+import InsertTuple from './InsertTuple/InsertTuple'
+import UpdateTuple from './UpdateTuple/UpdateTuple'
+import DeleteTuple from './DeleteTuple/DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import TableAttribute from './DataStorageClasses/TableAttribute'
 import TableAttributeType from './enums/TableAttributeType'
