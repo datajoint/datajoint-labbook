@@ -1,0 +1,26 @@
+.search-table-field {
+  width: 80%;
+  position: relative;
+  margin: 12px auto;
+}
+
+.search-table-field input {
+  position: relative;
+  height: 20px;
+  font-size: 0.75rem;
+  width: 94.5%;
+}
+
+.search-table-field .search-icon {
+  position: absolute;
+  top: 0.4rem;
+  right: 4px;
+  color: #91938F;
+  height: 0.8rem;
+}
+
+
+.table-view-controls {
+  display: inline-flex;
+  width: 100%;
+}

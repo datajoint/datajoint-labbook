@@ -27,6 +27,7 @@
   font-size: 0.75rem;
   width: 94.5%;
 }
+
 .search-schema-field .search-icon {
   position: absolute;
   top: 0.4rem;
@@ -108,13 +109,6 @@ select.sort-schema-options {
   width: 51%;
   margin-left: 2%;
   margin-right: 2%;
-}
-
-.table-view-controls {
-  display: inline-flex;
-  width: 100%;
-  height: 28px;
-  margin-top: 50px;
 }
 
 .sort-table-field {

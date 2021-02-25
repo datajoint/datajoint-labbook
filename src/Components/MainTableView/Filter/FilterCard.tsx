@@ -49,7 +49,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
    * @param attributeName
    * @param event 
    */
-  handleValueChange(attributeName: string, event: any) {
+  handleValueChange(event: any, attributeName: string) {
     let restriction = Object.assign({}, this.props.restriction);
     
     // Handle speical case with DateTime
