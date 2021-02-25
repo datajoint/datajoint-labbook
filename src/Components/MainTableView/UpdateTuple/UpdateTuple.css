@@ -1,0 +1,55 @@
+form {
+  width: 100%;
+  position: relative;
+}
+
+.inputRow:hover {
+  overflow-x: auto;
+}
+
+.rowControls {
+  align-self: flex-end;
+  display: flex;
+}
+
+.rowControls .icon {
+  margin-right: 8px;
+  color: rgb(80, 80, 80);
+  cursor: pointer;
+}
+
+.rowControls .icon.deleteRow:hover {
+  color: rgb(151, 0, 0);
+}
+
+.rowControls .icon.addRow:hover {
+  color: rgb(5, 114, 5);
+}
+
+.submitButton {
+  margin-top: 16px;
+  border: 2px solid rgb(5, 114, 5);
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: rgb(5, 114, 5);
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: rgb(5, 114, 5);
+  color: white;
+}
+
+.updateActionContainer .errorMessage {
+  padding: 0;
+}
+
+.updateActionContainer button.dismiss {
+  margin-left: 8px;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+
+.updateActionContainer button.dismiss:hover {
+  background-color: rgb(212, 212, 212);
+}

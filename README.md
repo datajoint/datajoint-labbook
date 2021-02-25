@@ -39,7 +39,11 @@ For now, development observes the following policy for branches:
 
 `pharus` is treated as a backend dependency managed by git's builtin submodules. It allows us to nest entire git repos with separate history and easy access. Below are some helpful commands to be used after cloning the source repo.
 
-### Update submodules to latest
+### First time git submodule initialization
+
+`git submodule init` then `git submodule update`
+
+### Update submodules to latest (Update to latest master version)
 
 `git submodule foreach git pull`
 

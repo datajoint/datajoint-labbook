@@ -36,7 +36,6 @@
   cursor: not-allowed;
 }
 
-
 .table-view .nav-tabs .tab.inView {
   color: #262A22;
   background-color: #F1f1f1;
@@ -61,4 +60,67 @@
 .loadingArea .loadingMessage {
   padding-left: 24px;
   padding-top: 52px;
+}
+
+.fieldUnit {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  border: 1px solid gray;
+}
+
+.fieldUnit input,
+.fieldUnit input:focus,
+.fieldUnit input:active,
+.fieldUnit select,
+.fieldUnit select:focus,
+.fieldUnit select:active {
+  box-sizing: border-box;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid gray;
+  outline: none;
+  height: 100%;
+  padding: 0 4px;
+}
+
+.fieldUnit input:disabled {
+  color: rgb(163, 163, 163);
+}
+
+.fieldUnit .dateTimeFields {
+  display: flex;
+}
+
+.fieldUnit .dateTimeFields input:first-of-type {
+  border-right: 1px solid gray;
+}
+
+.inputRow {
+  display: flex;
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+  margin-right: 0;
+  flex-direction: flex-end;
+  padding-bottom: 12px;
+}
+
+.primary-attribute-label {
+  color: #399E5A;
+  font-weight: bolder;
+}
+
+.secondary-attribute-label {
+}
+
+.attributeHead {
+  display: table-cell;
+  padding: 4px;
+  background-color: rgb(228, 228, 228);
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+
 }
