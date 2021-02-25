@@ -71,16 +71,6 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     if (this.props.tupleToUpdate === prevProps.tupleToUpdate) {
       return;
     } else {
-      // let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
-      // Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
-      //   Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-      //     tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-      //   })
-      //   Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-      //     tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-      //   })
-      // })
-      // this.setState({tupleBuffer: tupleBuffer});
       let tupleBuffer: any = {};
       Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
         Object.values(columns.tableAttributesInfo).forEach((attributes: any) => {
