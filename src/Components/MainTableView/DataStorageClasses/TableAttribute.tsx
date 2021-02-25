@@ -33,6 +33,11 @@ class TableAttribute {
      * @param timeString 
      */
     static parseTimeString(timeString: string) {
+      // Handle case with null
+      if (timeString === null) {
+        return '=NULL=';
+      }
+
       const timeNumber = parseInt(timeString)
       let date = new Date(timeNumber * 1000);
       const zeroPad = (num: number, places: number) => String(num).padStart(places, '0');
@@ -44,16 +49,26 @@ class TableAttribute {
      * @param dateTimeString 
      */
     static parseDateTime(dateTimeString: string) {
+      // Handle case with null
+      if (dateTimeString === null) {
+        return '=NULL=';
+      }
+
       let date = new Date(parseInt(dateTimeString) * 1000);
       return date.toUTCString();
     }
 
     /**
      * Helper function for converting date to Date String
-     * @param dateTimeString 
+     * @param dateString 
      */
-    static parseDate(dateTimeString: string) {
-      let date = new Date(parseInt(dateTimeString) * 1000);
+    static parseDate(dateString: string) {
+      // Handle case with null
+      if (dateString === null) {
+        return '=NULL=';
+      }
+
+      let date = new Date(parseInt(dateString) * 1000);
       return (date.getUTCMonth() + 1) + "-" + date.getUTCDate() + "-" + date.getUTCFullYear();
     }
 
