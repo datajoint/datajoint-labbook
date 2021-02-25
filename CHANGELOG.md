@@ -5,6 +5,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ## [Unreleased]
 ### Added
 - Support for double data type (#72) PR #86
+- Added search functionailty for table list similar to schema. (#73) PR #88
 
 ### Changed
 - Changed dark and default logos to reflect new `DataJoint LabBook` name. PR #70
