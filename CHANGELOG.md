@@ -9,6 +9,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Added support for double data type
 - Fixed issue with input fields for decimal, floats, and double not having the correct step settings.
 - Updated formating for time to match HH:MM:SS, before it would chop off MM and SS if was less then 10
+- Added search functionailty for table list similar to schema. Uses string matching.
 
 
 ## [0.1.0-alpha.2] - 2021-02-19
