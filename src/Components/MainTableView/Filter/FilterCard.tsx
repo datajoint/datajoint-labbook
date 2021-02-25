@@ -1,4 +1,6 @@
 import React from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faTrashAlt} from '@fortawesome/free-solid-svg-icons'
 import RestrictionType from '../enums/RestrictionType'
 import Restriction from '../DataStorageClasses/Restriction'
 import TableAttribute from '../DataStorageClasses/TableAttribute'
@@ -144,7 +146,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
           <label>Value</label>
           {this.getInputBlock()}
         </form>
-        <button className="filterCardDeleteButton" type="button" onClick={() => this.props.deleteFilterCard(this.props.index)}>Delete</button>
+        <button className="filterCardDeleteButton" type="button" onClick={() => this.props.deleteFilterCard(this.props.index)}><FontAwesomeIcon className="trashCard icon" icon={faTrashAlt} /></button>
       </div>
     )
   }

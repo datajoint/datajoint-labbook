@@ -3,9 +3,25 @@
   padding: 1%;
   margin: 0.7%;
   background-color: white;
+  width: 180px;
 }
 
 .filterCardForm {
   display: flex;
   flex-direction: column;
+}
+
+button.filterCardDeleteButton {
+  margin-top: 4px;
+  padding: 4px;
+}
+
+.trashCard.icon {
+  color: rgb(80, 80, 80);
+  cursor: pointer;
+  width: 12px;
+}
+
+.trashCard.icon:hover {
+  color: rgb(151, 0, 0);
 }
