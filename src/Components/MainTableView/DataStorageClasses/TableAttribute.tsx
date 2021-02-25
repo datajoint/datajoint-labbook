@@ -35,7 +35,7 @@ class TableAttribute {
     static parseTimeString(timeString: string) {
       // Handle case with null
       if (timeString === null) {
-        return 'null';
+        return '=NULL=';
       }
 
       const timeNumber = parseInt(timeString)
@@ -51,7 +51,7 @@ class TableAttribute {
     static parseDateTime(dateTimeString: string) {
       // Handle case with null
       if (dateTimeString === null) {
-        return 'null';
+        return '=NULL=';
       }
 
       let date = new Date(parseInt(dateTimeString) * 1000);
@@ -65,7 +65,7 @@ class TableAttribute {
     static parseDate(dateString: string) {
       // Handle case with null
       if (dateString === null) {
-        return 'null';
+        return '=NULL=';
       }
 
       let date = new Date(parseInt(dateString) * 1000);
