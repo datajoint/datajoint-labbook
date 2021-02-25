@@ -83,7 +83,6 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     }
 
     this.setState({hidePartTable: updatedList})
-    
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -155,7 +154,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     }
 
      // Update the state
-     this.setState({tableList: tableList, restrictedTableList: tableList});
+     this.setState({tableList: tableList, restrictedTableList: tableList, searchString: ''});
   }
 
   onSearchStringChange(event: any) {
@@ -176,10 +175,10 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
         }
       }
 
-      this.setState({searchString: event.target, restrictedTableList: restrictedTableList});
+      this.setState({searchString: event.target.value, restrictedTableList: restrictedTableList});
     }
     else {
-      this.setState({restrictedTableList: this.state.tableList});
+      this.setState({searchString: event.target.value, restrictedTableList: this.state.tableList});
     }
   }
 
@@ -187,7 +186,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     return(
       <div className="table-menu">
          <div className="search-table-field">
-          <input type="text" onChange={this.onSearchStringChange} placeholder="Search Table"/>
+          <input type="text" onChange={this.onSearchStringChange} value={this.state.searchString} placeholder="Search Table"/>
           <FontAwesomeIcon className="search-icon" icon={faSearch}/>
         </div>
         <div className="table-view-controls">
