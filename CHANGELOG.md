@@ -12,7 +12,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Changed dark and default logos to reflect new `DataJoint LabBook` name. PR #70
 - Changed Insert and Update component code to share common form generation code, still need to do for delete (#54) PR #86
 - Replaced the word delete with trash icon for filter card removal (#82) PR #87
-- Hide dependency logic in update and delete action - partially fixes (#83) PR #87
+- Hide dependency logic in update and delete action - partially fixes (#83) PR #87 #91
 
 ### Fixed
 - Fixed issue with input fields for decimal, floats, and double not having the correct step settings. (#81) PR #86
