@@ -26,20 +26,6 @@ form {
   color: rgb(5, 114, 5);
 }
 
-.submitButton {
-  margin-top: 16px;
-  border: 2px solid rgb(5, 114, 5);
-  padding: 8px 20px;
-  border-radius: 4px;
-  color: rgb(5, 114, 5);
-  cursor: pointer;
-}
-
-.submitButton:hover {
-  background-color: rgb(5, 114, 5);
-  color: white;
-}
-
 .copyOverPrompt {
   display: flex;
   align-items: center;
