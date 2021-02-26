@@ -5,6 +5,8 @@ import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
 import TableAttributeType from '../enums/TableAttributeType';
 
 import CheckDependency from '../CheckDependency';
+import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
+import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
 /**
  * list of allowed states on this delete tuple component
@@ -17,7 +19,16 @@ type deleteTupleState = {
   deleteAccessible: boolean // valdiation result of accessibility from check dependency component
 }
 
-class DeleteTuple extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, tupleToDelete?: any, fetchTableContent: any, clearEntrySelection: any}, deleteTupleState> {
+class DeleteTuple extends React.Component<{
+    token: string, 
+    selectedSchemaName: string, 
+    selectedTableName: string, 
+    tableAttributesInfo?: TableAttributesInfo, 
+    fetchTableContent: any, 
+    clearEntrySelection: any,
+    selectedTableEntry?: any
+  },
+  deleteTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -25,8 +36,11 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
       deleteStatusMessage: '',
       isGettingDependencies: false,
       isDeletingEntry: false,
-      deleteAccessible: false
+      deleteAccessible: false,
     }
+
+    this.getTableView = this.getTableView.bind(this);
+    this.handleTupleDeletion = this.handleTupleDeletion.bind(this);
   }
 
   /**
@@ -34,40 +48,43 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
    * @param prevProps 
    * @param prevState 
    */
-  componentDidUpdate(prevProps: any, prveState: any) {
-    // return if there has been no change in tuple selection
-    if (prevProps.tupleToDelete === this.props.tupleToDelete) {
-      return
-    } else {
-      // if there has been a change, close any error message
-      this.setState({deleteStatusMessage: ''})
+  componentDidUpdate(prevProps: any, prevState: any) {
+    if (this.props.selectedTableEntry === prevProps.selectedTableEntry) {
+      return;
     }
+    else if (this.props.selectedTableEntry === undefined) {
+      this.setState({deleteStatusMessage: ''})
+    }    
   }
 
   /**
    * Function to delete the selected table entry after user is presented with potential dependencies and confirms
-   * @param entry
    */
-  handleTupleDeletion(entry: any) {
-
-    // Check that tableAttirbutesInfo is not undefined
+  handleTupleDeletion() {
+    // Construct the tupleToDelete object which is basically only the primary keys
     if (this.props.tableAttributesInfo === undefined) {
       return;
     }
 
-    // Copy the current state of processedEntry for processing for submission
-    let processedEntry = Object.assign({}, entry[0]?.primaryEntries);
+    if (this.props.selectedTableEntry === undefined) {
+      return;
+    }
+    
+    // Build the tuple to delete which is basically this.props.selectedTableEntry but only the primary keys
+    let tupleToDelete: any = {};
 
     // Loop through and deal with date, datetime, and timestamp formats
-    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
-    for (let tableAttribute of tableAttributes) {
-      if (tableAttribute.attributeType === TableAttributeType.DATE) {
+    for (let primaryTableAttribute of this.props.tableAttributesInfo.primaryAttributes) {
+      if (primaryTableAttribute.attributeType === TableAttributeType.DATE) {
         // Convert date to DJ date format
-        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateToDJFormat(processedEntry[tableAttribute.attributeName])
+        tupleToDelete[primaryTableAttribute.attributeName] = TableAttribute.parseDateToDJFormat(tupleToDelete[primaryTableAttribute.attributeName])
       }
-      else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
+      else if (primaryTableAttribute.attributeType === TableAttributeType.DATETIME || primaryTableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         // Convert to DJ friendly datetime format
-        processedEntry[tableAttribute.attributeName] = TableAttribute.parseDateTimeToDJFormat(processedEntry[tableAttribute.attributeName])
+        tupleToDelete[primaryTableAttribute.attributeName] = TableAttribute.parseDateTimeToDJFormat(tupleToDelete[primaryTableAttribute.attributeName])
+      }
+      else {
+        tupleToDelete[primaryTableAttribute.attributeName] = this.props.selectedTableEntry[primaryTableAttribute.attributeName]
       }
     }
 
@@ -77,8 +94,8 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     // TODO: Run api fetch for list of dependencies/permission
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/delete_tuple`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restrictionTuple: processedEntry})
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restrictionTuple: tupleToDelete})
     })
       .then(result => {
         // set deleting status to done
@@ -114,69 +131,63 @@ class DeleteTuple extends React.Component<{token: string, selectedSchemaName: st
     this.setState({dependencies: list})
   }
 
+  getTableView() {
+    // Get the selected table entry
+    var tuple = Object.assign({}, this.props.selectedTableEntry);
+    // Remove __date and __time if exists
+    for (let tupleKey of Object.keys(tuple)) {
+      if (tupleKey.substring(tupleKey.length - 6) === '__date' || tupleKey.substring(tupleKey.length - 6) === '__time') {
+        delete tuple[tupleKey];
+      }
+    }
+
+    // Generate the table view
+    return(
+      <table className="tupleToDelete">
+        <thead>
+          {this.props.tableAttributesInfo?.primaryAttributes.map((primaryAttribute: PrimaryTableAttribute) => {
+              return <th key={primaryAttribute.attributeName} className="primaryKey">{primaryAttribute.attributeName}</th>
+            }
+          )}
+          {this.props.tableAttributesInfo?.secondaryAttributes.map((secondaryAttribute: SecondaryTableAttribute) => {
+              return <th key={secondaryAttribute.attributeName} className="secondaryKey">{secondaryAttribute.attributeName}</th>
+            }
+          )}
+        </thead>
+        <tbody>
+          {Object.keys(tuple).map((key: any, index: number) => {
+              return <td key={key} className="dataEntry">{tuple[key]}</td>
+            }
+          )}
+        </tbody>
+      </table>
+    )
+  }
+
   render() {
     return(
       <div className="deleteWorkZone">
-        <div className="tupleToDeleteCheck">
-          {Object.values(this.props.tupleToDelete).map((entry: any) => {
-            return (
-              <div key={entry}>
-                <p className="confirmationText">Delete this entry?</p>
-                <table className="tupleToDelete">
-                  <thead>
-                    <tr>
-                    {Object.keys(entry?.primaryEntries).map((primaryKey: any) => {
-                      return (<th key={primaryKey} className="primaryKey">{primaryKey}</th>)
-                    })}
-                    {Object.keys(entry?.secondaryEntries).map((secondaryKey: any) => {
-                      return (<th key={secondaryKey} className="secondaryKey">{secondaryKey}</th>)
-                    })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                    {Object.values(entry?.primaryEntries).map((primaryVal: any) => {
-                      return (<td key={primaryVal} className="primaryEntry">{primaryVal}</td>)
-                    })}
-                    {Object.values(entry?.secondaryEntries).map((secondaryVal: any) => {
-                      return (<td key={secondaryVal} className="secondaryEntry">{secondaryVal}</td>)
-                    })}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )
-          })}
-        </div>
-        {Object.entries(this.props.tupleToDelete).length === 0 && !Object.entries(this.state.dependencies).length ? <p>Select a table entry to delete.</p> :
-          <CheckDependency token={this.props.token} 
-                          selectedSchemaName={this.props.selectedSchemaName}
-                          selectedTableName={this.props.selectedTableName}
-                          tableAttributesInfo={this.props.tableAttributesInfo}
-                          tupleToCheckDependency={Object.values(this.props.tupleToDelete)}
-                          clearList={!Object.entries(this.state.dependencies).length} 
-                          dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
-                          allAccessible={(bool: boolean) => this.setState({deleteAccessible: bool})} />
-        }
-        {this.state.dependencies.length ? (
-          <div>
-            <p>Are you sure you want to delete this entry?</p>
-            <div className="actionButtons">
-              <button className="confirmAction" disabled={!this.state.deleteAccessible} onClick={()=>this.handleTupleDeletion(Object.values(this.props.tupleToDelete))} >Confirm Delete</button>
-              <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
-            </div>
+      {this.props.selectedTableEntry ?
+        <div>  
+          <p>Are you sure you want to delete this entry?</p>
+          <div className="tupleToDeleteCheck">
+            {this.getTableView()}
           </div>
-        ): ''}
-        <div className="deleting">
-        {this.state.isDeletingEntry ? <p>Deleting entry might take a while...</p>: '' } {/* TODO: replace with proper animation */}
-        {this.state.deleteStatusMessage ? (
-          <div className="errorMessage">{this.state.deleteStatusMessage}<button className="dismiss" onClick={() => this.setState({deleteStatusMessage: ''})}>dismiss</button></div>
-        ) : ''}
-        </div>
+          <div className="actionButtons">
+            <button className="confirmAction" onClick={() => this.handleTupleDeletion()} >Confirm Delete</button>
+            <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+          </div>
+          <div className="deleting">
+          {this.state.isDeletingEntry ? <p>Deleting entry might take a while...</p>: '' } {/* TODO: replace with proper animation */}
+          {this.state.deleteStatusMessage ? (
+            <div className="errorMessage">{this.state.deleteStatusMessage}<button className="dismiss" onClick={() => this.setState({deleteStatusMessage: ''})}>dismiss</button></div>
+          ) : ''}
+          </div>
+        </div> 
+        : <p>Select a table entry from below to delete</p>}
       </div>
     )
   }
-  
 }
 
 export default DeleteTuple;

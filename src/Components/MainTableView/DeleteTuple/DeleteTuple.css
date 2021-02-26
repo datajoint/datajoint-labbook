@@ -12,31 +12,32 @@ table.tupleToDelete {
   margin-bottom: 12px;
 }
 
-table.tupleToDelete thead tr th,
-table.tupleToDelete tbody tr td {
+table.tupleToDelete thead th,
+table.tupleToDelete tbody td {
   border: 0.5px solid gray;
   padding: 4px;
   white-space: nowrap;
   width: auto;
   font-size: 0.9rem;
+  background-color: #FFF;
 }
 
-table.tupleToDelete thead tr th{
+table.tupleToDelete thead th {
   background-color: rgb(228, 228, 228);
   font-size: 0.8rem;
 }
 
-table.tupleToDelete thead tr th.primaryKey {
+table.tupleToDelete thead th.primaryKey {
   color: #399E5A;
   font-weight: bolder;
 }
 
-table.tupleToDelete thead tr th.secondaryKey {
+table.tupleToDelete thead th.secondaryKey {
   font-weight: normal;
 }
 
-table.tupleToDelete thead tr,
-table.tupleToDelete tbody tr {
+table.tupleToDelete thead,
+table.tupleToDelete tbody {
   width: 100%;
   overflow-x: auto;
   line-height: 1rem;

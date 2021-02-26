@@ -1,6 +1,5 @@
 import TableAttributeType from "../enums/TableAttributeType";
 
-
 /**
  * Parent class for table attributes, typically never used directly
  */
@@ -85,8 +84,16 @@ class TableAttribute {
      * @param viewDateString
      */
     static parseDateToDJFormat(viewDateString: string) {
-      let djDate = new Date(viewDateString).toISOString().split("T")[0]
-      return djDate;
+      let djDate = new Date(viewDateString)
+      return djDate.toISOString().split("T")[0];
+    }
+
+    static covertRawDateToInputFieldFormat(rawDateValue: string) {
+      return new Date(rawDateValue).toISOString().split('T')[0];
+    }
+
+    static convertRawDateTimeInputFieldFormat(rawDateTimeValue: string) {
+      return new Date(rawDateTimeValue).toISOString().split('T').join(' ').split('.')[0];
     }
 
     static getTypeString(tableAttribute: TableAttribute) {
@@ -295,35 +302,57 @@ class TableAttribute {
 
       }
       else if (tableAttribute.attributeType === TableAttributeType.DATE) {
-        return <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
+        return <input type="date" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
       }
       else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
-        return(
-          <div className="dateTimeFields">
-            <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
-            <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
-          </div>
-        );
+        if (currentValue) {
+          const splitResult = currentValue.split(' ');
+          return(
+            <div className="dateTimeFields">
+              {/* <input type="datetime-local" value={currentValue.replace(',', ' ')} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)} /> */}
+              <input type="date" defaultValue={splitResult[0]} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
+              <input type="time" step="1" defaultValue={splitResult[1]} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
+            </div>
+          );
+        }
+        else {
+          return(
+            <div className="dateTimeFields">
+              {/* <input type="datetime-local" value={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)} /> */}
+              <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
+              <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
+            </div>
+          );
+        }
       }
       else if (tableAttribute.attributeType === TableAttributeType.TIME) {
-        return <input type="text" defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
-
+        return <input type="text" value={currentValue} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
       }
       else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
-        return(
-            <select onChange={(e) => handleChange(e, tableAttribute.attributeName)}> {
+        if (currentValue) {
+          return(
+            <select defaultValue={currentValue} onChange={(e) => handleChange(e, tableAttribute.attributeName)}> {
               tableAttribute.enumOptions?.map((enumOptionString: string) => {
                 return(<option selected={currentValue === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
               })}
             </select>
         )
+        }
+        else {
+          return(
+            <select defaultValue={defaultValue} onChange={(e) => handleChange(e, tableAttribute.attributeName)}> {
+              tableAttribute.enumOptions?.map((enumOptionString: string) => {
+                return(<option selected={currentValue === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
+              })}
+            </select>
+        )
+        }
       }
   
       // Handle number return types
       if (type === "number") {
         return <input value={currentValue} type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
       }
-      console.log(tableAttribute.attributeType)
       throw Error("Unsupported Type found for attribute: " + tableAttribute.attributeName);
     }
   }

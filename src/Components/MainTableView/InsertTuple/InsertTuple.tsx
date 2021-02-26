@@ -1,6 +1,6 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faRedoAlt, faTrashAlt, faPlusCircle, faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
+import {faTrashAlt, faPlusCircle, faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
 import TableAttribute from '../DataStorageClasses/TableAttribute';
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
@@ -23,7 +23,16 @@ type insertTupleState = {
  * @param fetchTableContent Callback function to tell the parent component to update the contentData
  * @param tuplesToInsert List of selected tuples to be copied over for quick insert field fill-in. For now, starting with just 1.
  */
-class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tuplesToInsert?: any,}, insertTupleState> {
+class InsertTuple extends React.Component<{
+    token: string, 
+    selectedSchemaName:string, 
+    selectedTableName: string, 
+    tableAttributesInfo?: TableAttributesInfo, 
+    fetchTableContent: any, 
+    clearEntrySelection: any, 
+    selectedTableEntry?: any}, 
+  insertTupleState> {
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -33,6 +42,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
 
     this.onSubmit = this.onSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.copyTuple = this.copyTuple.bind(this);
   }
 
   /**
@@ -70,21 +80,14 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
 
   /**
    * Helper function to handle copy over of the selected tuple into the insert fields by updating the tupleBuffer state.
-   * TODO: Does not work for date, time, datetime fill at the moment, figure out conversion.
    * @param tupleToInsert user selected tuple (single entry for now) to be copied over
    */
-  copyTuple(event: any, tupleToInsert: any) {
+  copyTuple(event: any) {
     event.preventDefault();
-    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
-    Object.values(tupleToInsert).forEach((columns: any) => {
-      Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-      })
-      Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-        tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-      })
-    })
-    this.setState({tupleBuffer: tupleBuffer});
+    // Get the tuple and set it as tupleBuffer
+    if (this.props.selectedTableEntry.length !== 0) {
+      this.setState({tupleBuffer: this.props.selectedTableEntry});
+    }
   }
 
   /**
@@ -157,18 +160,23 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     .then(result => {
       // Check for error mesage 500, if so throw and error
       if (result.status === 500) {
-        result.text().then(errorMessage => {throw new Error(errorMessage)});
+        result.text()
+        .then(errorMessage => {throw new Error(errorMessage)})
+        .catch((error) => {
+          this.setState({errorMessage: error.message});
+        });
       }
       return result.text();
     })
     .then(result => {
       // Insert was sucessful, tell TableView to fetch the content again
+      this.setState({tupleBuffer: {}})
+      this.props.clearEntrySelection();
       this.props.fetchTableContent();
     })
     .catch((error) => {
-      this.setState({errorMessage: error});
+      this.setState({errorMessage: error.message});
     })
-
   }
 
   /**
@@ -190,14 +198,14 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         <h1>Insert</h1>
         <form onSubmit={this.onSubmit}>
           <div className="inputRow">
-            { 
+            {/* { 
               // only show copy over/delete row icons when ready for multiple insert
-              this.props.tuplesToInsert.length > 1 ?
+              this.props.selectedTableEntry !== undefined ?
               (<div className="rowControls">
                 <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
                 <FontAwesomeIcon className="addRow icon" icon={faPlusCircle} />
               </div>) : ''
-            }
+            } */}
             {
               // Deal with primary attirbutes
               this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
@@ -222,17 +230,19 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
             }
           </div>
           {
-            Object.entries(this.props.tuplesToInsert).length ?
+            this.props.selectedTableEntry !== undefined ?
             <div className="copyOverPrompt">
               <FontAwesomeIcon className="icon" icon={faExclamationCircle}/>
               <span>Table entry selection detected. Copy over for a quick prefill?</span>
-              <button onClick={(event) => this.copyTuple(event, this.props.tuplesToInsert)}>Copy Over</button>
+              <button onClick={(event) => this.copyTuple(event)}>Copy Over</button>
             </div> :
             ''
           } 
           <input className="submitButton" type='submit' value='Submit'></input>
         </form>
-        <div>{this.state.errorMessage}</div>
+        {this.state.errorMessage ? (
+          <div>{this.state.errorMessage}<button className="dismiss" onClick={() => this.setState({errorMessage: ''})}>dismiss</button></div>
+        ) : ''}
       </div>
     )
   }

@@ -6,14 +6,18 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ### Added
 - Support for double data type (#72) PR #86
 - Added search functionailty for table list similar to schema. (#73) PR #88
+- Added input field for date/datetime/time/timestamp copy over for insert and update. (#47) PR #87
 
 ### Changed
 - Changed dark and default logos to reflect new `DataJoint LabBook` name. PR #70
 - Changed Insert and Update component code to share common form generation code, still need to do for delete (#54) PR #86
+- Replaced the word delete with trash icon for filter card removal (#82) PR #87
+- Hide dependency logic in delete action - partially fixes (#83) PR #87
 
 ### Fixed
 - Fixed issue with input fields for decimal, floats, and double not having the correct step settings. (#81) PR #86
 - Fixed formating for time to match HH:MM:SS, before it would chop off MM and SS if was less then 10 (#74) PR #86
+- Fixed issue with insert error breaking the app. (#71) PR #87
 - Fixed issue with time, date, datetime, and timestamp display null as Nan::Nan, now it just display null for those fields (#75) PR #89
 
 
