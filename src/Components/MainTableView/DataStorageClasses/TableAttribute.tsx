@@ -1,6 +1,5 @@
 import TableAttributeType from "../enums/TableAttributeType";
 
-
 /**
  * Parent class for table attributes, typically never used directly
  */
@@ -70,8 +69,16 @@ class TableAttribute {
      * @param viewDateString
      */
     static parseDateToDJFormat(viewDateString: string) {
-      let djDate = new Date(viewDateString).toISOString().split("T")[0]
-      return djDate;
+      let djDate = new Date(viewDateString)
+      return djDate.toISOString().split("T")[0];
+    }
+
+    static covertRawDateToInputFieldFormat(rawDateValue: string) {
+      return new Date(rawDateValue).toISOString().split('T')[0];
+    }
+
+    static convertRawDateTimeInputFieldFormat(rawDateTimeValue: string) {
+      return new Date(rawDateTimeValue).toISOString().split('T').join(' ').split('.')[0];
     }
 
     static getTypeString(tableAttribute: TableAttribute) {
@@ -284,16 +291,19 @@ class TableAttribute {
       }
       else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         if (currentValue) {
+          const splitResult = currentValue.split(' ');
           return(
             <div className="dateTimeFields">
-              <input type="date" defaultValue={currentValue?.split(' ')[0]} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
-              <input type="time" step="1" defaultValue={currentValue?.split(' ')[1]} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
+              {/* <input type="datetime-local" value={currentValue.replace(',', ' ')} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)} /> */}
+              <input type="date" defaultValue={splitResult[0]} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
+              <input type="time" step="1" defaultValue={splitResult[1]} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
             </div>
           );
         }
         else {
           return(
             <div className="dateTimeFields">
+              {/* <input type="datetime-local" value={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)} /> */}
               <input type="date" defaultValue={defaultValue} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
               <input type="time" step="1" defaultValue={defaultValue} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
             </div>

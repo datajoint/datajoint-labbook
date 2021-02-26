@@ -23,7 +23,16 @@ type insertTupleState = {
  * @param fetchTableContent Callback function to tell the parent component to update the contentData
  * @param tuplesToInsert List of selected tuples to be copied over for quick insert field fill-in. For now, starting with just 1.
  */
-class InsertTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tuplesToInsert?: any, clearEntrySelection: any}, insertTupleState> {
+class InsertTuple extends React.Component<{
+    token: string, 
+    selectedSchemaName:string, 
+    selectedTableName: string, 
+    tableAttributesInfo?: TableAttributesInfo, 
+    fetchTableContent: any, 
+    clearEntrySelection: any, 
+    selectedTableEntry?: any}, 
+  insertTupleState> {
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -33,6 +42,7 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
 
     this.onSubmit = this.onSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.copyTuple = this.copyTuple.bind(this);
   }
 
   /**
@@ -70,81 +80,14 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
 
   /**
    * Helper function to handle copy over of the selected tuple into the insert fields by updating the tupleBuffer state.
-   * TODO: Does not work for date, time, datetime fill at the moment, figure out conversion.
    * @param tupleToInsert user selected tuple (single entry for now) to be copied over
    */
-  copyTuple(event: any, tupleToInsert: any) {
+  copyTuple(event: any) {
     event.preventDefault();
-    let tupleBuffer: any = {};
-    Object.values(tupleToInsert).forEach((columns: any) => {
-      Object.values(columns.tableAttributesInfo).forEach((attributes: any) => {
-        attributes.forEach((attr: any) => {
-          if (attr.attributeType === TableAttributeType.DATE) {
-            if (attr.constructor === PrimaryTableAttribute) {
-              Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-                if (attributeKeyVal[0] === attr.attributeName) { // attributeKeyVal[0] is the key
-                  let dateFormat = new Date(attributeKeyVal[1])
-                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
-                }
-              })
-            }
-            else if (attr.constructor === SecondaryTableAttribute) {
-              Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-                if (attributeKeyVal[0] === attr.attributeName) {
-                  let dateFormat = new Date(attributeKeyVal[1])
-                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
-                }
-              })
-            }
-          }
-          else if (attr.attributeType === TableAttributeType.DATETIME || attr.attributeType === TableAttributeType.TIMESTAMP) {
-            if (attr.constructor === PrimaryTableAttribute) {
-              Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-                if (attributeKeyVal[0] === attr.attributeName) {
-                  let dateFormat = new Date(attributeKeyVal[1])
-                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
-                }
-              })
-            }
-            else if (attr.constructor === SecondaryTableAttribute) {
-              Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-                if (attributeKeyVal[0] === attr.attributeName) {
-                  let dateFormat = new Date(attributeKeyVal[1])
-                  tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
-                }
-              })
-            }
-          }
-          else if (attr.attributeType === TableAttributeType.TIME) {
-            if (attr.constructor === PrimaryTableAttribute) {
-              Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-                if (attributeKeyVal[0] === attr.attributeName) {
-                  tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-                }
-              })
-            }
-            else if (attr.constructor === SecondaryTableAttribute) {
-              Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-                if (attributeKeyVal[0] === attr.attributeName) {
-                  tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-                }
-              })
-            }
-          }
-        })
-      });
-      Object.entries(columns.primaryEntries).forEach((attributeKeyVal: Array<any>) => {
-        if (!tupleBuffer[attributeKeyVal[0]]) {
-          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-        }
-      })
-      Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: Array<any>) => {
-        if (!tupleBuffer[attributeKeyVal[0]]) {
-          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-        }
-      })
-    })
-    this.setState({tupleBuffer: tupleBuffer});
+    // Get the tuple and set it as tupleBuffer
+    if (this.props.selectedTableEntry.length !== 0) {
+      this.setState({tupleBuffer: this.props.selectedTableEntry});
+    }
   }
 
   /**
@@ -234,7 +177,6 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
     .catch((error) => {
       this.setState({errorMessage: error.message});
     })
-
   }
 
   /**
@@ -256,14 +198,14 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
         <h1>Insert</h1>
         <form onSubmit={this.onSubmit}>
           <div className="inputRow">
-            { 
+            {/* { 
               // only show copy over/delete row icons when ready for multiple insert
-              this.props.tuplesToInsert.length > 1 ?
+              this.props.selectedTableEntry !== undefined ?
               (<div className="rowControls">
                 <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
                 <FontAwesomeIcon className="addRow icon" icon={faPlusCircle} />
               </div>) : ''
-            }
+            } */}
             {
               // Deal with primary attirbutes
               this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
@@ -288,17 +230,19 @@ class InsertTuple extends React.Component<{token: string, selectedSchemaName:str
             }
           </div>
           {
-            Object.entries(this.props.tuplesToInsert).length ?
+            this.props.selectedTableEntry !== undefined ?
             <div className="copyOverPrompt">
               <FontAwesomeIcon className="icon" icon={faExclamationCircle}/>
               <span>Table entry selection detected. Copy over for a quick prefill?</span>
-              <button onClick={(event) => this.copyTuple(event, this.props.tuplesToInsert)}>Copy Over</button>
+              <button onClick={(event) => this.copyTuple(event)}>Copy Over</button>
             </div> :
             ''
           } 
           <input className="submitButton" type='submit' value='Submit'></input>
         </form>
-        <div>{this.state.errorMessage}</div>
+        {this.state.errorMessage ? (
+          <div>{this.state.errorMessage}<button className="dismiss" onClick={() => this.setState({errorMessage: ''})}>dismiss</button></div>
+        ) : ''}
       </div>
     )
   }

@@ -15,7 +15,15 @@ type updateTupleState = {
   updateAccessible: boolean // disables submit button if any of the dependencies are inaccessible
 }
 
-class UpdateTuple extends React.Component<{token: string, selectedSchemaName:string, selectedTableName: string, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any, tupleToUpdate?: any, clearEntrySelection: any}, updateTupleState> {
+class UpdateTuple extends React.Component<{
+    token: string, 
+    selectedSchemaName:string, 
+    selectedTableName: string, 
+    tableAttributesInfo?: TableAttributesInfo, 
+    fetchTableContent: any, 
+    clearEntrySelection: any,
+    selectedTableEntry: any}, 
+  updateTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -49,16 +57,10 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
       }
     }
 
-    let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
-      Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
-        Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-        })
-        Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-          tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-        })
-      })
-      this.setState({tupleBuffer: tupleBuffer});
+    // Check if there is a selectedTableEntry, if so update tuple buffer with it
+    if (this.props.selectedTableEntry !== undefined) {
+      this.setState({tupleBuffer: this.props.selectedTableEntry});
+    }
   }
 
   /**
@@ -68,79 +70,11 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
    */
   componentDidUpdate(prevProps: any, prevState: any) {
     // break if there has been no change to the tuple selection 
-    if (this.props.tupleToUpdate === prevProps.tupleToUpdate) {
+    if (this.props.selectedTableEntry === prevProps.selectedTableEntry || this.props.selectedTableEntry === undefined) {
       return;
-    } else {
-      let tupleBuffer: any = {};
-      Object.values(this.props.tupleToUpdate).forEach((columns: any) => {
-        Object.values(columns.tableAttributesInfo).forEach((attributes: any) => {
-          attributes.forEach((attr: any) => {
-            if (attr.attributeType === TableAttributeType.DATE) {
-              if (attr.constructor === PrimaryTableAttribute) {
-                Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-                  if (attributeKeyVal[0] === attr.attributeName) { // attributeKeyVal[0] is the key
-                    let dateFormat = new Date(attributeKeyVal[1])
-                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
-                  }
-                })
-              }
-              else if (attr.constructor === SecondaryTableAttribute) {
-                Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-                  if (attributeKeyVal[0] === attr.attributeName) {
-                    let dateFormat = new Date(attributeKeyVal[1])
-                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T')[0];
-                  }
-                })
-              }
-            }
-            else if (attr.attributeType === TableAttributeType.DATETIME || attr.attributeType === TableAttributeType.TIMESTAMP) {
-              if (attr.constructor === PrimaryTableAttribute) {
-                Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-                  if (attributeKeyVal[0] === attr.attributeName) {
-                    let dateFormat = new Date(attributeKeyVal[1])
-                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
-                  }
-                })
-              }
-              else if (attr.constructor === SecondaryTableAttribute) {
-                Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-                  if (attributeKeyVal[0] === attr.attributeName) {
-                    let dateFormat = new Date(attributeKeyVal[1])
-                    tupleBuffer[attributeKeyVal[0]] = dateFormat.toISOString().split('T').join(' ').split('.')[0];
-                  }
-                })
-              }
-            }
-            else if (attr.attributeType === TableAttributeType.TIME) {
-              if (attr.constructor === PrimaryTableAttribute) {
-                Object.entries(columns.primaryEntries).forEach((attributeKeyVal: any) => {
-                  if (attributeKeyVal[0] === attr.attributeName) {
-                    tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-                  }
-                })
-              }
-              else if (attr.constructor === SecondaryTableAttribute) {
-                Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: any) => {
-                  if (attributeKeyVal[0] === attr.attributeName) {
-                    tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-                  }
-                })
-              }
-            }
-          })
-        });
-        Object.entries(columns.primaryEntries).forEach((attributeKeyVal: Array<any>) => {
-          if (!tupleBuffer[attributeKeyVal[0]]) {
-            tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-          }
-        })
-        Object.entries(columns.secondaryEntries).forEach((attributeKeyVal: Array<any>) => {
-          if (!tupleBuffer[attributeKeyVal[0]]) {
-            tupleBuffer[attributeKeyVal[0]] = attributeKeyVal[1]
-          }
-        })
-      })
-      this.setState({tupleBuffer: tupleBuffer});
+    } 
+    else {
+      this.setState({tupleBuffer: this.props.selectedTableEntry});
     }
   }
 
@@ -272,7 +206,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
     return (
       <div className="updateActionContainer">
         {
-            Object.entries(this.props.tupleToUpdate).length === 0 ?
+            this.props.selectedTableEntry === undefined ?
               <p>Select a table entry from below to update</p>
             :
             <form onSubmit={this.onSubmit}>
@@ -305,7 +239,7 @@ class UpdateTuple extends React.Component<{token: string, selectedSchemaName:str
                              selectedSchemaName={this.props.selectedSchemaName}
                              selectedTableName={this.props.selectedTableName}
                              tableAttributesInfo={this.props.tableAttributesInfo}
-                             tupleToCheckDependency={Object.values(this.props.tupleToUpdate)}
+                             tupleToCheckDependency={Object.values(this.props.selectedTableEntry)}
                              clearList={!Object.entries(this.state.dependencies).length}
                              dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
                              allAccessible={(bool: boolean) => this.setState({updateAccessible: bool})} />

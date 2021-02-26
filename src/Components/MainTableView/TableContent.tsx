@@ -30,7 +30,8 @@ type TableContentStatus = {
   hideTableActionMenu: boolean,
   pageIncrement: number,
   paginatorState: Array<number>,
-  selectedTableEntries: any, // lookup dictionary to store the selected table entry - for menu UI
+  selectedTableIndex: number,
+  selectedTableEntry?: {}, // Has to be an object with each attribute name as key cause the way tuple_buffer is handle in the subcomponents
   showWarning: boolean, // text warning when duplicate selection is made for delete/update, most likely to be take out once disable checkbox feature is finished
   isDisabledCheckbox: boolean, // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
   headerWidth: number, // part of table column resizer feature
@@ -60,7 +61,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       hideTableActionMenu: true,
       pageIncrement: 25,
       paginatorState: [0, 25],
-      selectedTableEntries: {},
+      selectedTableIndex: -1,
+      selectedTableEntry: undefined,
       showWarning: false,
       isDisabledCheckbox: false,
       headerWidth: 0,
@@ -104,7 +106,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
     }
 
     // Reset TableActionview
-    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTableEntries: {}});
+    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTableEntry: undefined});
     
     // TODO: part of reference for table column width update
     // console.log('cellRef: ', this.cellRef)
@@ -205,8 +207,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             selectedTableName={this.props.selectedTableName}
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            tuplesToInsert = {this.state.selectedTableEntries}
             clearEntrySelection={() => this.handleSelectionClearRequest()}
+            selectedTableEntry={this.state.selectedTableEntry}
           />
         </div>)
     }
@@ -219,8 +221,8 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             selectedTableName={this.props.selectedTableName}
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            tupleToUpdate = {this.state.selectedTableEntries}
             clearEntrySelection={() => this.handleSelectionClearRequest()}
+            selectedTableEntry={this.state.selectedTableEntry}
           />
       </div>)
     }
@@ -229,12 +231,13 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
         <h1>Delete</h1>
         <DeleteTuple  
           token={this.props.token}
-          tupleToDelete={this.state.selectedTableEntries}
+          // tupleToDelete={this.state.selectedTableEntry}
           selectedSchemaName={this.props.selectedSchemaName} 
           selectedTableName={this.props.selectedTableName} 
           tableAttributesInfo={this.props.tableAttributesInfo}
           fetchTableContent={this.props.fetchTableContent}
           clearEntrySelection={() => this.handleSelectionClearRequest()}
+          selectedTableEntry={this.state.selectedTableEntry}
         />
       </div>)
     }
@@ -246,67 +249,52 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
   /**
    * Function to stage the selected table entries for insert/update/delete process
    * For insert, this will be used for the entry-copy-autofill feature requested.
-   * Datatype included in the selectedTableEntries but should we format datatype to 
+   * Datatype included in the selectedTableEntry but should we format datatype to 
    * DJ style here or right before making the API call?
    * @param event
    * @param tableEntry // table row selection from the checkbox
    */
-  handleCheckedEntry(event: any, tableEntry: any) {
-    /* goal format of this.state.selectedTableEntries = 
-      {
-        "primaryKey1_value.primaryKey2_value": {
-          "primaryEntries": {
-            "primaryKey1" : "primaryKey1_value",
-            "primaryKey2" : "primaryKey2_value"
-          },
-          "secondaryEntries": {
-            "secondaryKey1" : "secondaryKey1_value"
-          },
-          "attributesInfo": {
-            from this.props.tableAttributesInfo
-          }
-        },
-      }
-    */
-
-    // splitting the selected table entry into primary and secondary attributes
-    let primaryTableEntries = tableEntry.slice(0, this.props.tableAttributesInfo?.primaryAttributes.length);
-    let secondaryTableEntries = tableEntry.slice(this.props.tableAttributesInfo?.primaryAttributes.length);
-
-    // pairing the table entry with it's corresponding key
-    let primaryEntries: any = {};
-    let secondaryEntries: any = {};
-    this.props.tableAttributesInfo?.primaryAttributes.forEach((PK, index) => {
-      primaryEntries[PK.attributeName] = primaryTableEntries[index]
-    })
-    this.props.tableAttributesInfo?.secondaryAttributes.forEach((SK, index) => {
-      secondaryEntries[SK.attributeName] = secondaryTableEntries[index]
-    })
-
-    // store the labeled entries under unique keyname using its primary keys if not already there
-    let uniqueEntryName = primaryTableEntries.join(".")
-    let selectionsCopy = Object.assign({}, this.state.selectedTableEntries);
-    if (this.state.selectedTableEntries[uniqueEntryName]) {
-      // delete if already there
-      const {[uniqueEntryName]: remove, ...updatedCopy} = selectionsCopy;
-      this.setState({selectedTableEntries: updatedCopy});
+  handleCheckedEntry(event: any, tupleIndex: number) {
+    // Deal with tableAttributeInfo being undefined
+    if (this.props.tableAttributesInfo === undefined) {
+      return;
     }
-    else {
-      // prevent further creation if there's already an entry and action is set to delete or update
-      if (Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE)) {
-        event.preventDefault();
-        this.setState({showWarning: true});
-        return
-      }
 
-      // create entry if not there
-      selectionsCopy[uniqueEntryName] = {
-        "primaryEntries": primaryEntries,
-        "secondaryEntries": secondaryEntries,
-        "tableAttributesInfo": this.props.tableAttributesInfo
-      }
-      this.setState({selectedTableEntries: selectionsCopy});
+    // If the tupleIndex is already selected, deselect it
+    if (tupleIndex === this.state.selectedTableIndex) {
+      this.setState({selectedTableIndex: -1, selectedTableEntry: undefined});
+      return;
     }
+
+    // Obtain the array of all attributes types (Primary + Secondary)
+    const tableAttributesInfo: Array<TableAttribute> = (this.props.tableAttributesInfo.primaryAttributes as Array<TableAttribute>).concat(this.props.tableAttributesInfo.secondaryAttributes as Array<TableAttribute>);
+
+    // Get the tuple
+    let rawTupleValues = this.props.contentData[tupleIndex];
+    let tupleBuffer: any = {};
+
+    // Iterate though each one and handle speical cases
+    for (let i = 0; i < tableAttributesInfo.length; i++) {
+      // Deal with speical datatypes such as date, time, datetime, etc.
+      if (tableAttributesInfo[i].attributeType === TableAttributeType.DATE) {
+        // Covert date with covertRawDateToInputFieldFormat function from TableAttribute
+        tupleBuffer[tableAttributesInfo[i].attributeName] = TableAttribute.covertRawDateToInputFieldFormat(rawTupleValues[i]);
+      }
+      else if (tableAttributesInfo[i].attributeType === TableAttributeType.DATETIME || tableAttributesInfo[i].attributeType === TableAttributeType.TIMESTAMP) {
+        // Covert DateTime or TimeStamp to DATE,TIME
+        tupleBuffer[tableAttributesInfo[i].attributeName] = TableAttribute.convertRawDateTimeInputFieldFormat(rawTupleValues[i]);
+        const splitResult = tupleBuffer[tableAttributesInfo[i].attributeName].split(' ')
+        tupleBuffer[tableAttributesInfo[i].attributeName + '__date'] = splitResult[0];
+        tupleBuffer[tableAttributesInfo[i].attributeName + '__time'] = splitResult[1]; // YES I know this is dumb, will fix it later
+      }
+      else {
+        tupleBuffer[tableAttributesInfo[i].attributeName] = rawTupleValues[i];
+      }
+    }
+
+    // Covert array into object
+
+    this.setState({selectedTableIndex: tupleIndex, selectedTableEntry: tupleBuffer});
   }
 
   /**
@@ -323,7 +311,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
    * Clears the staging once delete/update is successful and table content has been modified
    */
   handleSelectionClearRequest() {
-    this.setState({selectedTableEntries: {}});
+    this.setState({selectedTableEntry: undefined});
   }
 
   /**
@@ -390,7 +378,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
       disableInsert = true;
       disableUpdate = true;
     }
-    else if (this.props.selectedTableType === TableType.PART || Object.entries(this.state.selectedTableEntries).length > 1) {
+    else if (this.props.selectedTableType === TableType.PART) {
       disableInsert = true;
       disableUpdate = true;
       disableDelete = true;
@@ -404,27 +392,6 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
         <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableDelete}>Delete</button>
       </div>
     )
-  }
-
-  /**
-   * Function to check if the table entry has been selected or not (used to prevent multiple selection for delete/update mode)
-   * @param tableEntry 
-   */
-  checkSelection(tableEntry: any) {
-    // splitting the selected table entry into primary and secondary attributes
-    let primaryTableEntries = tableEntry.slice(0, this.props.tableAttributesInfo?.primaryAttributes.length);
-
-    // pairing the table entry with it's corresponding key
-    let primaryEntries: any = {};
-    this.props.tableAttributesInfo?.primaryAttributes.forEach((PK, index) => {
-      primaryEntries[PK.attributeName] = primaryTableEntries[index]
-    })
-
-    // store the labeled entries under unique keyname using its primary keys if not already there
-    let uniqueEntryName = primaryTableEntries.join(".")
-
-    // returns true if entry is already selected
-    return this.state.selectedTableEntries[uniqueEntryName]
   }
 
   /**
@@ -523,14 +490,14 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             </tr>
             </thead>
             <tbody>
-            {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any) => {
+            {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any, tupleIndex: number) => {
               return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}>
                 <td colSpan={1}>
                   <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.
-                         disabled={Object.entries(this.state.selectedTableEntries).length > 0 && (this.state.currentSelectedTableActionMenu === TableActionType.DELETE || this.state.currentSelectedTableActionMenu === TableActionType.UPDATE || this.state.currentSelectedTableActionMenu === TableActionType.INSERT) && !this.checkSelection(entry)} 
-                         onChange={(event) => this.handleCheckedEntry(event, entry)} 
-                         checked={this.checkSelection(entry)}/>
+                         disabled={this.state.selectedTableIndex > -1 && this.state.selectedTableIndex !== tupleIndex} 
+                         onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
+                         checked={this.state.selectedTableIndex === tupleIndex}/>
                 </td>
                 {entry.map((column: any, index: number) => {
                   return (
