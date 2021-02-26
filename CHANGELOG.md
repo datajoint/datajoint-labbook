@@ -17,6 +17,8 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Fixed issue with input fields for decimal, floats, and double not having the correct step settings. (#81) PR #86
 - Fixed formating for time to match HH:MM:SS, before it would chop off MM and SS if was less then 10 (#74) PR #86
 - Fixed issue with insert error breaking the app. (#71) PR #87
+- Fixed issue with time, date, datetime, and timestamp display null as Nan::Nan, now it just display null for those fields (#75) PR #89
+
 
 ## [0.1.0-alpha.2] - 2021-02-19
 ### Added
