@@ -40,6 +40,20 @@ form {
   color: white;
 }
 
+.cancelButton {
+  margin-top: 16px;
+  border: 2px solid rgb(5, 114, 5);
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: rgb(5, 114, 5);
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background-color: rgb(5, 114, 5);
+  color: white;
+}
+
 .updateActionContainer .errorMessage {
   padding: 0;
 }
