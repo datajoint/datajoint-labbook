@@ -311,7 +311,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
    * Clears the staging once delete/update is successful and table content has been modified
    */
   handleSelectionClearRequest() {
-    this.setState({selectedTableEntry: undefined});
+    this.setState({selectedTableIndex: -1, selectedTableEntry: undefined});
   }
 
   /**
