@@ -174,8 +174,8 @@ class DeleteTuple extends React.Component<{
             {this.getTableView()}
           </div>
           <div className="actionButtons">
-            <button className="confirmAction" onClick={() => this.handleTupleDeletion()} >Confirm Delete</button>
-            <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+            <button className="confirmActionButton delete" onClick={() => this.handleTupleDeletion()} >Confirm Delete</button>
+            <button className="cancelActionButton" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
           </div>
           <div className="deleting">
           {this.state.isDeletingEntry ? <p>Deleting entry might take a while...</p>: '' } {/* TODO: replace with proper animation */}

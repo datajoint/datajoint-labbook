@@ -262,7 +262,7 @@ class InsertTuple extends React.Component<{
             </div> :
             ''
           } 
-          <input className="submitButton" type='submit' value='Submit'></input>
+          <input className="confirmActionButton insert" type='submit' value='Insert'></input>
         </form>
         {this.state.errorMessage ? (
           <div>{this.state.errorMessage}<button className="dismiss" onClick={() => this.setState({errorMessage: ''})}>dismiss</button></div>
