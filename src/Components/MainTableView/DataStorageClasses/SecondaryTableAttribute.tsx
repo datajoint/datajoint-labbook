@@ -8,12 +8,12 @@ import {faRedoAlt} from '@fortawesome/free-solid-svg-icons'
  */
 class SecondaryTableAttribute extends TableAttribute {
   nullable: boolean;
-  defaultValue: string;
+  defaultValue?: string;
 
   constructor(attributeName: string,
     attributeType: TableAttributeType,
     nullable: boolean,
-    defaultValue: string,
+    defaultValue?: string,
     stringTypeAttributeLengthInfo?: number,
     enumOptions?: Array<string>,
     decimalNumDigits?: number,
@@ -21,23 +21,33 @@ class SecondaryTableAttribute extends TableAttribute {
     ) {
     super(attributeName, attributeType, stringTypeAttributeLengthInfo, enumOptions, decimalNumDigits, decimalNumDecimalDigits);
     this.nullable = nullable;
-    this.defaultValue = defaultValue;
+    this.defaultValue = defaultValue === null? undefined : defaultValue;
   }
 
   static getAttributeLabelBlock(secondaryTableAttribute: SecondaryTableAttribute, resetToNullCallback: any) {
     const typeString = super.getTypeString(secondaryTableAttribute);
+    var resetButtonText = 'nullable';
+
+    if (secondaryTableAttribute.defaultValue !== undefined) {
+      resetButtonText = 'default';
+    }
+    
     return(
       <div className="attributeHead">
         <label className="secondary-attribute-label" htmlFor={secondaryTableAttribute.attributeName}>{secondaryTableAttribute.attributeName + ' (' + typeString + ')'}</label>
         { 
-            secondaryTableAttribute.nullable ? 
+            secondaryTableAttribute.nullable || secondaryTableAttribute.defaultValue ? 
             <div className="nullableControls">
-              <div className="nullableTag">nullable</div>
+              <div className="nullableTag">{resetButtonText}</div>
               <FontAwesomeIcon className="resetIcon" icon={faRedoAlt} onClick={() => {resetToNullCallback(secondaryTableAttribute)}} />
             </div> : ''
         }
       </div>
     )
+  }
+
+  static getAttributeInputBlock(secondaryTableAttribute: SecondaryTableAttribute, currentValue: any, handleChange: any) {
+    return super.getAttributeInputBlock(secondaryTableAttribute, currentValue, secondaryTableAttribute.defaultValue, handleChange);
   }
 }
 
