@@ -9,7 +9,8 @@ import './Filter.css'
 type FilterState = {
   restrictions: Array<Restriction>, // Array of Restrictions objects
   tableAttributes: Array<TableAttribute>, // List of TableAttributes which is derive from primary_attribute + secondary_attributes
-  currentRestrictionIDCount: number // Used to give a unique ID to each restriction object to allow react to keep track of what is being deleted
+  currentRestrictionIDCount: number, // Used to give a unique ID to each restriction object to allow react to keep track of what is being deleted
+  restrictionChangeTimeout: ReturnType<typeof setTimeout>
 }
 
 /**
@@ -21,7 +22,8 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     this.state = {
       restrictions: [new Restriction(0)],
       tableAttributes: [],
-      currentRestrictionIDCount: 1
+      currentRestrictionIDCount: 1,
+      restrictionChangeTimeout: setTimeout(() => {}, 0)
     }
     this.addRestriction = this.addRestriction.bind(this);
     this.updateRestriction = this.updateRestriction.bind(this);
@@ -88,28 +90,35 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
       return;
     }
 
-    // Check if any of the restrictions are valid, if so then send them to TableView fetchTuples
-    let validRestrictions: Array<Restriction> = []
-    for (let restriction of this.state.restrictions) {
-      if (restriction.tableAttribute !== undefined && restriction.restrictionType !== undefined && restriction.value !== undefined && restriction.isEnable === true) {
+    // Cancel timer and create a new one
+    clearTimeout(this.state.restrictionChangeTimeout);
 
-        // Check if it is of date time varient
-        if (restriction.tableAttribute.attributeType === TableAttributeType.DATETIME) {
-          if (restriction.value[0] === '' || restriction.value[1] === '') {
-            // Not completed yet thus break out
-            continue;
+    const restrictionChangeTimeout = setTimeout(() => {
+      // Check if any of the restrictions are valid, if so then send them to TableView fetchTuples
+      let validRestrictions: Array<Restriction> = []
+      for (let restriction of this.state.restrictions) {
+        if (restriction.tableAttribute !== undefined && restriction.restrictionType !== undefined && restriction.value !== undefined && restriction.isEnable === true) {
+
+          // Check if it is of date time varient
+          if (restriction.tableAttribute.attributeType === TableAttributeType.DATETIME) {
+            if (restriction.value[0] === '' || restriction.value[1] === '') {
+              // Not completed yet thus break out
+              continue;
+            }
           }
+
+          // Valid restriction, thus add it to the list
+          validRestrictions.push(restriction);
         }
-
-        // Valid restriction, thus add it to the list
-        validRestrictions.push(restriction);
       }
-    }
 
-    // Call fetch content if there is at lesat one valid restriction
-    if (validRestrictions.length >= 0) {
-      this.props.fetchTableContent(validRestrictions);
-    }
+      // Call fetch content if there is at lesat one valid restriction
+      if (validRestrictions.length >= 0) {
+        this.props.fetchTableContent(validRestrictions);
+      }
+    }, 1000);
+
+    this.setState({restrictionChangeTimeout: restrictionChangeTimeout});
   }
 
   render() {
