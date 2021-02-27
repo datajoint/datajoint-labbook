@@ -28,7 +28,6 @@ class SecondaryTableAttribute extends TableAttribute {
     const typeString = super.getTypeString(secondaryTableAttribute);
     var resetButtonText = 'nullable';
 
-    // I don't think this detects is correctly
     if (secondaryTableAttribute.defaultValue !== undefined) {
       resetButtonText = 'default';
     }
