@@ -2,7 +2,7 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
-## [Unreleased]
+## [0.1.0-beta.0] - 2021-02-26
 ### Added
 - Support for double data type (#72) PR #86
 - Added search functionailty for table list similar to schema. (#73) PR #88
@@ -36,5 +36,5 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
-[Unreleased]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...HEAD
+[0.1.0-beta.0]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...0.1.0-beta.0
 [0.1.0-alpha.2]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.2

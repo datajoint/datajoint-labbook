@@ -7,6 +7,8 @@ import NavBar from './NavBar';
 import Login from './Login';
 import Home from './Home'
 
+if (window.performance && performance.navigation.type === 1) alert( "This page is reloaded" )
+
 type DJGUIAppState = {
   currentDatabaseConnectionJWT: string;
   hostname: string;
