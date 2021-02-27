@@ -4,6 +4,11 @@ import {faEye, faEyeSlash, faSearch, faSortAmountDown} from '@fortawesome/free-s
 import TableType from '../TableTypeEnum/TableType';
 import './TableList.css';
 
+enum TableSortMode {
+  ATOZ,
+  ZTOA,
+}
+
 /**
  * Parent Class for all table entry which mainly contains name and type of each table
  */
@@ -45,7 +50,8 @@ type TableListState = {
   hidePartTable: Array<string>,
   tableList: Array<ParentTableListEntry>,
   restrictedTableList: Array<ParentTableListEntry>,
-  searchString: string
+  searchString: string,
+  currentTableSortMode: TableSortMode
 }
 
 class TableList extends React.Component<{token: string, tableListDict: any, selectedTableName: string, selectedTableType: TableType, onTableSelection: any}, TableListState> {
@@ -58,10 +64,12 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
       hidePartTable: [],
       tableList: [],
       restrictedTableList: [],
-      searchString: ''
+      searchString: '',
+      currentTableSortMode: TableSortMode.ATOZ
     }
 
     this.onSearchStringChange = this.onSearchStringChange.bind(this);
+    this.flipTableOrder = this.flipTableOrder.bind(this);
   }
 
   toggleAllPartTableView() {
@@ -153,8 +161,8 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
       }
     }
 
-     // Update the state
-     this.setState({tableList: tableList, restrictedTableList: tableList, searchString: ''});
+     // Update the state and reset sort mode to ATOZ
+     this.setState({tableList: tableList, restrictedTableList: tableList, searchString: '', currentTableSortMode: TableSortMode.ATOZ});
   }
 
   onSearchStringChange(event: any) {
@@ -182,6 +190,23 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     }
   }
 
+  /**
+   * Due to the assumtion that schemaList is initally in alphabetical ascending order and that there is only two option to sort
+   * the list that is ascending and decensding with ascending by default, we can take advantage by this by just simply fliping the list when
+   * the user change between the two sort mode. We also need to change the selected schema index accordingly which is simply just lengtOfArray - currentIndex - 1
+   */
+  flipTableOrder(event: any) {
+    var restrictedTableList: Array<ParentTableListEntry> = Object.assign([], this.state.restrictedTableList);
+
+    // Flip all part tables first
+    for (let parentTableListEntry of restrictedTableList) {
+      parentTableListEntry.partTables.reverse();
+    }
+
+    // Flip all the parent tables
+    this.setState({restrictedTableList: this.state.restrictedTableList.reverse(), currentTableSortMode: event.target.value});
+  }
+
   render() {
     return(
       <div className="table-menu">
@@ -195,10 +220,9 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
               <FontAwesomeIcon className="sort-icon" icon={faSortAmountDown} />
               <label>Sort<br />Table</label>
             </div>
-            <select className="sort-table-options">
-              <option value="tier">Tier</option>
-              {/* <option value="az">Alphabetical (A-Z)</option> */}
-              {/* <option value="za">Alphabetical (Z-A)</option> */}
+            <select className="sort-table-options" onChange={this.flipTableOrder}>
+              <option value={TableSortMode.ATOZ} selected={this.state.currentTableSortMode === TableSortMode.ATOZ}>Alphabetical (A-Z)</option>
+              <option value={TableSortMode.ZTOA} selected={this.state.currentTableSortMode === TableSortMode.ZTOA}>Alphabetical (Z-A)</option>
               {/* <option value="tb">Topological (top-bottom)</option> */}
               {/* <option value="bt">Topological (bottom-top)</option> */}
             </select>
