@@ -313,14 +313,14 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
    * Function to deal figure out what is the datatype given a string
    * @param tableTypeString The table type in string that was return from the api call
    */
-  parseTableTypeString(tableTypeString: string): TableAttributeType{
+  parseTableTypeString(tableTypeString: string): TableAttributeType {
     if (tableTypeString === 'tinyint') {
       return TableAttributeType.TINY;
     }
     else if (tableTypeString === 'tinyint unsigned') {
       return TableAttributeType.TINY_UNSIGNED;
     }
-    else if (tableTypeString === 'small int') {
+    else if (tableTypeString === 'smallint') {
       return TableAttributeType.SMALL;
     }
     else if (tableTypeString === 'smallint unsigned') {
@@ -329,7 +329,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString === 'medium') {
       return TableAttributeType.MEDIUM;
     }
-    else if (tableTypeString === 'medium unsinged') {
+    else if (tableTypeString === 'medium unsigned') {
       return TableAttributeType.MEDIUM_UNSIGNED;
     }
     else if (tableTypeString === 'big') {
