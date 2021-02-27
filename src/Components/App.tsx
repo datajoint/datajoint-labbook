@@ -7,6 +7,8 @@ import NavBar from './NavBar';
 import Login from './Login';
 import Home from './Home'
 
+window.onbeforeunload = () => '';
+
 type DJGUIAppState = {
   currentDatabaseConnectionJWT: string;
   hostname: string;

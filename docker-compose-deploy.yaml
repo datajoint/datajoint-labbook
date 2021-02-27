@@ -1,5 +1,5 @@
-# PHARUS_VERSION=0.1.0a5 DJLABBOOK_VERSION=0.1.0-alpha.2 docker-compose -f docker-compose-deploy.yaml pull
-# PHARUS_VERSION=0.1.0a5 DJLABBOOK_VERSION=0.1.0-alpha.2 docker-compose -f docker-compose-deploy.yaml up -d
+# PHARUS_VERSION=0.1.0b0 DJLABBOOK_VERSION=0.1.0-beta.0 docker-compose -f docker-compose-deploy.yaml pull
+# PHARUS_VERSION=0.1.0b0 DJLABBOOK_VERSION=0.1.0-beta.0 docker-compose -f docker-compose-deploy.yaml up -d
 #
 # Intended for production deployment.
 # Note: You must run both commands above for minimal outage.
@@ -21,7 +21,7 @@ services:
       - PHARUS_PORT=5000
   fakeservices.datajoint.io:
     <<: *net
-    image: raphaelguzman/nginx:v0.0.15
+    image: datajoint/nginx:v0.0.15
     environment:
       - ADD_zlabbook_TYPE=STATIC
       - ADD_zlabbook_PREFIX=/
