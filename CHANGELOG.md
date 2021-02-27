@@ -19,6 +19,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Hide dependency logic in update and delete action - partially fixes (#83) PR #87 #91
 - Update nginx image to pull from datajoint organization. PR #94
 - Changed the total number of entries in table to reflect the actual total count sent back by pharus PR #96
+- Improved filter request logic to reduce unnecessary calls with configurable delay. (#85) PR #97
 
 ### Fixed
 - Fixed issue with input fields for decimal, floats, and double not having the correct step settings. (#81) PR #86
