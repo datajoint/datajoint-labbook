@@ -78,7 +78,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           })
       }
       if (this.state.currentView === 'tableInfo') {
-        console.log('getting table def for: ', this.props.selectedTableName)
         fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_definition`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
