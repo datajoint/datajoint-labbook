@@ -138,7 +138,7 @@ class InsertTuple extends React.Component<{
       if (!tupleBuffer.hasOwnProperty(secondaryAttribute.attributeName)) {
         if (secondaryAttribute.nullable === true) {
           // Nullable is allow
-          tupleBuffer[secondaryAttribute.attributeName] = 'null';
+          delete tupleBuffer[secondaryAttribute.attributeName];
         }
         else if (secondaryAttribute.defaultValue !== null) {
           // Nullable is not allowed, but there is a default value
@@ -149,6 +149,9 @@ class InsertTuple extends React.Component<{
           this.setState({errorMessage: 'Missing require field: ' + secondaryAttribute.attributeName});
           return;
         }
+      }
+      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=') {
+        delete tupleBuffer[secondaryAttribute.attributeName];
       }
     }
 

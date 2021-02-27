@@ -21,13 +21,14 @@ class SecondaryTableAttribute extends TableAttribute {
     ) {
     super(attributeName, attributeType, stringTypeAttributeLengthInfo, enumOptions, decimalNumDigits, decimalNumDecimalDigits);
     this.nullable = nullable;
-    this.defaultValue = defaultValue === null? undefined : defaultValue;
+    this.defaultValue = defaultValue === null || defaultValue === 'null' ? undefined : defaultValue;
   }
 
   static getAttributeLabelBlock(secondaryTableAttribute: SecondaryTableAttribute, resetToNullCallback: any) {
     const typeString = super.getTypeString(secondaryTableAttribute);
     var resetButtonText = 'nullable';
 
+    // I don't think this detects is correctly
     if (secondaryTableAttribute.defaultValue !== undefined) {
       resetButtonText = 'default';
     }
