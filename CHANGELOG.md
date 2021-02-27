@@ -10,6 +10,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Added support for reseting to null or default for insert and update (#48) PR #93
 - Added support to render default values if exist for insert (#95) PR #93
 - Added browser default popup to confirm before page refresh. (#7) PR #94
+- Added table sorting feature (#84) PR #98
 - Added more details in the error message for table content/attribute/info fetch PR #96
 
 ### Changed
