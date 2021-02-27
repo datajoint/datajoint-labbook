@@ -188,8 +188,8 @@ class TableAttribute {
       // Determine type and any other attributes that need to be set based on that
       if (tableAttribute.attributeType === TableAttributeType.TINY) {
         type = "number";
-        min = "128";
-        max = "-127";
+        min = "-127";
+        max = "128";
       }
       else if (tableAttribute.attributeType === TableAttributeType.TINY_UNSIGNED) {
         type = "number";

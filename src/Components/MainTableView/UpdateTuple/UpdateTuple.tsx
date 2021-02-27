@@ -235,23 +235,13 @@ class UpdateTuple extends React.Component<{
                 })
               }
             </div>
-            <CheckDependency token={this.props.token} 
-                             selectedSchemaName={this.props.selectedSchemaName}
-                             selectedTableName={this.props.selectedTableName}
-                             tableAttributesInfo={this.props.tableAttributesInfo}
-                             tupleToCheckDependency={Object.values(this.props.selectedTableEntry)}
-                             clearList={!Object.entries(this.state.dependencies).length}
-                             dependenciesReady={(depList: Array<any>) => this.handleDependencies(depList)} 
-                             allAccessible={(bool: boolean) => this.setState({updateAccessible: bool})} />
-            {Object.entries(this.state.dependencies).length ? (
               <div>
                 <p>Are you sure you want to submit form to update this entry?</p>
                 <div className="actionButtons">
-                  <input className="submitButton" type="submit" value="Submit" disabled={!this.state.updateAccessible}/>
-                  <button className="cancelAction" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+                  <input className="confirmActionButton update" type="submit" value="Update"/>
+                  <button className="cancelActionButton update" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
                 </div>
               </div>
-            ): ''}
           </form>
         } 
         {this.state.errorMessage ? (
