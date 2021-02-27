@@ -520,7 +520,6 @@ class TableContent extends React.Component<{
           </table>
           </div>
             <div className="paginator">
-              {/* <p>Total Rows Fetched: {this.props.contentData.length}</p> */}
               <p>Total Table Entries: {this.props.tableTotal}</p>
             { Object.entries(this.props.contentData).length ?
               <div className="controls">
