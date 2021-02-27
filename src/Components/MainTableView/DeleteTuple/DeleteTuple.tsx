@@ -102,8 +102,14 @@ class DeleteTuple extends React.Component<{
         this.setState({isDeletingEntry: false, dependencies: []})
 
         // Check for error mesage 500, if so throw error - shouldn't happen as often once real dependency check is in place
-        if (result.status === 500) {
-          throw Error(`${result.status} - ${result.statusText}`)
+        if (result.status === 500 || result.status === 409) {
+          result.text()
+          .then(errorMessage => {
+            throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+          })
+          .catch(error => {
+            this.setState({deleteStatusMessage: error.message})
+          })
         }
         
         // return result - expecting a Delete Succesful string
