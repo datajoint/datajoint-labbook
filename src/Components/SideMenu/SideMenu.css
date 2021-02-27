@@ -168,6 +168,7 @@ select.sort-schema-options {
   min-width: 100%;
   border: 1px solid rgba(128, 128, 128, 0.5);
   position: relative;
+  z-index: 20;
   display: flex;
   overflow-x: hidden;
 }
@@ -293,9 +294,15 @@ span.tier-label {
   text-align: center;
   box-sizing: border-box;
   position: absolute;
+  z-index: 50;
   right: 0;
   height: 100%;
 }
+
+.show-part-table:hover .icon {
+  background-color: rgba(255, 255, 255, 1);
+}
+
 .show-part-table.computed {
   border-color: #BC3B68;
 }

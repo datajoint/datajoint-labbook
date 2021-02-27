@@ -53,7 +53,16 @@ type TableContentStatus = {
  * @param tableAttributesInfo A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
  * @param fetchTableContent Callback function to tell the parent component to update the contentData
  */
-class TableContent extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType, contentData: Array<any>, tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, TableContentStatus> {
+class TableContent extends React.Component<{
+    token: string, 
+    selectedSchemaName: string, 
+    selectedTableName: string, 
+    selectedTableType: TableType, 
+    contentData: Array<any>, 
+    tableTotal: number,
+    tableAttributesInfo?: TableAttributesInfo, 
+    fetchTableContent: any}, 
+  TableContentStatus> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -511,8 +520,7 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
           </table>
           </div>
             <div className="paginator">
-              <p>Total Rows: {this.props.contentData.length}</p>
-
+              <p>Total Table Entries: {this.props.tableTotal}</p>
             { Object.entries(this.props.contentData).length ?
               <div className="controls">
                 <FontAwesomeIcon className={!this.state.atStartPage ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.START)} />
