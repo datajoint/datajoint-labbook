@@ -10,6 +10,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Added support for reseting to null or default for insert and update (#48) PR #93
 - Added support to render default values if exist for insert (#95) PR #93
 - Added browser default popup to confirm before page refresh. (#7) PR #94
+- Added more details in the error message for table content/attribute/info fetch PR #95
 
 ### Changed
 - Changed dark and default logos to reflect new `DataJoint LabBook` name. PR #70
@@ -25,6 +26,8 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Fixed issue with time, date, datetime, and timestamp display null as Nan::Nan, now it just display null for those fields (#75) PR #89
 - Fixed broken styling that came up in the code cleaning process. PR #92
 - Fixed tinyInt input field min/max value. (#77) PR #92
+- Fixed typos for table type string (smallint/medium unsigned) PR #95
+- Fixed part table selection not getting highlighted correctly PR #95
 
 ## [0.1.0-alpha.2] - 2021-02-19
 ### Added
