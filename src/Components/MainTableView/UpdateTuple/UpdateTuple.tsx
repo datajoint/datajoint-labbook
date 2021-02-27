@@ -75,7 +75,6 @@ class UpdateTuple extends React.Component<{
       return;
     } 
     else {
-      console.log(this.props.selectedTableEntry)
       this.setState({tupleBuffer: this.props.selectedTableEntry});
     }
   }
