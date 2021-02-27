@@ -524,7 +524,6 @@ class TableContent extends React.Component<{token: string, selectedSchemaName: s
             : '' }
             </div>
         </div>
-
       </div>
     )
   }

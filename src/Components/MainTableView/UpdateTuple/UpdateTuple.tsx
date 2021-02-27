@@ -35,6 +35,7 @@ class UpdateTuple extends React.Component<{
 
     this.onSubmit = this.onSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.resetToNull = this.resetToNull.bind(this);
   }
 
    /**
@@ -141,7 +142,7 @@ class UpdateTuple extends React.Component<{
       if (!tupleBuffer.hasOwnProperty(secondaryAttribute.attributeName)) {
         if (secondaryAttribute.nullable === true) {
           // Nullable is allow
-          tupleBuffer[secondaryAttribute.attributeName] = 'null';
+          delete tupleBuffer[secondaryAttribute.attributeName];
         }
         else if (secondaryAttribute.defaultValue !== null) {
           // Nullable is not allowed, but there is a default value
@@ -152,6 +153,9 @@ class UpdateTuple extends React.Component<{
           this.setState({errorMessage: 'Missing require field: ' + secondaryAttribute.attributeName});
           return;
         }
+      }
+      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=') {
+        delete tupleBuffer[secondaryAttribute.attributeName];
       }
     }
 
@@ -190,11 +194,29 @@ class UpdateTuple extends React.Component<{
    * TODO: Align behavior with the edge case specs - whether to null, or fill with default
    * @param tableAttribute Table attribute object so the function can extract the attributeName 
    */
-  resetToNull(tableAttribute: any) {
+  resetToNull(tableAttribute: SecondaryTableAttribute) {
     if (Object.entries(this.state.tupleBuffer).length) {
-      let updatedBuffer = Object.assign({}, this.state.tupleBuffer);
-      updatedBuffer[tableAttribute.attributeName] = tableAttribute.defaulValue; // set to defaulValue for now
-      this.setState({tupleBuffer: updatedBuffer});
+      let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
+
+      if (tableAttribute.defaultValue !== undefined) {
+        if (tableAttribute.attributeType === TableAttributeType.DATE) {
+          tupleBuffer[tableAttribute.attributeName] = TableAttribute.covertRawDateToInputFieldFormat(tableAttribute.defaultValue);
+        }
+        else if (tableAttribute.attributeType === TableAttributeType.DATETIME) {
+          // Deal with date time string
+          const splitResult = tableAttribute.defaultValue.replaceAll('"', '').split(' ');
+          tupleBuffer[tableAttribute.attributeName + '__date'] = splitResult[0];
+          tupleBuffer[tableAttribute.attributeName + '__time'] = splitResult[1];
+        }
+        else {
+          tupleBuffer[tableAttribute.attributeName] = tableAttribute.defaultValue;
+        } 
+      }
+      else if (tableAttribute.nullable === true) {
+        tupleBuffer[tableAttribute.attributeName] = undefined;
+      }
+       // set to defaulValue for now
+      this.setState({tupleBuffer: tupleBuffer});
     }
   }
 
@@ -229,7 +251,12 @@ class UpdateTuple extends React.Component<{
                   return(
                     <div className='fieldUnit' key={secondaryAttribute.attributeName}>
                       {SecondaryTableAttribute.getAttributeLabelBlock(secondaryAttribute, this.resetToNull)}
-                      {SecondaryTableAttribute.getAttributeInputBlock(secondaryAttribute, this.state.tupleBuffer[secondaryAttribute.attributeName], undefined, this.handleChange)}
+                      {SecondaryTableAttribute.getAttributeInputBlock(
+                      secondaryAttribute,
+                      secondaryAttribute.attributeType === TableAttributeType.DATETIME || secondaryAttribute.attributeType === TableAttributeType.TIMESTAMP? 
+                      this.state.tupleBuffer[secondaryAttribute.attributeName + '__date'] + ' ' + this.state.tupleBuffer[secondaryAttribute.attributeName + '__time'] :
+                        this.state.tupleBuffer[secondaryAttribute.attributeName], 
+                      this.handleChange)}
                     </div>
                   )
                 })

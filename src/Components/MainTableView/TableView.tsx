@@ -285,7 +285,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           ));
       }
     }
-
     return tableAttributesInfo;
   }
 

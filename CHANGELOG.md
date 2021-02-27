@@ -7,6 +7,8 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Support for double data type (#72) PR #86
 - Added search functionailty for table list similar to schema. (#73) PR #88
 - Added input field for date/datetime/time/timestamp copy over for insert and update. (#47) PR #87
+- Added support for reseting to null or default for insert and update (#48) PR #93
+- Added support to render default values if exist for insert (#95) PR #93
 - Added browser default popup to confirm before page refresh. (#7) PR #94
 
 ### Changed
@@ -23,7 +25,6 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Fixed issue with time, date, datetime, and timestamp display null as Nan::Nan, now it just display null for those fields (#75) PR #89
 - Fixed broken styling that came up in the code cleaning process. PR #92
 - Fixed tinyInt input field min/max value. (#77) PR #92
-
 
 ## [0.1.0-alpha.2] - 2021-02-19
 ### Added
