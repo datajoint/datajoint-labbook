@@ -96,7 +96,7 @@ class UpdateTuple extends React.Component<{
    * based upon the info provided by this.props.tableAttributeInfo such as nullable? autoIncrement?, etc.
    * @param event Event object from the standard OnSubmit function
    */
-  onSubmit(event?: any) {
+  onSubmit(event: any) {
     event.preventDefault();
     // Check that tableAttirbutesInfo is not undefined
     if (this.props.tableAttributesInfo === undefined) {
@@ -115,16 +115,12 @@ class UpdateTuple extends React.Component<{
         if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + 'time')) {
           break;
         }
-
-        // Covert date time to UTC
-        let date = new Date(tupleBuffer[tableAttribute.attributeName + '__date'] + 'T' + tupleBuffer[tableAttribute.attributeName + '__time']);
+        // Construct the insert string 
+        tupleBuffer[tableAttribute.attributeName] = tupleBuffer[tableAttribute.attributeName + '__date'] + ' ' + tupleBuffer[tableAttribute.attributeName + '__time'];
 
         // Delete extra fields from tuple
         delete tupleBuffer[tableAttribute.attributeName + '__date'];
         delete tupleBuffer[tableAttribute.attributeName + '__time'];
-
-        // Construct the insert string 
-        tupleBuffer[tableAttribute.attributeName] = date.getUTCFullYear() + ':' + date.getUTCMonth() + ':' + date.getUTCDay() + ' ' + date.getUTCHours() + ':' + date.getUTCMinutes() + ':' + date.getUTCMinutes();
       }
     }
     
@@ -132,7 +128,7 @@ class UpdateTuple extends React.Component<{
     for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
       // Check if attribute exist, if not then complain
       if (!tupleBuffer.hasOwnProperty(primaryAttribute.attributeName) && primaryAttribute.autoIncrement === false) {
-        this.setState({errorMessage: 'Missing required field: ' + primaryAttribute.attributeName});
+        this.setState({errorMessage: 'Missing require field: ' + primaryAttribute.attributeName});
         return;
       }
     }
