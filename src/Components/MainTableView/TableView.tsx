@@ -57,7 +57,13 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         })
           .then(result => {
             if (!result.ok) {
-              throw Error(`${result.status} - ${result.statusText}`)
+              result.text()
+              .then(errorMessage => {
+                throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+              })
+              .catch(error => {
+                this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
+              })
             }
             return result.json()})
           .then(result => {
@@ -72,6 +78,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           })
       }
       if (this.state.currentView === 'tableInfo') {
+        console.log('getting table def for: ', this.props.selectedTableName)
         fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_definition`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
@@ -79,7 +86,13 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         })
           .then(result => {
             if (!result.ok) {
-              throw Error(`${result.status} - ${result.statusText}`)
+              result.text()
+              .then(errorMessage => {
+                throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+              })
+              .catch(error => {
+                this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
+              })
             }
             return result.text()})
           .then(result => {
@@ -136,7 +149,13 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     })
     .then(result => {
       if (!result.ok) {
-        throw Error(`${result.status} - ${result.statusText}`)
+        result.text()
+        .then(errorMessage => {
+          throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+        })
+        .catch(error => {
+          this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
+        })
       }
       return result.json();
     })
