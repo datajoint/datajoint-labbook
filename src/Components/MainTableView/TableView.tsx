@@ -16,6 +16,7 @@ type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,
   currentView: string,
   tableContentData: Array<any>,
+  tableRecordTotal: number,
   tableInfoData: string,
   selectedTable: string,
   errorMessage: string,
@@ -29,6 +30,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       tableAttributesInfo: undefined,
       currentView: 'tableContent',
       tableContentData: [],
+      tableRecordTotal: 0,
       tableInfoData: '',
       selectedTable: '',
       errorMessage: '',
@@ -55,7 +57,13 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         })
           .then(result => {
             if (!result.ok) {
-              throw Error(`${result.status} - ${result.statusText}`)
+              result.text()
+              .then(errorMessage => {
+                throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+              })
+              .catch(error => {
+                this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
+              })
             }
             return result.json()})
           .then(result => {
@@ -77,7 +85,13 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         })
           .then(result => {
             if (!result.ok) {
-              throw Error(`${result.status} - ${result.statusText}`)
+              result.text()
+              .then(errorMessage => {
+                throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+              })
+              .catch(error => {
+                this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
+              })
             }
             return result.text()})
           .then(result => {
@@ -134,7 +148,13 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     })
     .then(result => {
       if (!result.ok) {
-        throw Error(`${result.status} - ${result.statusText}`)
+        result.text()
+        .then(errorMessage => {
+          throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+        })
+        .catch(error => {
+          this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
+        })
       }
       return result.json();
     })
@@ -162,7 +182,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      this.setState({tableContentData: result.tuples, errorMessage: '', isLoading: false})
+      this.setState({tableContentData: result.tuples, tableRecordTotal: result.total_count, errorMessage: '', isLoading: false})
     })
     .catch(error => {
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
@@ -292,14 +312,14 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
    * Function to deal figure out what is the datatype given a string
    * @param tableTypeString The table type in string that was return from the api call
    */
-  parseTableTypeString(tableTypeString: string): TableAttributeType{
+  parseTableTypeString(tableTypeString: string): TableAttributeType {
     if (tableTypeString === 'tinyint') {
       return TableAttributeType.TINY;
     }
     else if (tableTypeString === 'tinyint unsigned') {
       return TableAttributeType.TINY_UNSIGNED;
     }
-    else if (tableTypeString === 'small int') {
+    else if (tableTypeString === 'smallint') {
       return TableAttributeType.SMALL;
     }
     else if (tableTypeString === 'smallint unsigned') {
@@ -308,7 +328,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (tableTypeString === 'medium') {
       return TableAttributeType.MEDIUM;
     }
-    else if (tableTypeString === 'medium unsinged') {
+    else if (tableTypeString === 'medium unsigned') {
       return TableAttributeType.MEDIUM_UNSIGNED;
     }
     else if (tableTypeString === 'big') {
@@ -390,6 +410,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
                 selectedTableName={this.state.selectedTable} 
                 selectedTableType={this.props.selectedTableType}
                 contentData={this.state.tableContentData} 
+                tableTotal={this.state.tableRecordTotal}
                 tableAttributesInfo={this.state.tableAttributesInfo}
                 fetchTableContent={this.fetchTableContent}
             />

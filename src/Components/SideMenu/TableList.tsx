@@ -73,7 +73,8 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
     
   }
 
-  toggleEachPartTableView(table: any) {
+  toggleEachPartTableView(event:any, table: any) {
+    event.stopPropagation();
     let updatedList = this.state.hidePartTable;
     if (this.state.hidePartTable.includes(table.tableName)) {
       let deleteIndex = updatedList.indexOf(table.tableName);
@@ -217,11 +218,11 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
             this.state.restrictedTableList.map((table: ParentTableListEntry) => {
               return(
                 <div key={`${table.tableName}-${table.tableType}`}>
-                  <div className={this.props.selectedTableName === table.tableName && this.props.selectedTableType === table.tableType ? 'table-entry selected' : 'table-entry'} key={`${table.tableName}-${table.tableType}`} onClick={() => {this.props.onTableSelection(table.tableName, table.tableType)}}>
+                  <div className={this.props.selectedTableName === table.tableName && this.props.selectedTableType === table.tableType ? 'table-entry selected' : 'table-entry'} key={`${table.tableName}-${table.tableType}`} onClick={(event) => {this.props.onTableSelection(table.tableName, table.tableType)}}>
                     <p className="table-name">{table.tableName}</p>
                     <span className={table.tableType === TableType.COMPUTED ? 'computed tier-label' : (table.tableType === TableType.LOOKUP ? 'lookup tier-label' : (table.tableType === TableType.MANUAL ? 'manual tier-label' : 'imported tier-label'))}>{TableType[table.tableType].toLowerCase()}</span>
                     {table.partTables.length ?
-                      (<div onClick={() => {this.toggleEachPartTableView(table)}} className={table.tableType === TableType.COMPUTED ? "computed show-part-table" : table.tableType === TableType.IMPORTED ? "imported show-part-table" : table.tableType === TableType.LOOKUP  ? "lookup show-part-table" : "manual show-part-table"}>
+                      (<div onClick={(event) => {this.toggleEachPartTableView(event, table)}} className={table.tableType === TableType.COMPUTED ? "computed show-part-table" : table.tableType === TableType.IMPORTED ? "imported show-part-table" : table.tableType === TableType.LOOKUP  ? "lookup show-part-table" : "manual show-part-table"}>
                         <label className="head">part table</label>
                         <div className="icon">{!this.state.viewAllPartTables || this.state.hidePartTable.includes(table.tableName) ?
                           <FontAwesomeIcon className="eye-icon" icon={faEyeSlash} />
@@ -232,7 +233,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
                   {table.partTables.length && !this.state.hidePartTable.includes(table.tableName) ? (
                     table.partTables.map((partTable: PartTableListEntry) => {
                       return (
-                        <div onClick={() => {this.props.onTableSelection(table.tableName + '.' + partTable.tableName, partTable.tableType)}} key={partTable.tableName} className={this.state.viewAllPartTables && this.props.selectedTableName === partTable.tableName && this.props.selectedTableType === partTable.tableType ? "part-table-entry selected" : this.state.viewAllPartTables && (this.props.selectedTableName !== partTable.tableName || this.props.selectedTableType !== partTable.tableType)? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide" : ""}>
+                        <div onClick={() => {this.props.onTableSelection(table.tableName + '.' + partTable.tableName, partTable.tableType)}} key={partTable.tableName} className={this.state.viewAllPartTables && this.props.selectedTableName === `${table.tableName}.${partTable.tableName}` && this.props.selectedTableType === partTable.tableType ? "part-table-entry selected" : this.state.viewAllPartTables && (this.props.selectedTableName !== `${table.tableName}.${partTable.tableName}` || this.props.selectedTableType !== partTable.tableType)? "part-table-entry" : !this.state.viewAllPartTables ? "part-table-entry hide" : ""}>
                         <p className="table-name">{partTable.tableName}</p>
                         <span className={table.tableType === TableType.COMPUTED ? "part-label computed-part" : table.tableType === TableType.LOOKUP ? "part-label lookup-part" : table.tableType === TableType.IMPORTED ? "part-label imported-part" : "part-label manual-part"}>
                           <div className="MT-type">{TableType[table.tableType].toLowerCase()}</div>
