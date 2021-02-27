@@ -238,8 +238,8 @@ class UpdateTuple extends React.Component<{
               <div>
                 <p>Are you sure you want to submit form to update this entry?</p>
                 <div className="actionButtons">
-                  <input className="submitButton" type="submit" value="Submit"/>
-                  <button className="cancelButton" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+                  <input className="confirmActionButton update" type="submit" value="Update"/>
+                  <button className="cancelActionButton update" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
                 </div>
               </div>
           </form>

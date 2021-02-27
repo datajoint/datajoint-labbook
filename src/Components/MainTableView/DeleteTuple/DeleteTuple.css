@@ -56,3 +56,13 @@ table.tupleToDelete tbody {
 .deleting button.dismiss:hover {
   background-color: rgb(212, 212, 212);
 }
+
+.confirmActionButton.delete {
+  border: 2px solid rgb(151, 0, 0);
+  color: rgb(151, 0, 0);
+}
+
+.confirmActionButton.delete:hover {
+  background-color: rgb(151, 0, 0);
+  color: white;
+}
