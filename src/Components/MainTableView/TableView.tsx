@@ -16,6 +16,7 @@ type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,
   currentView: string,
   tableContentData: Array<any>,
+  tableRecordTotal: number,
   tableInfoData: string,
   selectedTable: string,
   errorMessage: string,
@@ -29,6 +30,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       tableAttributesInfo: undefined,
       currentView: 'tableContent',
       tableContentData: [],
+      tableRecordTotal: 0,
       tableInfoData: '',
       selectedTable: '',
       errorMessage: '',
@@ -162,7 +164,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      this.setState({tableContentData: result.tuples, errorMessage: '', isLoading: false})
+      this.setState({tableContentData: result.tuples, tableRecordTotal: result.total_count, errorMessage: '', isLoading: false})
     })
     .catch(error => {
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
@@ -391,6 +393,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
                 selectedTableName={this.state.selectedTable} 
                 selectedTableType={this.props.selectedTableType}
                 contentData={this.state.tableContentData} 
+                tableTotal={this.state.tableRecordTotal}
                 tableAttributesInfo={this.state.tableAttributesInfo}
                 fetchTableContent={this.fetchTableContent}
             />
