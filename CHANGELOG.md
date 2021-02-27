@@ -2,17 +2,19 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
-## [Unreleased]
+## [0.1.0-beta.0] - 2021-02-26
 ### Added
 - Support for double data type (#72) PR #86
 - Added search functionailty for table list similar to schema. (#73) PR #88
 - Added input field for date/datetime/time/timestamp copy over for insert and update. (#47) PR #87
+- Added browser default popup to confirm before page refresh. (#7) PR #94
 
 ### Changed
 - Changed dark and default logos to reflect new `DataJoint LabBook` name. PR #70
 - Changed Insert and Update component code to share common form generation code, still need to do for delete (#54) PR #86
 - Replaced the word delete with trash icon for filter card removal (#82) PR #87
 - Hide dependency logic in update and delete action - partially fixes (#83) PR #87 #91
+- Update nginx image to pull from datajoint organization. PR #94
 
 ### Fixed
 - Fixed issue with input fields for decimal, floats, and double not having the correct step settings. (#81) PR #86
@@ -38,5 +40,5 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
-[Unreleased]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...HEAD
+[0.1.0-beta.0]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...0.1.0-beta.0
 [0.1.0-alpha.2]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.2
