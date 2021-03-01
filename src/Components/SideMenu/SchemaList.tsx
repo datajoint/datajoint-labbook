@@ -77,7 +77,7 @@ class SchemaList extends React.Component<{token: string, currentlySelectedSchema
 
     if (event.target.value !== '') {
       for (let schemaName of this.state.schemaList) {
-        if (schemaName.includes(event.target.value)) {
+        if (schemaName.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase())) {
           restrictiedSchemaList.push(schemaName);
         }
       }
