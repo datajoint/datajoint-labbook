@@ -308,8 +308,13 @@ class TableAttribute {
         var splitResult = [undefined, undefined]
         var defaultValueSplitResult: any = ['', '']
 
-        if (currentValue !== "undefined undefined" && currentValue !== undefined) {
-          splitResult = currentValue.split(' ');
+        if (currentValue !== "undefined undefined" && currentValue !== undefined) { // Yes this is a hack for now, we will consildate this to one standard
+          if (Array.isArray(currentValue)) {
+            splitResult = currentValue;
+          }
+          else {
+            splitResult = currentValue.split(' ');
+          }
         }
 
         if (defaultValue !== undefined) {
@@ -318,7 +323,6 @@ class TableAttribute {
         
           return(
             <div className="dateTimeFields">
-              {/* <input type="datetime-local" value={currentValue.replace(',', ' ')} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)} /> */}
               <input type="date" defaultValue={defaultValueSplitResult[0]} value={splitResult[0]} id={tableAttribute.attributeName + "__date"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__date")}></input>
               <input type="time" step="1" defaultValue={defaultValueSplitResult[1]} value={splitResult[1]} id={tableAttribute.attributeName + "__time"} onChange={(e) => handleChange(e, tableAttribute.attributeName + "__time")}></input>
             </div>
