@@ -77,11 +77,11 @@ class DeleteTuple extends React.Component<{
     for (let primaryTableAttribute of this.props.tableAttributesInfo.primaryAttributes) {
       if (primaryTableAttribute.attributeType === TableAttributeType.DATE) {
         // Convert date to DJ date format
-        tupleToDelete[primaryTableAttribute.attributeName] = TableAttribute.parseDateToDJFormat(tupleToDelete[primaryTableAttribute.attributeName])
+        tupleToDelete[primaryTableAttribute.attributeName] = TableAttribute.parseDateToDJFormat(this.props.selectedTableEntry[primaryTableAttribute.attributeName])
       }
       else if (primaryTableAttribute.attributeType === TableAttributeType.DATETIME || primaryTableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         // Convert to DJ friendly datetime format
-        tupleToDelete[primaryTableAttribute.attributeName] = TableAttribute.parseDateTimeToDJFormat(tupleToDelete[primaryTableAttribute.attributeName])
+        tupleToDelete[primaryTableAttribute.attributeName] = TableAttribute.parseDateTimeToDJFormat(this.props.selectedTableEntry[primaryTableAttribute.attributeName])
       }
       else {
         tupleToDelete[primaryTableAttribute.attributeName] = this.props.selectedTableEntry[primaryTableAttribute.attributeName]
