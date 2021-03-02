@@ -4,7 +4,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 
 ## [Unreleased]
 ### Added
-- CSS for making the primary keys look disabled/readonly for update mode PR#105
+- CSS for making the primary keys look disabled/readonly for update mode PR #105
 
 ### Fixed
 - Fix bug of delete with datetime in primarykey crashing PR#105
