@@ -11,14 +11,21 @@ import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
+import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
+
+enum CurrentView {
+  TABLE_CONTENT,
+  TABLE_INFO
+}
 
 type TableViewState = {
   tableAttributesInfo?: TableAttributesInfo,
-  currentView: string,
+  currentView: CurrentView,
+  tableContentNeedRefresh: boolean,
+  tableDefinitionNeedRefresh: boolean,
   tableContentData: Array<any>,
   tableRecordTotal: number,
   tableInfoData: string,
-  selectedTable: string,
   errorMessage: string,
   isLoading: boolean
 }
@@ -28,81 +35,113 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     super(props);
     this.state = {
       tableAttributesInfo: undefined,
-      currentView: 'tableContent',
+      currentView: CurrentView.TABLE_CONTENT,
+      tableContentNeedRefresh: true,
+      tableDefinitionNeedRefresh: true,
       tableContentData: [],
       tableRecordTotal: 0,
       tableInfoData: '',
-      selectedTable: '',
       errorMessage: '',
       isLoading: false,
     }
 
+    this.fetchTableAttributeAndContent = this.fetchTableAttributeAndContent.bind(this);
+    this.fetchTableContent = this.fetchTableContent.bind(this);
     this.fetchTableContent = this.fetchTableContent.bind(this);
   }
 
-  switchCurrentView(viewChoice: string) {
+  switchCurrentView(viewChoice: CurrentView) {
     this.setState({currentView: viewChoice});
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    if (this.props.selectedTableName !== this.state.selectedTable || this.state.currentView !== prevState.currentView) {
-      this.setState({selectedTable: this.props.selectedTableName});
-      if (this.state.currentView === 'tableContent') {
-        this.setState({isLoading: true})
-        // retrieve table headers
-        fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_attributes`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-          body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
-        })
-          .then(result => {
-            if (!result.ok) {
-              result.text()
-              .then(errorMessage => {
-                throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
-              })
-              .catch(error => {
-                this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
-              })
-            }
-            return result.json()})
-          .then(result => {
-            this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
-          })
-          .then(() => {
-            // Fetch table content after getting the table attribute info
-            this.fetchTableContent();
-          })
-          .catch(error => {
-            this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
-          })
+    // Check if table change, if so fetch the new data
+    if (prevProps.selectedTableName !== this.props.selectedTableName) {
+
+      // Determine what view the user is on and fetch accordingly
+      if (this.state.currentView === CurrentView.TABLE_CONTENT) {
+        // User is on TableContent, fetch data related to that view and set tableInfoNeedRefresh to true
+        this.fetchTableAttributeAndContent();
+        this.setState({tableContentNeedRefresh: false, tableDefinitionNeedRefresh: true});
       }
-      if (this.state.currentView === 'tableInfo') {
-        fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_definition`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-          body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
-        })
-          .then(result => {
-            if (!result.ok) {
-              result.text()
-              .then(errorMessage => {
-                throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
-              })
-              .catch(error => {
-                this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
-              })
-            }
-            return result.text()})
-          .then(result => {
-            this.setState({tableInfoData: result, errorMessage: ''})
-          })
-          .catch(error => {
-            this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
-          })
+      else if (this.state.currentView === CurrentView.TABLE_INFO) {
+        // User is on TableInfo, fetch data related to that view nad set tableContentNeedRefresh to true
+        this.fetchTableDefinition();
+        this.setState({tableContentNeedRefresh: true, tableDefinitionNeedRefresh: false});
+      }
+    }
+    else if (this.state.currentView !== prevState.currentView) {
+      // The view change thus update accordingly if refresh is needed
+      if (this.state.currentView === CurrentView.TABLE_CONTENT && this.state.tableContentNeedRefresh) {
+        // Fetch data realted to TableContent
+        this.fetchTableAttributeAndContent();
+        this.setState({tableContentNeedRefresh: false})
+      }
+      else if (this.state.currentView === CurrentView.TABLE_INFO && this.state.tableDefinitionNeedRefresh) {
+        // Fetch data related to TableInfo
+        this.fetchTableDefinition();
+        this.setState({tableDefinitionNeedRefresh: false})
       }
     }
   }
+
+  fetchTableDefinition() {
+    this.setState({isLoading: true})
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_definition`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
+      body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
+    })
+    .then(result => {
+      if (!result.ok) {
+        result.text()
+        .then(errorMessage => {
+          throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+        })
+        .catch(error => {
+          this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
+        })
+      }
+      return result.text()})
+    .then(result => {
+      console.log(result);
+      this.setState({tableInfoData: result, errorMessage: '', isLoading: false})
+    })
+    .catch(error => {
+      this.setState({tableInfoData: '', errorMessage: 'Problem fetching table information: ' + error})
+    })
+  }
+
+  fetchTableAttributeAndContent() {
+    this.setState({isLoading: true})
+    // retrieve table headers
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_attributes`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
+    })
+    .then(result => {
+      if (!result.ok) {
+        result.text()
+        .then(errorMessage => {
+          throw Error(`${result.status} - ${result.statusText}: (${errorMessage})`)
+        })
+        .catch(error => {
+          this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
+        })
+      }
+      return result.json()})
+    .then(result => {
+      this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
+    })
+    .then(() => {
+      // Fetch table content after getting the table attribute info
+      this.fetchTableContent();
+    })
+    .catch(error => {
+      this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
+    })
+}
 
   /**
    * Utility function for refeshing the table view of tuples
@@ -138,7 +177,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
 
       // Covert the restrictions to json string then base64 it
       apiUrl += 'restriction=' + encodeURIComponent(btoa(JSON.stringify(restrictionsInAPIFormat)));
-
     }
     
     fetch(apiUrl, {
@@ -402,12 +440,12 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         return <div className="errorMessage">{this.state.errorMessage}</div>
       }
       else {
-        if (this.state.currentView === 'tableContent') {
+        if (this.state.currentView === CurrentView.TABLE_CONTENT) {
           return (
             <TableContent 
                 token={this.props.token} 
                 selectedSchemaName={this.props.selectedSchemaName} 
-                selectedTableName={this.state.selectedTable} 
+                selectedTableName={this.props.selectedTableName} 
                 selectedTableType={this.props.selectedTableType}
                 contentData={this.state.tableContentData} 
                 tableTotal={this.state.tableRecordTotal}
@@ -416,7 +454,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
             />
           )
         }
-        else if (this.state.currentView === 'tableInfo') {
+        else if (this.state.currentView === CurrentView.TABLE_INFO) {
           return <TableInfo infoDefData={this.state.tableInfoData}/>
         }
 
@@ -436,8 +474,8 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     return (
       <div className="table-view">
         <div className="nav-tabs">
-          <button className={this.state.currentView === "tableContent" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableContent')} disabled={this.props.selectedTableName === ''}>View Content</button>
-          <button className={this.state.currentView === "tableInfo" ? "tab inView" : "tab"} onClick={() => this.switchCurrentView('tableInfo')} disabled={this.props.selectedTableName === ''}>Table Information</button>
+          <button className={this.state.currentView === CurrentView.TABLE_CONTENT ? "tab inView" : "tab"} onClick={() => this.switchCurrentView(CurrentView.TABLE_CONTENT)} disabled={this.props.selectedTableName === ''}>View Content</button>
+          <button className={this.state.currentView === CurrentView.TABLE_INFO ? "tab inView" : "tab"} onClick={() => this.switchCurrentView(CurrentView.TABLE_INFO)} disabled={this.props.selectedTableName === ''}>Table Information</button>
         </div>
 
         <div className="view-area"> {this.getCurrentView()}
