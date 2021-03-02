@@ -7,9 +7,6 @@ type TableInfoState = {
 class TableInfo extends React.Component<{infoDefData: string}, TableInfoState> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      tableDefinition: ''
-    }
   }
 
   render() {
