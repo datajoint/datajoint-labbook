@@ -2,6 +2,13 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
+## [Unreleased]
+### Added
+- CSS for making the primary keys look disabled/readonly for update mode PR #105
+
+### Fixed
+- Fix bug of delete with datetime in primarykey crashing PR #105
+
 ## [0.1.0-beta.1] - 2021-02-26
 ### Added
 - Support for double data type (#72) PR #86
@@ -47,5 +54,6 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
+[Unreleased]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.1...HEAD
 [0.1.0-beta.1]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...0.1.0-beta.1
 [0.1.0-alpha.2]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.2
