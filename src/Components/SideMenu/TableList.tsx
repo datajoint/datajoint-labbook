@@ -172,12 +172,12 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
 
     if (event.target.value !== '') {
       for (let parentTableListEntry of this.state.tableList) {
-        if (parentTableListEntry.tableName.includes(event.target.value)) {
+        if (parentTableListEntry.tableName.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase())) {
           restrictedTableList.push(parentTableListEntry);
         }
         else {
           for (let partTableListEntry of parentTableListEntry.partTables) {
-            if (partTableListEntry.tableName.includes(event.target.value)) {
+            if (partTableListEntry.tableName.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase())) {
               restrictedTableList.push(parentTableListEntry);
             }
           }
