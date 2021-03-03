@@ -5,6 +5,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ## [Unreleased]
 ### Added
 - Case invariate behavior to schema and table search box (#99) PR #102
+- Added Case insensitive behavior to schema and table search box (#99) PR #102
 - CSS for making the primary keys look disabled/readonly for update mode PR #105
 
 ### Fixed
