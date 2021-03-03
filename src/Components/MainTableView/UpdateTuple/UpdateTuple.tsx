@@ -234,7 +234,7 @@ class UpdateTuple extends React.Component<{
                 // Deal with primary attirbutes
                 this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
                   return(
-                    <div className='fieldUnit' key={primaryTableAttribute.attributeName}>
+                    <div className='fieldUnit primary' key={primaryTableAttribute.attributeName}>
                       {PrimaryTableAttribute.getAttributeLabelBlock(primaryTableAttribute)}
                       {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], this.handleChange)}
                     </div>

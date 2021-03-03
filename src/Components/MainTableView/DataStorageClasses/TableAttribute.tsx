@@ -308,7 +308,7 @@ class TableAttribute {
         var splitResult = [undefined, undefined]
         var defaultValueSplitResult: any = ['', '']
 
-        if (currentValue !== "undefined undefined") {
+        if (currentValue !== "undefined undefined" && currentValue !== undefined) {
           splitResult = currentValue.split(' ');
         }
 

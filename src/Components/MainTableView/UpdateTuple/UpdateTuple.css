@@ -26,6 +26,11 @@ form {
   color: rgb(5, 114, 5);
 }
 
+.fieldUnit.primary input {
+  color: gray;
+  cursor: not-allowed;
+}
+
 .confirmActionButton.update {
   border: 2px solid rgb(189, 138, 28);
   color: rgb(189, 138, 28);
