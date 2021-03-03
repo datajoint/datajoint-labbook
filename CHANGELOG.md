@@ -5,6 +5,10 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ## [Unreleased]
 ### Added
 - Case invariate behavior to schema and table search box (#99) PR #102
+- CSS for making the primary keys look disabled/readonly for update mode PR #105
+
+### Fixed
+- Fix bug of delete with datetime in primarykey crashing PR #105
 
 ## [0.1.0-beta.1] - 2021-02-26
 ### Added
@@ -51,5 +55,6 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
+[Unreleased]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.1...HEAD
 [0.1.0-beta.1]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...0.1.0-beta.1
 [0.1.0-alpha.2]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.2
