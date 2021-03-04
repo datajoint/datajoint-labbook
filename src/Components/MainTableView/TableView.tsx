@@ -12,6 +12,7 @@ import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribut
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
 import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
+import { url } from 'inspector';
 
 enum CurrentView {
   TABLE_CONTENT,
@@ -23,8 +24,11 @@ type TableViewState = {
   currentView: CurrentView,
   tableContentNeedRefresh: boolean,
   tableDefinitionNeedRefresh: boolean,
+  tuplePerPage: number,
+  totalNumOfTuples: number,
+  currentPageNumber: number,
+  maxPageNumber: number,
   tableContentData: Array<any>,
-  tableRecordTotal: number,
   tableInfoData: string,
   errorMessage: string,
   isLoading: boolean
@@ -38,15 +42,18 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       currentView: CurrentView.TABLE_CONTENT,
       tableContentNeedRefresh: true,
       tableDefinitionNeedRefresh: true,
+      tuplePerPage: 25,
+      currentPageNumber: 1,
+      maxPageNumber: 1,
       tableContentData: [],
-      tableRecordTotal: 0,
+      totalNumOfTuples: 0,
       tableInfoData: '',
       errorMessage: '',
       isLoading: false,
     }
 
     this.fetchTableAttributeAndContent = this.fetchTableAttributeAndContent.bind(this);
-    this.fetchTableContent = this.fetchTableContent.bind(this);
+    this.setPageNumber = this.setPageNumber.bind(this);
     this.fetchTableContent = this.fetchTableContent.bind(this);
   }
 
@@ -82,6 +89,9 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         this.fetchTableDefinition();
         this.setState({tableDefinitionNeedRefresh: false})
       }
+    }
+    else if (this.state.currentPageNumber !== prevState.currentPageNumber) {
+      this.fetchTableContent();
     }
   }
 
@@ -148,8 +158,15 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
    * @param restrictions Array of valid restrictions used to query the back end to prevent it sending back everything
    */
   fetchTableContent(restrictions?: Array<Restriction>) {
-    // Construct restriction base64 restriction from restriction
-    let apiUrl = `${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/fetch_tuples`;
+    // Buffer to store restrictions
+    let urlParams: Array<string> = []
+    
+
+    // Add limit to url
+    urlParams.push('limit=' + this.state.tuplePerPage);
+
+    // Add page param
+    urlParams.push('page=' + this.state.currentPageNumber);
 
     if (restrictions !== undefined) {
       let restrictionsInAPIFormat = []
@@ -172,13 +189,24 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      // Add ? to url
-      apiUrl += '?'
-
       // Covert the restrictions to json string then base64 it
-      apiUrl += 'restriction=' + encodeURIComponent(btoa(JSON.stringify(restrictionsInAPIFormat)));
+      urlParams.push('restriction=' + encodeURIComponent(btoa(JSON.stringify(restrictionsInAPIFormat))));
+    }
+
+    // Build the url with params
+    let apiUrl = `${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/fetch_tuples`;
+    if (urlParams.length > 0) {
+      apiUrl += '?';
+
+      // Add the first param
+      apiUrl += urlParams[0];
+
+      for (let i = 1; i < urlParams.length; i++) {
+        apiUrl += '&' + urlParams[i];
+      }
     }
     
+    // Call get fetch_tuple with params
     fetch(apiUrl, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
@@ -220,11 +248,20 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      this.setState({tableContentData: result.tuples, tableRecordTotal: result.total_count, errorMessage: '', isLoading: false})
+      this.setState({tableContentData: result.tuples, totalNumOfTuples: result.total_count, errorMessage: '', maxPageNumber:  Math.ceil(this.state.totalNumOfTuples / this.state.tuplePerPage), isLoading: false})
     })
     .catch(error => {
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
     })
+  }
+
+  setPageNumber(pageNumber: number) {
+    console.log(pageNumber)
+    if (pageNumber < 1 || pageNumber > this.state.maxPageNumber) {
+      throw Error('Invalid pageNumber requested');
+    }
+
+    this.setState({currentPageNumber: pageNumber});
   }
  
   /**
@@ -443,19 +480,22 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         if (this.state.currentView === CurrentView.TABLE_CONTENT) {
           return (
             <TableContent 
-                token={this.props.token} 
-                selectedSchemaName={this.props.selectedSchemaName} 
-                selectedTableName={this.props.selectedTableName} 
-                selectedTableType={this.props.selectedTableType}
-                contentData={this.state.tableContentData} 
-                tableTotal={this.state.tableRecordTotal}
-                tableAttributesInfo={this.state.tableAttributesInfo}
-                fetchTableContent={this.fetchTableContent}
+                token = {this.props.token} 
+                selectedSchemaName = {this.props.selectedSchemaName} 
+                selectedTableName = {this.props.selectedTableName} 
+                selectedTableType = {this.props.selectedTableType}
+                contentData = {this.state.tableContentData} 
+                currentPageNumber = {this.state.currentPageNumber}
+                maxPageNumber = {this.state.maxPageNumber}
+                totalNumOfTuples = {this.state.totalNumOfTuples}
+                tableAttributesInfo = {this.state.tableAttributesInfo}
+                setPageNumber = {this.setPageNumber}
+                fetchTableContent = {this.fetchTableContent}
             />
           )
         }
         else if (this.state.currentView === CurrentView.TABLE_INFO) {
-          return <TableInfo infoDefData={this.state.tableInfoData}/>
+          return <TableInfo infoDefData = {this.state.tableInfoData}/>
         }
 
         // Error out cause the view selected is not valid

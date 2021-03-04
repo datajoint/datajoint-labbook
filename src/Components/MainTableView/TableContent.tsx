@@ -10,6 +10,7 @@ import DeleteTuple from './DeleteTuple/DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import TableAttribute from './DataStorageClasses/TableAttribute'
 import TableAttributeType from './enums/TableAttributeType'
+import { convertToObject } from 'typescript';
 
 enum PaginationCommand {
   FORWARD,
@@ -19,27 +20,23 @@ enum PaginationCommand {
 }
 
 enum TableActionType {
-  FILTER = 0,
-  INSERT = 1,
-  UPDATE = 2,
-  DELETE = 3
+  FILTER,
+  INSERT,
+  UPDATE,
+  DELETE
 }
 
 type TableContentStatus = {
   currentSelectedTableActionMenu: TableActionType,
   hideTableActionMenu: boolean,
-  pageIncrement: number,
-  paginatorState: Array<number>,
-  selectedTableIndex: number,
-  selectedTableEntry?: {}, // Has to be an object with each attribute name as key cause the way tuple_buffer is handle in the subcomponents
+  selectedTupleIndex: number,
+  selectedTuple?: {}, // Has to be an object with each attribute name as key cause the way tuple_buffer is handle in the subcomponents
   showWarning: boolean, // text warning when duplicate selection is made for delete/update, most likely to be take out once disable checkbox feature is finished
   isDisabledCheckbox: boolean, // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
   headerWidth: number, // part of table column resizer feature
   dragStart: number, // part of table column resizer feature
   dragDistance: number, // part of table column resizer feature
   resizeIndex: any, // part of table column resizer feature
-  atEndPage: boolean, // tells the UI to disable certain pagination icons if user is on the last page
-  atStartPage: boolean // tells the UI to disable certain pagination icons if user is on the first page
 }
 
 /**
@@ -59,8 +56,11 @@ class TableContent extends React.Component<{
     selectedTableName: string, 
     selectedTableType: TableType, 
     contentData: Array<any>, 
-    tableTotal: number,
-    tableAttributesInfo?: TableAttributesInfo, 
+    totalNumOfTuples: number,
+    currentPageNumber: number,
+    maxPageNumber: number,
+    tableAttributesInfo?: TableAttributesInfo,
+    setPageNumber: any,
     fetchTableContent: any}, 
   TableContentStatus> {
   constructor(props: any) {
@@ -68,29 +68,22 @@ class TableContent extends React.Component<{
     this.state = {
       currentSelectedTableActionMenu: TableActionType.FILTER,
       hideTableActionMenu: true,
-      pageIncrement: 25,
-      paginatorState: [0, 25],
-      selectedTableIndex: -1,
-      selectedTableEntry: undefined,
+      selectedTupleIndex: -1,
+      selectedTuple: undefined,
       showWarning: false,
       isDisabledCheckbox: false,
       headerWidth: 0,
       dragStart: 0,
       dragDistance: 0,
-      resizeIndex: undefined,
-      atEndPage: false,
-      atStartPage: true
+      resizeIndex: undefined
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
     this.getShowWarningComponent = this.getShowWarningComponent.bind(this);
-
-    // TODO: use effect to add reference for table column styling
-    // cellRef: React.RefObject<HTMLTableDataCellElement>;
-    // this.cellRef = createRef<HTMLTableDataCellElement>()
-    // const [colRefs, setColRefs] = React.useState([]);
-    // React.useEffect(() => {
-    // })
+    this.goToFirstPage = this.goToFirstPage.bind(this);
+    this.goToLastPage = this.goToLastPage.bind(this);
+    this.goForwardAPage = this.goForwardAPage.bind(this);
+    this.goToLastPage = this.goToLastPage.bind(this);
   }
 
   /**
@@ -99,31 +92,13 @@ class TableContent extends React.Component<{
    * @param prevState 
    */
   componentDidUpdate(prevProps: any, prevState: any) {
-    // check to see if contentData updated, if so, check length to update page info
-    if (this.props.contentData !== prevProps.contentData) {
-      // Update paginator state if contentData is less than 25
-      if (this.props.contentData.length < 25 ) {
-        this.setState({paginatorState: [0, this.props.contentData.length]})
-      } else {
-        this.setState({paginatorState: [0, this.state.pageIncrement]}) // set to default increment of 25
-      }
-    }
-
     // Break if the the selectedTable did not change
     if (prevProps.selectedTableName === this.props.selectedTableName) {
       return;
     }
 
     // Reset TableActionview
-    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTableEntry: undefined});
-    
-    // TODO: part of reference for table column width update
-    // console.log('cellRef: ', this.cellRef)
-    // let cellStyle
-    // if (this.cellRef.current) {
-    //   cellStyle = getComputedStyle(this.cellRef.current)
-    //   console.log('width: ', cellStyle.width)
-    // }
+    this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTuple: undefined});
   }
 
   /**
@@ -141,59 +116,21 @@ class TableContent extends React.Component<{
     }
   }
 
-  /**
-   * Function for paginating between data entries. Takes in forward/backward/start/end commands to set
-   * the page view state by increments (currently hardcoded on pageIncrement state) of 25 entries.
-   * @param cmd 
-   */
-  handlePagination(cmd: PaginationCommand) {
-    // check to see if paginator needs to even run for pages with small entries, if not, break
-    if (this.state.paginatorState[1] < this.state.pageIncrement) {
-      this.setState({atStartPage: true, atEndPage: true})
-      return;
-    }
-    
-    // jump to beginning/end/next/previous page and update the page position and style status accordingly
-    if (cmd === PaginationCommand.START) {
-      this.setState({paginatorState: [0, this.state.pageIncrement], atStartPage: true, atEndPage: false})
-    }
-    else if (cmd === PaginationCommand.END) {
-      if (this.props.contentData.length % this.state.pageIncrement > 0) {
-        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length % this.state.pageIncrement, this.props.contentData.length]})
-      } 
-      else {
-        this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length]})
-      }
-      this.setState({atStartPage: false, atEndPage: true})
-    } 
-    else if (cmd === PaginationCommand.FORWARD) {
-      if (this.state.paginatorState[1] + this.state.pageIncrement < this.props.contentData.length) {
-        this.setState({paginatorState: [this.state.paginatorState[0] + this.state.pageIncrement, this.state.paginatorState[1] + this.state.pageIncrement],
-                       atStartPage: false})
-      } 
-      else if (this.props.contentData.length % this.state.pageIncrement > 0) {
-        this.setState({paginatorState: [this.props.contentData.length - this.props.contentData.length % this.state.pageIncrement, this.props.contentData.length],
-                       atStartPage: false, atEndPage: true})
-      } 
-      else {
-        this.setState({paginatorState: [this.props.contentData.length - this.state.pageIncrement, this.props.contentData.length],
-                       atStartPage: false, atEndPage: true})
-      }
-    } 
-    else if (cmd === PaginationCommand.BACKWARD) {
-      if (this.state.paginatorState[0] - this.state.pageIncrement > 0) {
-        this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]],
-                       atEndPage: false})
-      } 
-      else if (this.state.paginatorState[0] - this.state.pageIncrement === 0) {
-        this.setState({paginatorState: [this.state.paginatorState[0] - this.state.pageIncrement, this.state.paginatorState[0]],
-                       atStartPage: true, atEndPage: false})
-      }
-      else {
-        this.setState({paginatorState: [0, this.state.pageIncrement],
-                       atStartPage: true, atEndPage: false})
-      }
-    }
+  goToFirstPage() {
+    this.props.setPageNumber(1);
+  }
+
+  goToLastPage() {
+    this.props.setPageNumber(this.props.maxPageNumber);
+  }
+
+  goForwardAPage() {
+    console.log('asdjfklasjdlkfj')
+    this.props.setPageNumber(this.props.currentPageNumber + 1);
+  }
+
+  goBackwardAPage() {
+    this.props.setPageNumber(this.props.currentPageNumber - 1);
   }
 
   /**
@@ -217,7 +154,7 @@ class TableContent extends React.Component<{
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
             clearEntrySelection={() => this.handleSelectionClearRequest()}
-            selectedTableEntry={this.state.selectedTableEntry}
+            selectedTableEntry={this.state.selectedTuple}
           />
         </div>)
     }
@@ -231,7 +168,7 @@ class TableContent extends React.Component<{
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
             clearEntrySelection={() => this.handleSelectionClearRequest()}
-            selectedTableEntry={this.state.selectedTableEntry}
+            selectedTableEntry={this.state.selectedTuple}
           />
       </div>)
     }
@@ -246,7 +183,7 @@ class TableContent extends React.Component<{
           tableAttributesInfo={this.props.tableAttributesInfo}
           fetchTableContent={this.props.fetchTableContent}
           clearEntrySelection={() => this.handleSelectionClearRequest()}
-          selectedTableEntry={this.state.selectedTableEntry}
+          selectedTableEntry={this.state.selectedTuple}
         />
       </div>)
     }
@@ -270,8 +207,8 @@ class TableContent extends React.Component<{
     }
 
     // If the tupleIndex is already selected, deselect it
-    if (tupleIndex === this.state.selectedTableIndex) {
-      this.setState({selectedTableIndex: -1, selectedTableEntry: undefined});
+    if (tupleIndex === this.state.selectedTupleIndex) {
+      this.setState({selectedTupleIndex: -1, selectedTuple: undefined});
       return;
     }
 
@@ -303,7 +240,7 @@ class TableContent extends React.Component<{
 
     // Covert array into object
 
-    this.setState({selectedTableIndex: tupleIndex, selectedTableEntry: tupleBuffer});
+    this.setState({selectedTupleIndex: tupleIndex, selectedTuple: tupleBuffer});
   }
 
   /**
@@ -320,7 +257,7 @@ class TableContent extends React.Component<{
    * Clears the staging once delete/update is successful and table content has been modified
    */
   handleSelectionClearRequest() {
-    this.setState({selectedTableIndex: -1, selectedTableEntry: undefined});
+    this.setState({selectedTupleIndex: -1, selectedTuple: undefined});
   }
 
   /**
@@ -499,14 +436,14 @@ class TableContent extends React.Component<{
             </tr>
             </thead>
             <tbody>
-            {this.props.contentData.slice(this.state.paginatorState[0], this.state.paginatorState[1]).map((entry: any, tupleIndex: number) => {
+            {this.props.contentData.map((entry: any, tupleIndex: number) => {
               return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}>
                 <td colSpan={1}>
                   <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.
-                         disabled={this.state.selectedTableIndex > -1 && this.state.selectedTableIndex !== tupleIndex} 
+                         disabled={this.state.selectedTupleIndex > -1 && this.state.selectedTupleIndex !== tupleIndex} 
                          onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
-                         checked={this.state.selectedTableIndex === tupleIndex}/>
+                         checked={this.state.selectedTupleIndex === tupleIndex}/>
                 </td>
                 {entry.map((column: any, index: number) => {
                   return (
@@ -520,16 +457,17 @@ class TableContent extends React.Component<{
           </table>
           </div>
             <div className="paginator">
-              <p>Total Table Entries: {this.props.tableTotal}</p>
-            { Object.entries(this.props.contentData).length ?
-              <div className="controls">
-                <FontAwesomeIcon className={!this.state.atStartPage ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.handlePagination(PaginationCommand.START)} />
-                <FontAwesomeIcon className={!this.state.atStartPage ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.handlePagination(PaginationCommand.BACKWARD)} />
-                Currently viewing: {this.state.paginatorState[0] + 1} - {this.state.paginatorState[1]}
-                <FontAwesomeIcon className={!this.state.atEndPage ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.handlePagination(PaginationCommand.FORWARD)} />
-                <FontAwesomeIcon className={!this.state.atEndPage ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.handlePagination(PaginationCommand.END)} />
-              </div>
-            : '' }
+              <p>Total Table Entries: {this.props.totalNumOfTuples}</p>
+              {Object.entries(this.props.contentData).length ?
+                <div className="controls">
+                  <FontAwesomeIcon className={true ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.goToFirstPage()} />
+                  <FontAwesomeIcon className={true  ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.goBackwardAPage()} />
+                  Page: {this.props.currentPageNumber}
+                  <FontAwesomeIcon className={true  ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.goForwardAPage()} />
+                  <FontAwesomeIcon className={true  ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.goToLastPage()} />
+                </div>
+                : ''
+              }
             </div>
         </div>
       </div>
