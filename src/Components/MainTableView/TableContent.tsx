@@ -128,11 +128,16 @@ class TableContent extends React.Component<{
   }
 
   goForwardAPage() {
-    this.props.setPageNumber(this.props.currentPageNumber + 1);
+    if (this.props.currentPageNumber != this.props.maxPageNumber) {
+      this.props.setPageNumber(this.props.currentPageNumber + 1);
+    }
+    
   }
 
   goBackwardAPage() {
-    this.props.setPageNumber(this.props.currentPageNumber - 1);
+    if (this.props.currentPageNumber != 1) {
+      this.props.setPageNumber(this.props.currentPageNumber - 1);
+    } 
   }
 
   /**
@@ -472,7 +477,7 @@ class TableContent extends React.Component<{
                 <div className="controls">
                   <FontAwesomeIcon className={true ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.goToFirstPage()} />
                   <FontAwesomeIcon className={true  ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.goBackwardAPage()} />
-                  Page: {this.props.currentPageNumber}
+                  Page: ({this.props.currentPageNumber + ' / ' + this.props.maxPageNumber})
                   <FontAwesomeIcon className={true  ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.goForwardAPage()} />
                   <FontAwesomeIcon className={true  ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.goToLastPage()} />
                 </div>

@@ -91,8 +91,12 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         this.setState({tableDefinitionNeedRefresh: false})
       }
     }
-    else if (this.state.currentPageNumber !== prevState.currentPageNumber || this.state.numberOfTuplesPerPage != prevState.numberOfTuplesPerPage) {
+    else if (this.state.currentPageNumber !== prevState.currentPageNumber) {
       this.fetchTableContent();
+    }
+    else if (this.state.numberOfTuplesPerPage != prevState.numberOfTuplesPerPage) {
+      this.fetchTableContent();
+      this.setState({currentPageNumber: 1}); // Reset back to the first page
     }
   }
 
@@ -249,7 +253,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      this.setState({tableContentData: result.tuples, totalNumOfTuples: result.total_count, errorMessage: '', maxPageNumber:  Math.ceil(this.state.totalNumOfTuples / this.state.numberOfTuplesPerPage), isLoading: false})
+      this.setState({tableContentData: result.tuples, totalNumOfTuples: result.total_count, errorMessage: '', maxPageNumber:  Math.ceil(result.total_count / this.state.numberOfTuplesPerPage), isLoading: false})
     })
     .catch(error => {
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
@@ -258,8 +262,9 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
 
   setPageNumber(pageNumber: number) {
     console.log(pageNumber)
+    console.log(this.state.maxPageNumber);
     if (pageNumber < 1 || pageNumber > this.state.maxPageNumber) {
-      throw Error('Invalid pageNumber requested');
+      throw Error('Invalid pageNumber ' + pageNumber + ' requested');
     }
 
     this.setState({currentPageNumber: pageNumber});
