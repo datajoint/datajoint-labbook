@@ -59,8 +59,10 @@ class TableContent extends React.Component<{
     totalNumOfTuples: number,
     currentPageNumber: number,
     maxPageNumber: number,
+    tuplePerPage: number,
     tableAttributesInfo?: TableAttributesInfo,
     setPageNumber: any,
+    setNumberOfTuplesPerPage: any,
     fetchTableContent: any}, 
   TableContentStatus> {
   constructor(props: any) {
@@ -84,6 +86,7 @@ class TableContent extends React.Component<{
     this.goToLastPage = this.goToLastPage.bind(this);
     this.goForwardAPage = this.goForwardAPage.bind(this);
     this.goToLastPage = this.goToLastPage.bind(this);
+    this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
   }
 
   /**
@@ -125,7 +128,6 @@ class TableContent extends React.Component<{
   }
 
   goForwardAPage() {
-    console.log('asdjfklasjdlkfj')
     this.props.setPageNumber(this.props.currentPageNumber + 1);
   }
 
@@ -241,6 +243,10 @@ class TableContent extends React.Component<{
     // Covert array into object
 
     this.setState({selectedTupleIndex: tupleIndex, selectedTuple: tupleBuffer});
+  }
+
+  handleNumberOfTuplesPerPageChange(event: any) {
+    this.props.setNumberOfTuplesPerPage(event.target.value)
   }
 
   /**
@@ -458,6 +464,10 @@ class TableContent extends React.Component<{
           </div>
             <div className="paginator">
               <p>Total Table Entries: {this.props.totalNumOfTuples}</p>
+              <div className="number-of-rows-per-page-input">
+                <p>Number of row per page</p>
+                <input type='number' value={this.props.tuplePerPage} onChange={this.handleNumberOfTuplesPerPageChange}></input>
+              </div>
               {Object.entries(this.props.contentData).length ?
                 <div className="controls">
                   <FontAwesomeIcon className={true ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.goToFirstPage()} />

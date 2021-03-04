@@ -24,7 +24,7 @@ type TableViewState = {
   currentView: CurrentView,
   tableContentNeedRefresh: boolean,
   tableDefinitionNeedRefresh: boolean,
-  tuplePerPage: number,
+  numberOfTuplesPerPage: number,
   totalNumOfTuples: number,
   currentPageNumber: number,
   maxPageNumber: number,
@@ -42,7 +42,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       currentView: CurrentView.TABLE_CONTENT,
       tableContentNeedRefresh: true,
       tableDefinitionNeedRefresh: true,
-      tuplePerPage: 25,
+      numberOfTuplesPerPage: 25,
       currentPageNumber: 1,
       maxPageNumber: 1,
       tableContentData: [],
@@ -54,6 +54,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
 
     this.fetchTableAttributeAndContent = this.fetchTableAttributeAndContent.bind(this);
     this.setPageNumber = this.setPageNumber.bind(this);
+    this.setNumberOfTuplesPerPage = this.setNumberOfTuplesPerPage.bind(this);
     this.fetchTableContent = this.fetchTableContent.bind(this);
   }
 
@@ -90,7 +91,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         this.setState({tableDefinitionNeedRefresh: false})
       }
     }
-    else if (this.state.currentPageNumber !== prevState.currentPageNumber) {
+    else if (this.state.currentPageNumber !== prevState.currentPageNumber || this.state.numberOfTuplesPerPage != prevState.numberOfTuplesPerPage) {
       this.fetchTableContent();
     }
   }
@@ -163,7 +164,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     
 
     // Add limit to url
-    urlParams.push('limit=' + this.state.tuplePerPage);
+    urlParams.push('limit=' + this.state.numberOfTuplesPerPage);
 
     // Add page param
     urlParams.push('page=' + this.state.currentPageNumber);
@@ -248,7 +249,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
         }
       }
 
-      this.setState({tableContentData: result.tuples, totalNumOfTuples: result.total_count, errorMessage: '', maxPageNumber:  Math.ceil(this.state.totalNumOfTuples / this.state.tuplePerPage), isLoading: false})
+      this.setState({tableContentData: result.tuples, totalNumOfTuples: result.total_count, errorMessage: '', maxPageNumber:  Math.ceil(this.state.totalNumOfTuples / this.state.numberOfTuplesPerPage), isLoading: false})
     })
     .catch(error => {
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
@@ -262,6 +263,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     }
 
     this.setState({currentPageNumber: pageNumber});
+  }
+
+  setNumberOfTuplesPerPage(numberOfTuplesPerPage: number) {
+    this.setState({numberOfTuplesPerPage: numberOfTuplesPerPage});
   }
  
   /**
@@ -488,8 +493,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
                 currentPageNumber = {this.state.currentPageNumber}
                 maxPageNumber = {this.state.maxPageNumber}
                 totalNumOfTuples = {this.state.totalNumOfTuples}
+                tuplePerPage = {this.state.numberOfTuplesPerPage}
                 tableAttributesInfo = {this.state.tableAttributesInfo}
                 setPageNumber = {this.setPageNumber}
+                setNumberOfTuplesPerPage = {this.setNumberOfTuplesPerPage}
                 fetchTableContent = {this.fetchTableContent}
             />
           )
