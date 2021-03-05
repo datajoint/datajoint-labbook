@@ -85,7 +85,7 @@ class TableContent extends React.Component<{
     this.goToFirstPage = this.goToFirstPage.bind(this);
     this.goToLastPage = this.goToLastPage.bind(this);
     this.goForwardAPage = this.goForwardAPage.bind(this);
-    this.goToLastPage = this.goToLastPage.bind(this);
+    this.goBackwardAPage = this.goBackwardAPage.bind(this);
     this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
   }
 
