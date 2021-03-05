@@ -158,13 +158,13 @@ class TableAttribute {
         typeString = "date";
       }
       else if (tableAttribute.attributeType === TableAttributeType.DATETIME) {
-        typeString = "date time";
+        typeString = "datetime";
       }
       else if (tableAttribute.attributeType === TableAttributeType.TIME) {
         typeString = "HH:MM:SS";
       }
       else if (tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
-        typeString = "TIMESTAMP";
+        typeString = "timestamp";
       }
       else if (tableAttribute.attributeType === TableAttributeType.ENUM) {
         typeString = "enum";
