@@ -14,6 +14,8 @@ import Restriction from './DataStorageClasses/Restriction';
 import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
 import { url } from 'inspector';
 
+const NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT: number = 500;
+
 enum CurrentView {
   TABLE_CONTENT,
   TABLE_INFO
@@ -25,6 +27,7 @@ type TableViewState = {
   tableContentNeedRefresh: boolean,
   tableDefinitionNeedRefresh: boolean,
   numberOfTuplesPerPage: number,
+  setNumberOFTuplesPerPageTimeout: ReturnType<typeof setTimeout>
   totalNumOfTuples: number,
   currentPageNumber: number,
   maxPageNumber: number,
@@ -43,6 +46,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       tableContentNeedRefresh: true,
       tableDefinitionNeedRefresh: true,
       numberOfTuplesPerPage: 25,
+      setNumberOFTuplesPerPageTimeout: setTimeout(() => {}, 1000),
       currentPageNumber: 1,
       maxPageNumber: 1,
       tableContentData: [],
@@ -95,8 +99,11 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       this.fetchTableContent();
     }
     else if (this.state.numberOfTuplesPerPage != prevState.numberOfTuplesPerPage) {
-      this.fetchTableContent();
-      this.setState({currentPageNumber: 1}); // Reset back to the first page
+      clearTimeout(this.state.setNumberOFTuplesPerPageTimeout);
+      const setNumberOFTuplesPerPageTimeout = setTimeout(() => {
+        this.fetchTableContent();
+        this.setState({currentPageNumber: 1});
+      }, NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT)
     }
   }
 
@@ -261,8 +268,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   }
 
   setPageNumber(pageNumber: number) {
-    console.log(pageNumber)
-    console.log(this.state.maxPageNumber);
     if (pageNumber < 1 || pageNumber > this.state.maxPageNumber) {
       throw Error('Invalid pageNumber ' + pageNumber + ' requested');
     }
