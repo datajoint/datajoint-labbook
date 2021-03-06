@@ -15,6 +15,9 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Fixed redundent props to state copy in tableInfo component PR #117
 - Fixed issue website crashing when opening generate an input html block for datetime (#104) PR #106
 
+### Changed
+- Changed date time to datetime and Timestamp to timestamp for input block labels (#108) PR #118
+
 ## [0.1.0-beta.1] - 2021-02-26
 ### Added
 - Support for double data type (#72) PR #86
