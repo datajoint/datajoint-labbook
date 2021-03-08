@@ -21,10 +21,10 @@ enum PaginationCommand {
 }
 
 enum TableActionType {
-  FILTER = 'Filter',
-  INSERT = 'Insert',
-  UPDATE = 'Update',
-  DELETE = 'Delete'
+  FILTER,
+  INSERT,
+  UPDATE,
+  DELETE,
 }
 
 type TableContentStatus = {
@@ -423,6 +423,25 @@ class TableContent extends React.Component<{
     }
   }
 
+  /**
+   * Converts the current table action type to string for proper rendering on loading popup text
+   * @param currentTableActionType 
+   */
+  tableActionEnumToString(currentTableActionType: TableActionType) {
+    if (currentTableActionType === TableActionType.INSERT) {
+      return 'Insert'
+    }
+    else if (currentTableActionType === TableActionType.UPDATE) {
+      return 'Update'
+    }
+    else if (currentTableActionType === TableActionType.DELETE) {
+      return 'Delete'
+    }
+    else {
+      return ''
+    }
+  }
+
   handleActionWaitTime(isWaiting: boolean) {
     this.setState({isWaiting: isWaiting});
   }
@@ -500,7 +519,7 @@ class TableContent extends React.Component<{
           <div className="loadingBackdrop">
             <div className="loadingPopup">
               <BasicLoadingIcon size={80} />
-              <p>{this.state.currentSelectedTableActionMenu} in action, please hold.</p>
+              <p>{this.tableActionEnumToString(this.state.currentSelectedTableActionMenu)} in action, please hold.</p>
             </div>
           </div>
         ) : ''}
