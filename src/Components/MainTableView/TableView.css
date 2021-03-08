@@ -56,6 +56,11 @@
   box-shadow: -1px 0px 3px rgb(160, 160, 160);
 }
 
+.loadingArea {
+  position: relative;
+  height: 100%;
+}
+
 .errorMessage,
 .loadingArea .loadingMessage {
   padding-left: 24px;

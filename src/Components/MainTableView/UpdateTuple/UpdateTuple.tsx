@@ -22,7 +22,9 @@ class UpdateTuple extends React.Component<{
     tableAttributesInfo?: TableAttributesInfo, 
     fetchTableContent: any, 
     clearEntrySelection: any,
-    selectedTableEntry: any}, 
+    selectedTableEntry: any,
+    updateInAction: any // for loading animation status
+  }, 
   updateTupleState> {
   constructor(props: any) {
     super(props);
@@ -155,6 +157,9 @@ class UpdateTuple extends React.Component<{
       }
     }
 
+    // start update in action wait animation and stop when api responds
+    this.props.updateInAction(true);
+
     // All checks passed thus attempt insert
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/update_tuple`, {
       method: 'POST',
@@ -162,6 +167,7 @@ class UpdateTuple extends React.Component<{
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: tupleBuffer})
     })
     .then(result => {
+      this.props.updateInAction(false);
       // Check for error mesage 500, if so throw and error
       if (result.status === 500) {
         result.text()
@@ -181,6 +187,7 @@ class UpdateTuple extends React.Component<{
       this.props.fetchTableContent();
     })
     .catch((error) => {
+      this.props.updateInAction(false);
       this.setState({errorMessage: error.message});
     })
   }

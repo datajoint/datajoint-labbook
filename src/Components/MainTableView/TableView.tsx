@@ -11,8 +11,7 @@ import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
-import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
-import { url } from 'inspector';
+import BasicLoadingIcon from '../LoadingAnimation/BasicLoadingIcon';
 
 const NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT: number = 500;
 
@@ -521,7 +520,8 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     } else {
       return (
         <div className="loadingArea">
-          <div className="loadingMessage">Loading...</div>
+          <BasicLoadingIcon size={100} />
+          {/* <div className="loadingMessage">Loading...</div> */}
         </div>
       )
     }
