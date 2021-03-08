@@ -3,6 +3,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEye, faEyeSlash, faSearch, faSortAmountDown} from '@fortawesome/free-solid-svg-icons';
 import TableType from '../TableTypeEnum/TableType';
 import './TableList.css';
+import TableListLoading from '../LoadingAnimation/TableListLoading';
 
 enum TableSortMode {
   ATOZ,
@@ -51,10 +52,17 @@ type TableListState = {
   tableList: Array<ParentTableListEntry>,
   restrictedTableList: Array<ParentTableListEntry>,
   searchString: string,
-  currentTableSortMode: TableSortMode
+  currentTableSortMode: TableSortMode,
 }
 
-class TableList extends React.Component<{token: string, tableListDict: any, selectedTableName: string, selectedTableType: TableType, onTableSelection: any}, TableListState> {
+class TableList extends React.Component<{
+    token: string, 
+    tableListDict: any, 
+    selectedTableName: string, 
+    selectedTableType: TableType, 
+    onTableSelection: any,
+    tableListIsLoading: boolean
+  }, TableListState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -236,6 +244,8 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
             </div>
           </div>
         </div>
+        {this.props.tableListIsLoading ? 
+        <TableListLoading /> : 
         <div className="table-listing">
           {
             this.state.restrictedTableList.map((table: ParentTableListEntry) => {
@@ -278,6 +288,7 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
             })
           }
         </div>
+        }
       </div>
     )
   }

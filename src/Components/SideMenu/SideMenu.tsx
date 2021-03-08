@@ -11,6 +11,7 @@ import './SideMenu.css';
 type HomeSideMenuState = {
   selectedSchemaBuffer: string
   tableDict: any,
+  tableListIsLoading: boolean
 }
 
 /**
@@ -24,7 +25,8 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
     this.handleTableSelection = this.handleTableSelection.bind(this);
     this.state = {
       selectedSchemaBuffer: '',
-      tableDict: {}
+      tableDict: {},
+      tableListIsLoading: false
     }
   }
 
@@ -35,7 +37,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
    */
   handleSchemaSelection(schema: string) {
     // Update selectedSchemaBuffer
-    this.setState({selectedSchemaBuffer: schema})
+    this.setState({selectedSchemaBuffer: schema, tableListIsLoading: true})
     
     // Run api fetch for list tables and deal with result
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/list_tables`, {
@@ -44,6 +46,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
       body: JSON.stringify({schemaName: schema})
     })
       .then(result => {
+        this.setState({tableListIsLoading: false})
         // Check for error mesage 500, if so throw and error
         if (result.status === 500) {
           result.text().then(errorMessage => {throw new Error(errorMessage)});
@@ -55,6 +58,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
         this.setState({tableDict: result.tableTypeAndNames});
       })
       .catch((error) => {
+        this.setState({tableListIsLoading: false})
         console.error('Error: ', error);
       })
   }
@@ -78,6 +82,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
           selectedTableName={this.props.selectedTableName}
           selectedTableType = {this.props.selectedTableType}
           onTableSelection={(tableName: string, tableType: TableType) => {this.handleTableSelection(tableName, tableType)}}
+          tableListIsLoading={this.state.tableListIsLoading}
         />
       </div>
     )
