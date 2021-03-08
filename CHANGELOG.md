@@ -9,7 +9,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 
 ### Fixed
 - Fixed bug of delete with datetime in primarykey crashing PR #105
-- Fixed issue website crashing when opening generate an input html block for datetime (#104) PR #106
+-  Fixed issue where website crashes when opening a filter card for datetime. (#104) PR #106
 
 ## [0.1.0-beta.1] - 2021-02-26
 ### Added
