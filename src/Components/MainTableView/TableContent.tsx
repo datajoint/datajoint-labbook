@@ -10,6 +10,7 @@ import DeleteTuple from './DeleteTuple/DeleteTuple'
 import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import TableAttribute from './DataStorageClasses/TableAttribute'
 import TableAttributeType from './enums/TableAttributeType'
+import BasicLoadingIcon from '../LoadingAnimation/BasicLoadingIcon';
 import Restriction from './DataStorageClasses/Restriction'
 
 enum PaginationCommand {
@@ -23,7 +24,7 @@ enum TableActionType {
   FILTER,
   INSERT,
   UPDATE,
-  DELETE
+  DELETE,
 }
 
 type TableContentStatus = {
@@ -37,6 +38,7 @@ type TableContentStatus = {
   dragStart: number, // part of table column resizer feature
   dragDistance: number, // part of table column resizer feature
   resizeIndex: any, // part of table column resizer feature
+  isWaiting: boolean, // tells the UI to display loading icon while insert/update/delete are in action
 }
 
 /**
@@ -78,7 +80,8 @@ class TableContent extends React.Component<{
       headerWidth: 0,
       dragStart: 0,
       dragDistance: 0,
-      resizeIndex: undefined
+      resizeIndex: undefined,
+      isWaiting: false
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
@@ -163,6 +166,7 @@ class TableContent extends React.Component<{
             fetchTableContent={this.props.fetchTableContent}
             clearEntrySelection={() => this.handleSelectionClearRequest()}
             selectedTableEntry={this.state.selectedTuple}
+            insertInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
         </div>)
     }
@@ -177,6 +181,7 @@ class TableContent extends React.Component<{
             fetchTableContent={this.props.fetchTableContent}
             clearEntrySelection={() => this.handleSelectionClearRequest()}
             selectedTableEntry={this.state.selectedTuple}
+            updateInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
       </div>)
     }
@@ -192,6 +197,7 @@ class TableContent extends React.Component<{
           fetchTableContent={this.props.fetchTableContent}
           clearEntrySelection={() => this.handleSelectionClearRequest()}
           selectedTableEntry={this.state.selectedTuple}
+          deleteInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
         />
       </div>)
     }
@@ -417,6 +423,29 @@ class TableContent extends React.Component<{
     }
   }
 
+  /**
+   * Converts the current table action type to string for proper rendering on loading popup text
+   * @param currentTableActionType 
+   */
+  tableActionEnumToString(currentTableActionType: TableActionType) {
+    if (currentTableActionType === TableActionType.INSERT) {
+      return 'Insert'
+    }
+    else if (currentTableActionType === TableActionType.UPDATE) {
+      return 'Update'
+    }
+    else if (currentTableActionType === TableActionType.DELETE) {
+      return 'Delete'
+    }
+    else {
+      return ''
+    }
+  }
+
+  handleActionWaitTime(isWaiting: boolean) {
+    this.setState({isWaiting: isWaiting});
+  }
+
   render() {
     return(
       <div className="table-content-viewer">
@@ -486,6 +515,14 @@ class TableContent extends React.Component<{
               }
             </div>
         </div>
+        {this.state.isWaiting ? (
+          <div className="loadingBackdrop">
+            <div className="loadingPopup">
+              <BasicLoadingIcon size={80} />
+              <p>{this.tableActionEnumToString(this.state.currentSelectedTableActionMenu)} in action, please hold.</p>
+            </div>
+          </div>
+        ) : ''}
       </div>
     )
   }

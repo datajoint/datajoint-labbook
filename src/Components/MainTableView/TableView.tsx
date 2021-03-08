@@ -11,6 +11,7 @@ import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
+import BasicLoadingIcon from '../LoadingAnimation/BasicLoadingIcon';
 
 const NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT: number = 500;
 
@@ -494,7 +495,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   getCurrentView() {
     if (!this.state.isLoading) {
       if (this.props.selectedTableName === '') {
-        return <div className="errorMessage">Select a Table to see contents</div>
+        return <div className="errorMessage">Select a table to see contents</div>
       } 
       else if (this.state.errorMessage) {
         return <div className="errorMessage">{this.state.errorMessage}</div>
@@ -530,7 +531,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     } else {
       return (
         <div className="loadingArea">
-          <div className="loadingMessage">Loading...</div>
+          <BasicLoadingIcon size={100} />
         </div>
       )
     }

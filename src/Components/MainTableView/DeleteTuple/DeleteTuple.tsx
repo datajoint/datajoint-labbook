@@ -15,7 +15,6 @@ type deleteTupleState = {
   dependencies: Array<any>, // list of dependencies fetched from API
   deleteStatusMessage: string, // for GUI to show
   isGettingDependencies: boolean, // for loading animation status
-  isDeletingEntry: boolean // for loading animation status
   deleteAccessible: boolean // valdiation result of accessibility from check dependency component
 }
 
@@ -26,7 +25,8 @@ class DeleteTuple extends React.Component<{
     tableAttributesInfo?: TableAttributesInfo, 
     fetchTableContent: any, 
     clearEntrySelection: any,
-    selectedTableEntry?: any
+    selectedTableEntry?: any,
+    deleteInAction: any // for loading animation status
   },
   deleteTupleState> {
   constructor(props: any) {
@@ -35,7 +35,6 @@ class DeleteTuple extends React.Component<{
       dependencies: [],
       deleteStatusMessage: '',
       isGettingDependencies: false,
-      isDeletingEntry: false,
       deleteAccessible: false,
     }
 
@@ -89,7 +88,7 @@ class DeleteTuple extends React.Component<{
     }
 
     // set status true for deleting entry, switch to false once api responds
-    this.setState({isDeletingEntry: true})
+    this.props.deleteInAction(true)
 
     // TODO: Run api fetch for list of dependencies/permission
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/delete_tuple`, {
@@ -99,7 +98,8 @@ class DeleteTuple extends React.Component<{
     })
       .then(result => {
         // set deleting status to done
-        this.setState({isDeletingEntry: false, dependencies: []})
+        this.setState({dependencies: []})
+        this.props.deleteInAction(false)
 
         // Check for error mesage 500, if so throw error - shouldn't happen as often once real dependency check is in place
         if (result.status === 500 || result.status === 409) {
@@ -126,6 +126,7 @@ class DeleteTuple extends React.Component<{
 
       })
       .catch(error => {
+        this.props.deleteInAction(false);
         this.setState({deleteStatusMessage: error.message});
       })
   }
@@ -184,7 +185,6 @@ class DeleteTuple extends React.Component<{
             <button className="cancelActionButton" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
           </div>
           <div className="deleting">
-          {this.state.isDeletingEntry ? <p>Deleting entry might take a while...</p>: '' } {/* TODO: replace with proper animation */}
           {this.state.deleteStatusMessage ? (
             <div className="errorMessage">{this.state.deleteStatusMessage}<button className="dismiss" onClick={() => this.setState({deleteStatusMessage: ''})}>dismiss</button></div>
           ) : ''}

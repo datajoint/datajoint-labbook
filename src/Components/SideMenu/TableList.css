@@ -19,6 +19,10 @@
   height: 0.8rem;
 }
 
+.unselectedSchemaMessage {
+  width: 90%;
+  margin: 12px auto;
+}
 
 .table-view-controls {
   display: inline-flex;

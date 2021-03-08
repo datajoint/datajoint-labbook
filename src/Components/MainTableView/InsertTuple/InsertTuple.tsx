@@ -30,7 +30,9 @@ class InsertTuple extends React.Component<{
     tableAttributesInfo?: TableAttributesInfo, 
     fetchTableContent: any, 
     clearEntrySelection: any, 
-    selectedTableEntry?: any}, 
+    selectedTableEntry?: any,
+    insertInAction: any // for loading/waiting animation while insert takes place
+  }, 
   insertTupleState> {
 
   constructor(props: any) {
@@ -155,6 +157,9 @@ class InsertTuple extends React.Component<{
       }
     }
 
+    // start insert in action wait animation and stop when api responds
+    this.props.insertInAction(true);
+
     // All checks passed thus attempt insert
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/insert_tuple`, {
       method: 'POST',
@@ -162,6 +167,7 @@ class InsertTuple extends React.Component<{
       body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: tupleBuffer})
     })
     .then(result => {
+      this.props.insertInAction(false);
       // Check for error mesage 500, if so throw and error
       if (result.status === 500) {
         result.text()
@@ -179,6 +185,7 @@ class InsertTuple extends React.Component<{
       this.props.fetchTableContent();
     })
     .catch((error) => {
+      this.props.insertInAction(false);
       this.setState({errorMessage: error.message});
     })
   }
