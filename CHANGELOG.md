@@ -7,6 +7,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Added case insensitive behavior to schema and table search box (#99) PR #102
 - CSS for making the primary keys look disabled/readonly for update mode PR #105
 - Added number of tuples input box for fetch table viewing PR #117
+- Added loading animation to table list load, table content load, and table action wait time (#107) PR #120
 
 ### Fixed
 - Fixed bug of delete with datetime in primarykey crashing PR #105
