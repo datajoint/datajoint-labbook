@@ -532,7 +532,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       return (
         <div className="loadingArea">
           <BasicLoadingIcon size={100} />
-          {/* <div className="loadingMessage">Loading...</div> */}
         </div>
       )
     }
