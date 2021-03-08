@@ -11,8 +11,6 @@ import PrimaryTableAttribute from './DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribute';
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
-import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
-import { url } from 'inspector';
 
 const NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT: number = 500;
 
@@ -34,7 +32,8 @@ type TableViewState = {
   tableContentData: Array<any>,
   tableInfoData: string,
   errorMessage: string,
-  isLoading: boolean
+  isLoading: boolean,
+  restrictions: Array<Restriction> // Storage for the last requested restrction to deal with case such as numberOfTuplesPerPage change
 }
 
 class TableView extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType}, TableViewState> {
@@ -54,12 +53,30 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
       tableInfoData: '',
       errorMessage: '',
       isLoading: false,
+      restrictions: []
     }
 
     this.fetchTableAttributeAndContent = this.fetchTableAttributeAndContent.bind(this);
     this.setPageNumber = this.setPageNumber.bind(this);
     this.setNumberOfTuplesPerPage = this.setNumberOfTuplesPerPage.bind(this);
     this.fetchTableContent = this.fetchTableContent.bind(this);
+    this.setRestrictions = this.setRestrictions.bind(this);
+  }
+
+  setPageNumber(pageNumber: number) {
+    if (pageNumber < 1 || pageNumber > this.state.maxPageNumber) {
+      throw Error('Invalid pageNumber ' + pageNumber + ' requested');
+    }
+
+    this.setState({currentPageNumber: pageNumber});
+  }
+
+  setNumberOfTuplesPerPage(numberOfTuplesPerPage: number) {
+    this.setState({numberOfTuplesPerPage: numberOfTuplesPerPage});
+  }
+
+  setRestrictions(restrictions: Array<Restriction>) {
+    this.setState({restrictions: restrictions});
   }
 
   switchCurrentView(viewChoice: CurrentView) {
@@ -98,12 +115,16 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     else if (this.state.currentPageNumber !== prevState.currentPageNumber) {
       this.fetchTableContent();
     }
-    else if (this.state.numberOfTuplesPerPage != prevState.numberOfTuplesPerPage) {
+    else if (this.state.numberOfTuplesPerPage !== prevState.numberOfTuplesPerPage) {
       clearTimeout(this.state.setNumberOFTuplesPerPageTimeout);
       const setNumberOFTuplesPerPageTimeout = setTimeout(() => {
         this.fetchTableContent();
         this.setState({currentPageNumber: 1});
       }, NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT)
+      this.setState({setNumberOFTuplesPerPageTimeout: setNumberOFTuplesPerPageTimeout});
+    }
+    else if (this.state.restrictions !== prevState.restrictions) {
+      this.fetchTableContent();
     }
   }
 
@@ -163,16 +184,15 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     .catch(error => {
       this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
     })
-}
+  }
 
   /**
    * Utility function for refeshing the table view of tuples
    * @param restrictions Array of valid restrictions used to query the back end to prevent it sending back everything
    */
-  fetchTableContent(restrictions?: Array<Restriction>) {
+  fetchTableContent() {
     // Buffer to store restrictions
     let urlParams: Array<string> = []
-    
 
     // Add limit to url
     urlParams.push('limit=' + this.state.numberOfTuplesPerPage);
@@ -180,10 +200,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     // Add page param
     urlParams.push('page=' + this.state.currentPageNumber);
 
-    if (restrictions !== undefined) {
+    if (this.state.restrictions !== []) {
       let restrictionsInAPIFormat = []
 
-      for (let restriction of restrictions) {
+      for (let restriction of this.state.restrictions) {
 
         if (restriction.tableAttribute?.attributeType === TableAttributeType.DATETIME) {
           restrictionsInAPIFormat.push({
@@ -265,18 +285,6 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     .catch(error => {
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
     })
-  }
-
-  setPageNumber(pageNumber: number) {
-    if (pageNumber < 1 || pageNumber > this.state.maxPageNumber) {
-      throw Error('Invalid pageNumber ' + pageNumber + ' requested');
-    }
-
-    this.setState({currentPageNumber: pageNumber});
-  }
-
-  setNumberOfTuplesPerPage(numberOfTuplesPerPage: number) {
-    this.setState({numberOfTuplesPerPage: numberOfTuplesPerPage});
   }
  
   /**
@@ -508,6 +516,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
                 setPageNumber = {this.setPageNumber}
                 setNumberOfTuplesPerPage = {this.setNumberOfTuplesPerPage}
                 fetchTableContent = {this.fetchTableContent}
+                setRestrictions = {this.setRestrictions}
             />
           )
         }
