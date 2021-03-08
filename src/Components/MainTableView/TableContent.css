@@ -206,3 +206,13 @@ input[type="checkbox"][disabled] {
   color: rgb(196, 196, 196);
   cursor: not-allowed;
 }
+
+.number-of-rows-per-page-input {
+  display: flex;
+  flex-direction: row;
+}
+
+.number-of-rows-per-page-input input{
+  margin-left: 20px;
+  width: 40px;
+}
