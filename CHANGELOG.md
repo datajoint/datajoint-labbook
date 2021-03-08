@@ -14,7 +14,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Fixed broken paging system for fetching records. Before it would fetched everything, now it only fetches only what is needed (#30) PR #117
 - Fixed redundent data fetching when user switch between Table Content and Table Info PR #117
 - Fixed redundent props to state copy in tableInfo component PR #117
-- Fixed issue website crashing when opening generate an input html block for datetime (#104) PR #106
+- Fixed issue where website crashes when opening a filter card for datetime. (#104) PR #106
 
 ### Changed
 - Changed date time to datetime and Timestamp to timestamp for input block labels (#108) PR #118
