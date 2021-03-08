@@ -485,7 +485,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   getCurrentView() {
     if (!this.state.isLoading) {
       if (this.props.selectedTableName === '') {
-        return <div className="errorMessage">Select a Table to see contents</div>
+        return <div className="errorMessage">Select a table to see contents</div>
       } 
       else if (this.state.errorMessage) {
         return <div className="errorMessage">{this.state.errorMessage}</div>

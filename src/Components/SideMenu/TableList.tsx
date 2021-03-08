@@ -247,6 +247,7 @@ class TableList extends React.Component<{
         {this.props.tableListIsLoading ? 
         <TableListLoading /> : 
         <div className="table-listing">
+          {!this.props.tableListDict ? <p className="unselectedSchemaMessage">Select a schema to see table listing</p> : ''}
           {
             this.state.restrictedTableList.map((table: ParentTableListEntry) => {
               return(

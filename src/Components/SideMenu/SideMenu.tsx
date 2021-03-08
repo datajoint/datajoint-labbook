@@ -25,7 +25,7 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
     this.handleTableSelection = this.handleTableSelection.bind(this);
     this.state = {
       selectedSchemaBuffer: '',
-      tableDict: {},
+      tableDict: undefined,
       tableListIsLoading: false
     }
   }
