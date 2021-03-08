@@ -183,7 +183,6 @@ class TableList extends React.Component<{token: string, tableListDict: any, sele
           }
         }
       }
-
       this.setState({searchString: event.target.value, restrictedTableList: restrictedTableList});
     }
     else {

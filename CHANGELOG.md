@@ -4,12 +4,16 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 
 ## [Unreleased]
 ### Added
-- Added Case insensitive behavior to schema and table search box (#99) PR #102
+- Added case insensitive behavior to schema and table search box (#99) PR #102
 - CSS for making the primary keys look disabled/readonly for update mode PR #105
+- Added number of tuples input box for fetch table viewing PR #117
 
 ### Fixed
 - Fixed bug of delete with datetime in primarykey crashing PR #105
--  Fixed issue where website crashes when opening a filter card for datetime. (#104) PR #106
+- Fixed broken paging system for fetching records. Before it would fetched everything, now it only fetches only what is needed (#30) PR #117
+- Fixed redundent data fetching when user switch between Table Content and Table Info PR #117
+- Fixed redundent props to state copy in tableInfo component PR #117
+- Fixed issue where website crashes when opening a filter card for datetime. (#104) PR #106
 
 ## [0.1.0-beta.1] - 2021-02-26
 ### Added

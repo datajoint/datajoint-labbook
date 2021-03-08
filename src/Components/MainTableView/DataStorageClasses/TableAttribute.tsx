@@ -348,8 +348,7 @@ class TableAttribute {
                 return(<option selected={currentValue === enumOptionString} key={enumOptionString} value={enumOptionString}>{enumOptionString}</option>);
               })}
             </select>
-        )
-        }
+        )}
       }
   
       // Handle number return types
