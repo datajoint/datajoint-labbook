@@ -11,6 +11,7 @@ import TableAttributesInfo from './DataStorageClasses/TableAttributesInfo';
 import TableAttribute from './DataStorageClasses/TableAttribute'
 import TableAttributeType from './enums/TableAttributeType'
 import BasicLoadingIcon from '../LoadingAnimation/BasicLoadingIcon';
+import Restriction from './DataStorageClasses/Restriction'
 
 enum PaginationCommand {
   FORWARD,
@@ -64,7 +65,8 @@ class TableContent extends React.Component<{
     tableAttributesInfo?: TableAttributesInfo,
     setPageNumber: any,
     setNumberOfTuplesPerPage: any,
-    fetchTableContent: any}, 
+    fetchTableContent: any,
+    setRestrictions: (restrictions: Array<Restriction>) => void},
   TableContentStatus> {
   constructor(props: any) {
     super(props);
@@ -150,7 +152,7 @@ class TableContent extends React.Component<{
       return (<div className="actionMenuContainer">
           <Filter 
             tableAttributesInfo={this.props.tableAttributesInfo}
-            fetchTableContent={this.props.fetchTableContent}
+            setRestrictions={this.props.setRestrictions}
           />
         </div>)
     }

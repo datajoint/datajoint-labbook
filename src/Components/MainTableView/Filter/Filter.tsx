@@ -16,7 +16,7 @@ type FilterState = {
 /**
  * Filter component that is in charge of managing one to many FilterCards as well as the data store beind them
  */
-class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo, fetchTableContent: any}, FilterState> {
+class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo, setRestrictions: (restrictions: Array<Restriction>) => void}, FilterState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -114,7 +114,7 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
 
       // Call fetch content if there is at lesat one valid restriction
       if (validRestrictions.length >= 0) {
-        this.props.fetchTableContent(validRestrictions);
+        this.props.setRestrictions(validRestrictions);
       }
     }, 1000);
 
