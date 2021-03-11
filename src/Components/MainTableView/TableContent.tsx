@@ -36,7 +36,6 @@ type TableContentStatus = {
   isDisabledCheckbox: boolean, // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
   newHeaderWidths: Array<number>, // part of table column resizer feature
   dragStart: number, // part of table column resizer feature
-  dragDistance: number, // part of table column resizer feature
   resizeIndex: any, // part of table column resizer feature
   isWaiting: boolean, // tells the UI to display loading icon while insert/update/delete are in action
   initialTableColWidths: Array<number> // list of column widths to load initially
@@ -83,7 +82,6 @@ class TableContent extends React.Component<{
       isDisabledCheckbox: false,
       newHeaderWidths: [],
       dragStart: 0,
-      dragDistance: 0,
       resizeIndex: undefined,
       isWaiting: false,
       initialTableColWidths: []
@@ -117,50 +115,48 @@ class TableContent extends React.Component<{
     this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTuple: undefined});
   }
 
+  /**
+   * initialzing the table column width 
+   */
   componentDidMount() {
     let tableBodyCellWidthLookup: Array<any> = []
     let tablenewHeaderWidthss: Array<any> = []
-    console.log('mounted - this.headerColumnSizeRef: ', this.headerColumnSizeRef)
     let headerColumns = this.headerColumnSizeRef.current.cells
     for (let col of headerColumns) {
-      // console.log(`header width for ${col.innerText}: `, col.clientWidth)
       tableBodyCellWidthLookup.push([])
       tablenewHeaderWidthss.push(col.clientWidth)
     }
-
-    console.log('this.tableBodyColumnRefs: ', this.tableBodyColumnRefs)
 
     for (let row of this.tableBodyColumnRefs) {
       if (row.current) {
         let tableRows = row.current.cells
         let index = 0
         for (let col of tableRows) {
-          // console.log(`width for row index ${index} - ${col.innerText}: `, col.clientWidth)
           tableBodyCellWidthLookup[index].push(col.clientWidth)
           index += 1;
         }
       } 
     }
-    let tableBodyAvgWidths: Array<number> = []
-    let finalTableColWidths: Array<number> = []
-    tableBodyCellWidthLookup.forEach((col, index) => {
-      let colAvg = Math.ceil(col.reduce((a: number, b: number) => (a + b)) / col.length)
-      tableBodyAvgWidths.push(colAvg)
-      //// checking the max width of each column just in case - implementing with rounded up average for now
-      // let colMax = Math.max(...col)
-      // console.log(`Avg: ${colAvg}...Max: ${colMax}`)
 
-      // check the average body width against the header width, put the larger of the two in the final width
-      if (colAvg > tablenewHeaderWidthss[index]) {
-        finalTableColWidths.push(colAvg)
-      }
-      else {
-        finalTableColWidths.push(tablenewHeaderWidthss[index])
+    // going through the body column references to decide on the initial width of the table columns
+    let finalTableColWidths: Array<number> = []
+    tableBodyCellWidthLookup.forEach((col: any, index: number) => {
+      if (col.length > 0) {
+        let colAvg = Math.ceil(col.reduce((a: number, b: number) => (a + b)) / col.length)
+        //// checking the max width of each column just in case - implementing with rounded up average for now
+        // let colMax = Math.max(...col)
+        // console.log(`Avg: ${colAvg}...Max: ${colMax}`)
+
+        // check the average body width against the header width, put the larger of the two in the final width
+        if (colAvg > tablenewHeaderWidthss[index]) {
+          finalTableColWidths.push(colAvg)
+        }
+        else {
+          finalTableColWidths.push(tablenewHeaderWidthss[index])
+        }
       }
     })
-    console.log('header width: ', tablenewHeaderWidthss)
-    console.log('body avg widths: ', tableBodyAvgWidths)
-    console.log('final width: ', finalTableColWidths)
+
     this.setState({initialTableColWidths: finalTableColWidths.slice(1)}) // not including the initial width of the checkbox
   }
 
@@ -414,18 +410,20 @@ class TableContent extends React.Component<{
     )
   }
 
-  // /**
-  //  * Function to set the new adjusted width (TODO: fix to make sure the fix is for each column using reference)
-  //  * @param difference // the distance the user dragged the column divider handle
-  //  */
-  // setnewHeaderWidths(difference: number) {
-  //   if (this.state.newHeaderWidths + difference > 0) {
-  //     this.setState({newHeaderWidths: this.state.newHeaderWidths + difference});
-  //   }
-  //   else {
-  //     this.setState({newHeaderWidths: 1})
-  //   }
-  // }
+  /**
+   * Function to set the new adjusted width (TODO: fix to make sure the fix is for each column using reference)
+   * @param difference // the distance the user dragged the column divider handle
+   */
+  setnewHeaderWidths(difference: number) {
+    if (this.state.newHeaderWidths.length > 0 && difference !== 0) {
+      let newWidthsCopy = this.state.newHeaderWidths
+      newWidthsCopy[this.state.resizeIndex] = this.state.newHeaderWidths[this.state.resizeIndex] + difference
+      this.setState({newHeaderWidths: newWidthsCopy});
+    }
+    else {
+      this.setState({newHeaderWidths: this.state.initialTableColWidths})
+    }
+  }
 
   /**
    * Listens for when cell border is selected and stores the index of the column and mouse start position
@@ -434,7 +432,6 @@ class TableContent extends React.Component<{
    */
   cellResizeMouseDown(event: any, colIndex: any) {
     this.setState({dragStart: event.clientX, resizeIndex: colIndex})
-    // console.log('event.target.offsetParent.nextSibling: ', event.target.offsetParent.nextSibling)
   }
 
   /**
@@ -443,8 +440,12 @@ class TableContent extends React.Component<{
    */
   cellResizeMouseMove(event: any) {
     if (this.state.dragStart) {
-      this.setState({dragDistance: event.pageX - this.state.dragStart})
-      // this.setnewHeaderWidths(this.state.dragDistance);
+      // use the drag distance to calculate the new width
+      let dragDistance = event.pageX - this.state.dragStart
+      this.setnewHeaderWidths(dragDistance);
+
+      // update the new start
+      this.setState({dragStart: event.clientX})
     }
   }
 
@@ -454,7 +455,7 @@ class TableContent extends React.Component<{
    */
   cellResizeMouseUp(event: any) {
     // reset column drag stats
-    this.setState({dragStart: 0, dragDistance: 0, resizeIndex: undefined})
+    this.setState({dragStart: 0, resizeIndex: undefined})
   }
   
   /**
@@ -464,16 +465,15 @@ class TableContent extends React.Component<{
   getCellWidth(colIndex: number) {
     if (this.state.resizeIndex === colIndex && this.state.newHeaderWidths[colIndex]) {
       return {
-        // width: this.state.newHeaderWidths + 'px'
+        width: this.state.newHeaderWidths[colIndex] + 'px'
       }
     }
     else if (this.state.resizeIndex !== colIndex && this.state.newHeaderWidths[colIndex]) {
       return {
-        // width: '180px' // needs to refer to each col state
+        width: this.state.newHeaderWidths[colIndex] + 'px'
       }
     } 
     else {
-      console.log('returning initial value: ', this.state.initialTableColWidths[colIndex])
       return {
         width: this.state.initialTableColWidths[colIndex] // default
       }
@@ -535,6 +535,7 @@ class TableContent extends React.Component<{
             </thead>
             <tbody>
             {this.props.contentData.map((entry: any, tupleIndex: number) => {
+              // creating reference for each body column to track the width
               let colRef: any = createRef();
               this.tableBodyColumnRefs.push(colRef);
               return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={colRef}>
