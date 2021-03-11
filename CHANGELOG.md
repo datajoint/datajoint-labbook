@@ -2,7 +2,7 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
-## [0.1.0-beta.2] - 2021-03-09
+## [0.1.0-beta.2] - 2021-03-11
 ### Added
 - Added case insensitive behavior to schema and table search box (#99) PR #102
 - CSS for making the primary keys look disabled/readonly for update mode PR #105
