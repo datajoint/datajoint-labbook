@@ -3,10 +3,9 @@ import TableAttribute from '../DataStorageClasses/TableAttribute';
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
 import TableAttributeType from '../enums/TableAttributeType';
-import './UpdateTuple.css'
 import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
-import CheckDependency from '../CheckDependency';
+import './UpdateTuple.css'
 
 type updateTupleState = {
   tupleBuffer: any, // Object to stored the values typed in by the user

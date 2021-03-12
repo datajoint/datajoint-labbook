@@ -3,8 +3,6 @@ import "./DeleteTuple.css";
 import TableAttribute from '../DataStorageClasses/TableAttribute';
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
 import TableAttributeType from '../enums/TableAttributeType';
-
-import CheckDependency from '../CheckDependency';
 import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
