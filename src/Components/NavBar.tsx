@@ -8,12 +8,20 @@ import './NavBar.css'
 // Assets
 import logo from '../images/logo_default.svg'
 
-type DJGUINavBarState = {
-  backendVersion: string
+interface NavBarProps {
+  hostname: string;
+  isLoggedIn: boolean;
 }
 
-class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJGUINavBarState> {
-  constructor(props: any) {
+interface NavBarState {
+  backendVersion: string;
+}
+
+/**
+ * Navigation bar component
+ */
+export default class NavBar extends React.Component<NavBarProps, NavBarState> {
+  constructor(props: NavBarProps) {
     super(props);
 
     this.state = {
@@ -21,6 +29,9 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
     }
   }
 
+  /**
+   * Get the version number upon being mounted.
+   */
   componentDidMount() {
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/version`, {
       method: 'GET',
@@ -77,5 +88,3 @@ class NavBar extends React.Component<{hostname: string, isLoggedIn: boolean}, DJ
     );
   }
 }
-
-export default NavBar;

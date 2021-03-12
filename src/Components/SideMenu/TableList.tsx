@@ -17,6 +17,11 @@ class TableListEntry {
   tableName: string;
   tableType: TableType;
 
+  /**
+   * Constructor
+   * @param tableName Name of table
+   * @param tableType Type of table, should be one of the enums from TableType
+   */
   constructor(tableName: string, tableType: TableType) {
     this.tableName = tableName;
     this.tableType = tableType;
@@ -29,6 +34,12 @@ class TableListEntry {
 class ParentTableListEntry extends TableListEntry {
   partTables: Array<PartTableListEntry>;
 
+  /**
+   * Constructor for ParentTableListEntry
+   * @param tableName Name of table
+   * @param tableType Type of table, should be one of the enums from TableType
+   * @param partTables Array of PartTables
+   */
   constructor(tableName: string, tableType: TableType, partTables: Array<PartTableListEntry>) {
     super(tableName, tableType);
     this.partTables = partTables;
@@ -39,31 +50,40 @@ class ParentTableListEntry extends TableListEntry {
  * Part Table List Entry which inherits TableListEntry but set table type to PART by default
  */
 class PartTableListEntry extends TableListEntry {
+  /**
+   * Construcotor for PartTableListEntry
+   * @param tableName Name of part table
+   */
   constructor(tableName: string) {
     super(tableName, TableType.PART);
   }
 }
 
-type TableListState = {
-  currentSort: string,
-  viewAllPartTables: boolean,
-  tablesToSort: any,
-  hidePartTable: Array<string>,
-  tableList: Array<ParentTableListEntry>,
-  restrictedTableList: Array<ParentTableListEntry>,
-  searchString: string,
-  currentTableSortMode: TableSortMode,
+interface TableListProps {
+  token: string;
+  tableListDict: any;
+  selectedTableName: string;
+  selectedTableType: TableType;
+  onTableSelection: any,
+  tableListIsLoading: boolean
 }
 
-class TableList extends React.Component<{
-    token: string, 
-    tableListDict: any, 
-    selectedTableName: string, 
-    selectedTableType: TableType, 
-    onTableSelection: any,
-    tableListIsLoading: boolean
-  }, TableListState> {
-  constructor(props: any) {
+interface TableListState {
+  currentSort: string;
+  viewAllPartTables: boolean;
+  tablesToSort: any;
+  hidePartTable: Array<string>;
+  tableList: Array<ParentTableListEntry>;
+  restrictedTableList: Array<ParentTableListEntry>;
+  searchString: string;
+  currentTableSortMode: TableSortMode;
+}
+
+/**
+ * Class for listing, sorting, and serachinng for tables in tableList
+ */
+export default class TableList extends React.Component<TableListProps, TableListState> {
+  constructor(props: TableListProps) {
     super(props);
     this.state = {
       currentSort: 'tier',
@@ -80,29 +100,42 @@ class TableList extends React.Component<{
     this.flipTableOrder = this.flipTableOrder.bind(this);
   }
 
+  /**
+   * Call back for toggle the visability of part tables in tablelist
+   */
   toggleAllPartTableView() {
     // Controls visibility for all of the part tables in the list
     this.setState({viewAllPartTables: !this.state.viewAllPartTables})
     if (this.state.viewAllPartTables) {
       this.setState({hidePartTable: []})
     }
-    
   }
 
-  toggleEachPartTableView(event:any, table: any) {
+  /**
+   * Call back for hiding parts tables of a specific parent table
+   * @param event HTML on click event from button
+   * @param table Table object that the part table view should be hidden or shown
+   */
+  toggleEachPartTableView(event: React.MouseEvent<HTMLDivElement, MouseEvent>, table: TableListEntry) {
     event.stopPropagation();
     let updatedList = this.state.hidePartTable;
     if (this.state.hidePartTable.includes(table.tableName)) {
       let deleteIndex = updatedList.indexOf(table.tableName);
-      updatedList.splice(deleteIndex, 1)
-    } else {  
+      updatedList.splice(deleteIndex, 1);
+    } 
+    else {
       updatedList.push(table.tableName)
     }
 
     this.setState({hidePartTable: updatedList})
   }
-
-  componentDidUpdate(prevProps: any, prevState: any) {
+  
+  /**
+   * Handles the construction of the tableList for rendering based on if the tableListDict from props change or not
+   * @param prevProps
+   * @param prevState
+   */
+  componentDidUpdate(prevProps: TableListProps, prevState: TableListState) {
     // Check if the selectedSchemaBuffer is different if so than update the tableList
     if (prevProps.tableListDict === this.props.tableListDict) {
       return;
@@ -174,7 +207,11 @@ class TableList extends React.Component<{
      this.setState({tableList: tableList, restrictedTableList: tableList, searchString: '', currentTableSortMode: TableSortMode.ATOZ});
   }
 
-  onSearchStringChange(event: any) {
+  /**
+   * Call back for Table Search box input OnChange
+   * @param event 
+   */
+  onSearchStringChange(event: React.ChangeEvent<HTMLInputElement>) {
     // Filter our the results based on the search string, assuming it is not empty
     let restrictedTableList: Array<ParentTableListEntry> = [];
 
@@ -203,7 +240,7 @@ class TableList extends React.Component<{
    * the list that is ascending and decensding with ascending by default, we can take advantage by this by just simply fliping the list when
    * the user change between the two sort mode. We also need to change the selected schema index accordingly which is simply just lengtOfArray - currentIndex - 1
    */
-  flipTableOrder(event: any) {
+  flipTableOrder(event: React.ChangeEvent<HTMLSelectElement>) {
     var restrictedTableList: Array<ParentTableListEntry> = Object.assign([], this.state.restrictedTableList);
 
     // Flip all part tables first
@@ -212,7 +249,7 @@ class TableList extends React.Component<{
     }
 
     // Flip all the parent tables
-    this.setState({restrictedTableList: this.state.restrictedTableList.reverse(), currentTableSortMode: event.target.value});
+    this.setState({restrictedTableList: this.state.restrictedTableList.reverse(), currentTableSortMode: parseInt(event.target.value)});
   }
 
   render() {
@@ -294,5 +331,3 @@ class TableList extends React.Component<{
     )
   }
 }
-
-export {TableList}

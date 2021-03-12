@@ -5,20 +5,23 @@ import './Login.css'
 // Assets
 import logo from '../images/logo_default.svg'
 
-interface loginInFormProps {
-  setCurrentDatabaseConnectionJWT: any;
+interface LoginProps {
+  setJWTTokenAndHostName: (jwt: string, hostname: string) => void; // Call back function to setting the jwtToken
 }
 
-interface loginInFormBuffer {
-  databaseAddress: string;
-  username: string;
-  password: string;
-  rememberMe: boolean;
-  returnMessage: string;
+interface LoginState {
+  databaseAddress: string; // Buffer object to store databaseAddress
+  username: string; // Buffer object to store username
+  password: string; // Buffer object to store password
+  rememberMe: boolean; // For storing the state if the user wants to remeber login info or not
+  returnMessage: string; // Buffer for error message from the server
 }
 
-class Login extends Component<loginInFormProps, loginInFormBuffer> {
-  constructor(props: any) {
+/**
+ * Component for handling authencation against the backend to connect to a mysql database
+ */
+export default class Login extends Component<LoginProps, LoginState> {
+  constructor(props: LoginProps) {
     super(props);
 
     // Default values
@@ -38,6 +41,9 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  /**
+   * On mount, check if there are cookies that stored the databaseAddress and username, if so load them
+   */
   componentDidMount() {
     // Load databaseAddress and usernameCookie from cookies
     var databaseAddressCookie = Cookies.get('databaseAddress');
@@ -49,23 +55,43 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     })
   }
 
-  onDatabaseAddressChange(event: any) {
+  /**
+   * Call back for databaseAddress input field change
+   * @param event HTML Input OnChange event
+   */
+  onDatabaseAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({databaseAddress: event.target.value});
   }
 
-  onUsernameChange(event: any) {
+  /**
+   * Call back for username input field change
+   * @param event HTML Input OnChange event
+   */
+  onUsernameChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({username: event.target.value});
   }
 
-  onPasswordChange(event: any) {
+  /**
+   * Call back for password input field change
+   * @param event HTML Input OnChange event
+   */
+  onPasswordChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({password: event.target.value});
   }
 
-  onRememberMeChange(event: any) {
+  /**
+   * Call back for rememberMeChange
+   * @param event HTML Input OnChange event
+   */
+  onRememberMeChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({rememberMe: event.target.checked})
   }
 
-  async onSubmit(event: any) {
+  /**
+   * Call back for form submission
+   * Attempts to login with the provided info, if failed then set the error message.
+   */
+  async onSubmit() {
     if (this.state.rememberMe) {
       Cookies.set('databaseAddress', this.state.databaseAddress);
       Cookies.set('username', this.state.username);
@@ -89,9 +115,13 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     }
     
     const jsonObject = await response.json();
-    this.props.setCurrentDatabaseConnectionJWT(jsonObject.jwt, this.state.databaseAddress);
+    this.props.setJWTTokenAndHostName(jsonObject.jwt, this.state.databaseAddress);
   }
 
+  /**
+   * Checks if databaseAddress, username, and password is filled out. If so then returns true
+   * @returns boolean on whether the form is ready for submission or not
+   */
   isFormReady() {
     return this.state.databaseAddress && this.state.username && this.state.password ? true : false
   }
@@ -122,5 +152,3 @@ class Login extends Component<loginInFormProps, loginInFormBuffer> {
     )
   }
 }
-
-export default Login;

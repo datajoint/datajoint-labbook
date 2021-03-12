@@ -1,7 +1,7 @@
 import React from 'react';
-import SchemaList from './SchemaList'
-import {TableList} from './TableList'
-import TableType from '../TableTypeEnum/TableType'
+import SchemaList from './SchemaList';
+import TableList from './TableList';
+import TableType from '../TableTypeEnum/TableType';
 import './SideMenu.css';
 
 /**
@@ -18,7 +18,7 @@ type HomeSideMenuState = {
  * SideMenu component that handles listing schemas and tables
  * 
  */
-class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, selectedTableType: TableType, handleTableSelection: any}, HomeSideMenuState> {
+export default class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, selectedTableType: TableType, handleTableSelection: any}, HomeSideMenuState> {
   constructor(props: any) {
     super(props);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
@@ -88,4 +88,3 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
     )
   }
 }
-export default SideMenu;
