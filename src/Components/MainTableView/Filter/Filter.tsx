@@ -6,18 +6,23 @@ import TableAttribute from '../DataStorageClasses/TableAttribute'
 import TableAttributeType from '../enums/TableAttributeType';
 import './Filter.css'
 
-type FilterState = {
-  restrictions: Array<Restriction>, // Array of Restrictions objects
-  tableAttributes: Array<TableAttribute>, // List of TableAttributes which is derive from primary_attribute + secondary_attributes
-  currentRestrictionIDCount: number, // Used to give a unique ID to each restriction object to allow react to keep track of what is being deleted
-  restrictionChangeTimeout: ReturnType<typeof setTimeout>
+interface FilterProps {
+  tableAttributesInfo?: TableAttributesInfo;
+  setRestrictions: (restrictions: Array<Restriction>) => void;
+}
+
+interface FilterState {
+  restrictions: Array<Restriction>; // Array of Restrictions objects
+  tableAttributes: Array<TableAttribute>; // List of TableAttributes which is derive from primary_attribute + secondary_attributes
+  currentRestrictionIDCount: number; // Used to give a unique ID to each restriction object to allow react to keep track of what is being deleted
+  restrictionChangeTimeout: ReturnType<typeof setTimeout>;
 }
 
 /**
  * Filter component that is in charge of managing one to many FilterCards as well as the data store beind them
  */
-class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo, setRestrictions: (restrictions: Array<Restriction>) => void}, FilterState> {
-  constructor(props: any) {
+export default class Filter extends React.Component<FilterProps, FilterState> {
+  constructor(props: FilterProps) {
     super(props);
     this.state = {
       restrictions: [new Restriction(0)],
@@ -84,7 +89,7 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
    * @param prevProps 
    * @param prevState 
    */
-  componentDidUpdate(prevProps: any, prevState: any) {
+  componentDidUpdate(prevProps: FilterProps, prevState: FilterState) {
     // If state didn't change then don't do anything
     if (prevState.restrictions === this.state.restrictions) {
       return;
@@ -134,5 +139,3 @@ class Filter extends React.Component<{tableAttributesInfo?: TableAttributesInfo,
     )
   }
 }
-
-export default Filter

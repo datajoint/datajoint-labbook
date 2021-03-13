@@ -1,6 +1,6 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faTrashAlt, faPlusCircle, faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
+import {faExclamationCircle} from '@fortawesome/free-solid-svg-icons'
 import TableAttribute from '../DataStorageClasses/TableAttribute';
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
@@ -8,34 +8,27 @@ import TableAttributeType from '../enums/TableAttributeType';
 import './InsertTuple.css'
 import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
-type insertTupleState = {
-  tupleBuffer: any // Object to stored the values typed in by the user
-  errorMessage: string // Error message string for failed inserts
+interface InsertTupleProps {
+  token: string;
+  selectedSchemaName:string;
+  selectedTableName: string;
+  tableAttributesInfo?: TableAttributesInfo;
+  selectedTableEntry?: any; // Tuple that that is checked
+  fetchTableContent: () => void;
+  clearTupleSelection: () => void;
+  insertInAction: (isWaiting: boolean) => void; // for loading/waiting animation while insert takes place
+}
+
+interface InsertTupleState {
+  tupleBuffer: any; // Tuple buffer to stored the values typed in by the user
+  errorMessage: string; // Error message string for failed inserts
 }
 
 /**
  * Class component to insertion of tuples
- * 
- * @param token JWT token for authentaction
- * @param selectedSchemaName Name of selected schema
- * @param selectedTableName Name of selected table
- * @param tableAttributesInfo A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
- * @param fetchTableContent Callback function to tell the parent component to update the contentData
- * @param tuplesToInsert List of selected tuples to be copied over for quick insert field fill-in. For now, starting with just 1.
  */
-class InsertTuple extends React.Component<{
-    token: string, 
-    selectedSchemaName:string, 
-    selectedTableName: string, 
-    tableAttributesInfo?: TableAttributesInfo, 
-    fetchTableContent: any, 
-    clearEntrySelection: any, 
-    selectedTableEntry?: any,
-    insertInAction: any // for loading/waiting animation while insert takes place
-  }, 
-  insertTupleState> {
-
-  constructor(props: any) {
+export default class InsertTuple extends React.Component<InsertTupleProps, InsertTupleState> {
+  constructor(props: InsertTupleProps) {
     super(props);
     this.state = {
       tupleBuffer: {},
@@ -74,7 +67,7 @@ class InsertTuple extends React.Component<{
    * @param attributeName Attribute name of the change, this is used to access the tupleBuffer object members to set the value
    * @param event Event object that come from the onChange function
    */
-  handleChange(event: any, attributeName: string) {
+  handleChange(event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>, attributeName: string) {
     // Create a copy, update the object, then set state
     let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
@@ -85,7 +78,7 @@ class InsertTuple extends React.Component<{
    * Helper function to handle copy over of the selected tuple into the insert fields by updating the tupleBuffer state.
    * @param tupleToInsert user selected tuple (single entry for now) to be copied over
    */
-  copyTuple(event: any) {
+  copyTuple(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     event.preventDefault();
     // Get the tuple and set it as tupleBuffer
     if (this.props.selectedTableEntry.length !== 0) {
@@ -98,7 +91,7 @@ class InsertTuple extends React.Component<{
    * based upon the info provided by this.props.tableAttributeInfo such as nullable? autoIncrement?, etc.
    * @param event Event object from the standard OnSubmit function
    */
-  onSubmit(event: any) {
+  onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Check that tableAttirbutesInfo is not undefined
     if (this.props.tableAttributesInfo === undefined) {
@@ -181,7 +174,7 @@ class InsertTuple extends React.Component<{
     .then(result => {
       // Insert was sucessful, tell TableView to fetch the content again
       this.setState({tupleBuffer: {}})
-      this.props.clearEntrySelection();
+      this.props.clearTupleSelection();
       this.props.fetchTableContent();
     })
     .catch((error) => {
@@ -227,21 +220,13 @@ class InsertTuple extends React.Component<{
         <h1>Insert</h1>
         <form onSubmit={this.onSubmit}>
           <div className="inputRow">
-            {/* { 
-              // only show copy over/delete row icons when ready for multiple insert
-              this.props.selectedTableEntry !== undefined ?
-              (<div className="rowControls">
-                <FontAwesomeIcon className="deleteRow icon" icon={faTrashAlt} />
-                <FontAwesomeIcon className="addRow icon" icon={faPlusCircle} />
-              </div>) : ''
-            } */}
             {
               // Deal with primary attirbutes
               this.props.tableAttributesInfo?.primaryAttributes.map((primaryTableAttribute) => {
                 return(
                   <div className='fieldUnit' key={primaryTableAttribute.attributeName}>
                     {PrimaryTableAttribute.getAttributeLabelBlock(primaryTableAttribute)}
-                    {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], this.handleChange)}
+                    {PrimaryTableAttribute.getPrimaryAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], this.handleChange)}
                   </div>
                 )
               })
@@ -252,7 +237,7 @@ class InsertTuple extends React.Component<{
                 return(
                   <div className='fieldUnit' key={secondaryAttribute.attributeName}>
                     {SecondaryTableAttribute.getAttributeLabelBlock(secondaryAttribute, this.resetToNull)}
-                    {SecondaryTableAttribute.getAttributeInputBlock(
+                    {SecondaryTableAttribute.getSecondaryAttributeInputBlock(
                       secondaryAttribute,
                       secondaryAttribute.attributeType === TableAttributeType.DATETIME || secondaryAttribute.attributeType === TableAttributeType.TIMESTAMP?  
                       this.state.tupleBuffer[secondaryAttribute.attributeName + '__date'] + ' ' + this.state.tupleBuffer[secondaryAttribute.attributeName + '__time'] :
@@ -281,5 +266,3 @@ class InsertTuple extends React.Component<{
     )
   }
 }
-
-export default InsertTuple;

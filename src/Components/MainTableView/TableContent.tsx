@@ -79,6 +79,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     this.goForwardAPage = this.goForwardAPage.bind(this);
     this.goBackwardAPage = this.goBackwardAPage.bind(this);
     this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
+    this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
   /**
@@ -163,7 +164,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
             selectedTableName={this.props.selectedTableName}
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            clearEntrySelection={() => this.handleSelectionClearRequest()}
+            clearTupleSelection={() => this.clearTupleSelection()}
             selectedTableEntry={this.state.selectedTuple}
             insertInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
@@ -178,7 +179,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
             selectedTableName={this.props.selectedTableName}
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            clearEntrySelection={() => this.handleSelectionClearRequest()}
+            clearTupleSelection={this.clearTupleSelection}
             selectedTableEntry={this.state.selectedTuple}
             updateInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
@@ -194,7 +195,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
           selectedTableName={this.props.selectedTableName} 
           tableAttributesInfo={this.props.tableAttributesInfo}
           fetchTableContent={this.props.fetchTableContent}
-          clearEntrySelection={() => this.handleSelectionClearRequest()}
+          clearEntrySelection={this.clearTupleSelection}
           selectedTableEntry={this.state.selectedTuple}
           deleteInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
         />
@@ -277,7 +278,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   /**
    * Clears the staging once delete/update is successful and table content has been modified
    */
-  handleSelectionClearRequest() {
+  clearTupleSelection() {
     this.setState({selectedTupleIndex: -1, selectedTuple: undefined});
   }
 

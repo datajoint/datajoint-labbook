@@ -45,22 +45,22 @@ export default class SideMenu extends React.Component<{token: string, selectedSc
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
       body: JSON.stringify({schemaName: schema})
     })
-      .then(result => {
-        this.setState({tableListIsLoading: false})
-        // Check for error mesage 500, if so throw and error
-        if (result.status === 500) {
-          result.text().then(errorMessage => {throw new Error(errorMessage)});
-        }
-        
-        return result.json();
-      })
-      .then(result => {
-        this.setState({tableDict: result.tableTypeAndNames});
-      })
-      .catch((error) => {
-        this.setState({tableListIsLoading: false})
-        console.error('Error: ', error);
-      })
+    .then(result => {
+      this.setState({tableListIsLoading: false})
+      // Check for error mesage 500, if so throw and error
+      if (result.status === 500) {
+        result.text().then(errorMessage => {throw new Error(errorMessage)});
+      }
+      
+      return result.json();
+    })
+    .then(result => {
+      this.setState({tableDict: result.tableTypeAndNames});
+    })
+    .catch((error) => {
+      this.setState({tableListIsLoading: false})
+      console.error('Error: ', error);
+    })
   }
 
   /**

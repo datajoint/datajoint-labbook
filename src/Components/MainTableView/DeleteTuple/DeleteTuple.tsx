@@ -6,27 +6,29 @@ import TableAttributeType from '../enums/TableAttributeType';
 import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
 import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
-/**
- * list of allowed states on this delete tuple component
- */
-type deleteTupleState = {
-  dependencies: Array<any>, // list of dependencies fetched from API
-  deleteStatusMessage: string, // for GUI to show
-  isGettingDependencies: boolean, // for loading animation status
-  deleteAccessible: boolean // valdiation result of accessibility from check dependency component
+
+interface DeleteTupleProps {
+  token: string;
+  selectedSchemaName: string;
+  selectedTableName: string;
+  tableAttributesInfo?: TableAttributesInfo;
+  selectedTableEntry?: any;
+  fetchTableContent: () => void;
+  clearEntrySelection: () => void;
+  deleteInAction: (isWaiting: boolean) => void;
 }
 
-class DeleteTuple extends React.Component<{
-    token: string, 
-    selectedSchemaName: string, 
-    selectedTableName: string, 
-    tableAttributesInfo?: TableAttributesInfo, 
-    fetchTableContent: any, 
-    clearEntrySelection: any,
-    selectedTableEntry?: any,
-    deleteInAction: any // for loading animation status
-  },
-  deleteTupleState> {
+interface DeleteTupleState {
+  dependencies: Array<any>; // list of dependencies fetched from API
+  deleteStatusMessage: string; // for GUI to show
+  isGettingDependencies: boolean; // for loading animation status
+  deleteAccessible: boolean; // valdiation result of accessibility from check dependency component
+}
+
+/**
+ * Component to handle deletion of tuples in a given table
+ */
+export default class DeleteTuple extends React.Component<DeleteTupleProps, DeleteTupleState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -45,7 +47,7 @@ class DeleteTuple extends React.Component<{
    * @param prevProps 
    * @param prevState 
    */
-  componentDidUpdate(prevProps: any, prevState: any) {
+  componentDidUpdate(prevProps: DeleteTupleProps, prevState: DeleteTupleState) {
     if (this.props.selectedTableEntry === prevProps.selectedTableEntry) {
       return;
     }
@@ -136,6 +138,10 @@ class DeleteTuple extends React.Component<{
     this.setState({dependencies: list})
   }
 
+  /**
+   * Helper function for rendering the delete table view for the given tuple
+   * @returns HTML DIV Block showing the tuple in table view
+   */
   getTableView() {
     // Get the selected table entry
     var tuple = Object.assign({}, this.props.selectedTableEntry);
@@ -193,5 +199,3 @@ class DeleteTuple extends React.Component<{
     )
   }
 }
-
-export default DeleteTuple;
