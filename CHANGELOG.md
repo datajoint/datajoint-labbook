@@ -11,7 +11,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
 
-## [0.1.0-beta.2]
+## [0.1.0-beta.2] - 2021-03-11
 ### Added
 - Added case insensitive behavior to schema and table search box (#99) PR #102
 - CSS for making the primary keys look disabled/readonly for update mode PR #105
