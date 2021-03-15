@@ -3,12 +3,12 @@
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
 ## [Unreleased]
-### Fixed
-- Make table column width fit content or header and make it resizable (#11) PR #
-
-## [0.1.0-beta.2] - 2021-03-11
 ## Added
 - Docstrings for all classes and functions (#112) PR #124
+- Smaller screen layout (#58) PR #127
+
+### Fixed
+- Make table column width fit content or header and make it resizable (#11) PR #127
 
 ## Changed
 - Replaced usage of any with more strongly typed data types (#125) PR #124

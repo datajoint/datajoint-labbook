@@ -1,3 +1,15 @@
+/* table menu styling */
+.table-menu {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 51%;
+  margin-left: 2%;
+  box-shadow: 2px 3px 3px gray;
+  border-left: 1px solid lightgray;
+}
+
 .search-table-field {
   width: 80%;
   position: relative;
@@ -9,6 +21,10 @@
   height: 20px;
   font-size: 0.75rem;
   width: 100%;
+  border-radius: 2px;
+  border: 1px solid lightgray;
+  background-color: #f1f1f1;
+  padding-left: 4px;
 }
 
 .search-table-field .search-icon {
@@ -29,16 +45,6 @@
   width: 100%;
 }
 
-/* table menu styling */
-.table-menu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 51%;
-  margin-left: 2%;
-  margin-right: 2%;
-}
-
 .sort-table-field {
   display: flex;
   width: 65%;
@@ -51,11 +57,15 @@
   text-align: center;
   padding-left: 8px;
   border-radius: 0;
+  border: none;
+  border-top: 1px solid rgba(128, 128, 128, 0.5);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
 }
 
 .view-all-part-tables {
   display: flex;
   width: 35%;
+  cursor: pointer;
 }
 
 .view-all-part-tables .sort-field-head {
@@ -74,8 +84,9 @@
   align-items: center;
   justify-content: center;
   padding: 2px;
-  border: 1px solid gray;
-  border-left: none;
+  border: none;
+  border-top: 1px solid rgba(128, 128, 128, 0.5);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
   font-size: 0.8rem;
   color: gray;
 }
@@ -83,10 +94,7 @@
 .table-listing {
   height: 96%;
   width: 100%;
-  margin-bottom: 4%;
-  border: 1px solid lightgray;
   overflow: hidden;
-  /* box-shadow: 1px 2px 3px gray; */
 }
 .table-listing:hover {
   overflow: auto;
@@ -146,7 +154,6 @@ span.tier-label {
   margin-left: 10%;
   border: 1px solid rgba(128, 128, 128, 0.5);
   position: relative;
-  /* padding: 20px 4px 4px; */
 }
 
 .part-table-entry.hide {
@@ -226,11 +233,9 @@ span.tier-label {
   right: 0;
   height: 100%;
 }
-
 .show-part-table:hover .icon {
   background-color: rgba(255, 255, 255, 1);
 }
-
 .show-part-table.computed {
   border-color: #BC3B68;
 }
@@ -252,6 +257,7 @@ span.tier-label {
   align-items: center;
   justify-content: center;
 }
+
 .show-part-table label.head {
   font-size: 0.6rem;
   line-height: 0.5em;
@@ -278,6 +284,11 @@ span.tier-label {
   .table-menu {
     width: 96%;
     height: 50%;
+    border-top: 1px solid lightgray;
+  }
+
+  .table-listing {
+    font-size: 0.9rem;
   }
 }
 
