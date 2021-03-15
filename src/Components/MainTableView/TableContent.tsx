@@ -107,8 +107,8 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * initialzing the table column width 
    */
   componentDidMount() {
-    let tableBodyCellWidthLookup: Array<any> = []
-    let tablenewHeaderWidths: Array<any> = []
+    let tableBodyCellWidthLookup: Array<Array<number>> = []
+    let tablenewHeaderWidths: Array<number> = []
     // let headerColumns = this.headerColumnSizeRef.current.cells
     let headerColumns: HTMLCollectionOf<HTMLTableDataCellElement | HTMLTableHeaderCellElement>;
     if (this.headerColumnSizeRef && this.headerColumnSizeRef.current) {
@@ -134,7 +134,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
 
     // going through the body column references to decide on the initial width of the table columns
     let finalTableColWidths: Array<number> = []
-    tableBodyCellWidthLookup.forEach((col: any, index: number) => {
+    tableBodyCellWidthLookup.forEach((col: Array<number>, index: number) => {
       if (col.length > 0) {
         let colAvg = Math.ceil(col.reduce((a: number, b: number) => (a + b)) / col.length)
         //// checking the max width of each column just in case - implementing with rounded up average for now
