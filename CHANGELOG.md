@@ -2,6 +2,15 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
+## [Unreleased]
+## Added
+- Docstrings for all classes and functions (#112) PR #124
+
+## Changed
+- Replaced usage of any with more strongly typed data types (#125) PR #124
+- Replaced the direct react component props definition with interface PR #124
+- Replaced state and props with interface instead of types PR #124
+
 ## [0.1.0-beta.2]
 ### Added
 - Added case insensitive behavior to schema and table search box (#99) PR #102
@@ -64,6 +73,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
+[Unreleased]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.2...HEAD
 [0.1.0-beta.2]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.1...0.1.0-beta.2
 [0.1.0-beta.1]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...0.1.0-beta.1
 [0.1.0-alpha.2]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.2
