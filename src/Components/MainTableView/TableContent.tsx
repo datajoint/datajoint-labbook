@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward, faFilter, faPlusCircle, faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
@@ -45,7 +45,7 @@ interface TableContentState {
   showWarning: boolean; // text warning when duplicate selection is made for delete/update, most likely to be take out once disable checkbox feature is finished
   isDisabledCheckbox: boolean; // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
   dragStart: number; // part of table column resizer feature
-  resizeIndex: any; // part of table column resizer feature
+  resizeIndex?: number; // part of table column resizer feature
   isWaiting: boolean; // tells the UI to display loading icon while insert/update/delete are in action
   newHeaderWidths: Array<number>; // list of table column header width after user resizes
   initialTableColWidths: Array<number>; // list of initial table column width on load
@@ -56,8 +56,8 @@ interface TableContentState {
  * 
  */
 export default class TableContent extends React.Component<TableContentProps, TableContentState> {
-  private headerColumnSizeRef: any;
-  private tableBodyColumnRefs: Array<any>;
+  private headerColumnSizeRef: RefObject<HTMLTableRowElement>;
+  private tableBodyColumnRefs: Array<RefObject<HTMLTableRowElement>>;
   constructor(props: TableContentProps) {
     super(props);
     this.state = {
@@ -108,18 +108,24 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    */
   componentDidMount() {
     let tableBodyCellWidthLookup: Array<any> = []
-    let tablenewHeaderWidthss: Array<any> = []
-    let headerColumns = this.headerColumnSizeRef.current.cells
-    for (let col of headerColumns) {
-      tableBodyCellWidthLookup.push([])
-      tablenewHeaderWidthss.push(col.clientWidth)
+    let tablenewHeaderWidths: Array<any> = []
+    // let headerColumns = this.headerColumnSizeRef.current.cells
+    let headerColumns: HTMLCollectionOf<HTMLTableDataCellElement | HTMLTableHeaderCellElement>;
+    if (this.headerColumnSizeRef && this.headerColumnSizeRef.current) {
+      headerColumns = this.headerColumnSizeRef.current.cells
+
+      for (let col of Object.values(headerColumns)) {
+        tableBodyCellWidthLookup.push([])
+        tablenewHeaderWidths.push(col.clientWidth)
+      }
     }
+    
 
     for (let row of this.tableBodyColumnRefs) {
       if (row.current) {
         let tableRows = row.current.cells
         let index = 0
-        for (let col of tableRows) {
+        for (let col of Object.values(tableRows)) {
           tableBodyCellWidthLookup[index].push(col.clientWidth)
           index += 1;
         }
@@ -136,11 +142,11 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         // console.log(`Avg: ${colAvg}...Max: ${colMax}`)
 
         // check the average body width against the header width, put the larger of the two in the final width
-        if (colAvg > tablenewHeaderWidthss[index]) {
+        if (colAvg > tablenewHeaderWidths[index]) {
           finalTableColWidths.push(colAvg)
         }
         else {
-          finalTableColWidths.push(tablenewHeaderWidthss[index])
+          finalTableColWidths.push(tablenewHeaderWidths[index])
         }
       }
     })
@@ -420,8 +426,10 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   setnewHeaderWidths(difference: number) {
     if (this.state.newHeaderWidths.length > 0 && difference !== 0) {
       let newWidthsCopy = this.state.newHeaderWidths
-      newWidthsCopy[this.state.resizeIndex] = this.state.newHeaderWidths[this.state.resizeIndex] + difference
-      this.setState({newHeaderWidths: newWidthsCopy});
+      if (this.state.resizeIndex !== undefined) {
+        newWidthsCopy[this.state.resizeIndex] = this.state.newHeaderWidths[this.state.resizeIndex] + difference
+        this.setState({newHeaderWidths: newWidthsCopy});
+      }
     }
     else {
       this.setState({newHeaderWidths: this.state.initialTableColWidths})
@@ -543,7 +551,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
             <tbody>
             {this.props.contentData.map((entry: any, tupleIndex: number) => {
               // creating reference for each body column to track the width
-              let colRef: any = React.createRef();
+              let colRef: RefObject<HTMLTableRowElement> = React.createRef<HTMLTableRowElement>();
               this.tableBodyColumnRefs.push(colRef);
               return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={colRef}>
                 <td colSpan={1}>
