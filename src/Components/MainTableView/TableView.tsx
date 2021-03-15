@@ -37,7 +37,7 @@ interface TableViewState {
   totalNumOfTuples: number; // Total number of tuples for the given table
   currentPageNumber: number; // Current page number that is being rendered
   maxPageNumber: number; // The max page number which is computed upon fetching the table tuples
-  tableContentData: Array<any>; // The tuples of the table stored in an array
+  tableContentData: Array<any>; // The tuples of the table stored in an array. Type any used here as there are many possible types with all the available input blocks
   tableInfoData: string; // Table description obtain from backend
   errorMessage: string; // Error message buffer
   isLoading: boolean; // Boolean for loading animation

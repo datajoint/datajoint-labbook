@@ -12,7 +12,7 @@ interface UpdateTupleProps {
   selectedSchemaName:string;
   selectedTableName: string;
   tableAttributesInfo?: TableAttributesInfo;
-  selectedTableEntry: any; // Tuple that that is checked
+  selectedTableEntry: any; // Tuple copy from the table that is checked. Type any used here as there are many possible types with all the available input blocks
   fetchTableContent: () => void;
   clearTupleSelection: () => void;
   updateInAction: (isWaiting: boolean) => void; // Callback for loading animation status

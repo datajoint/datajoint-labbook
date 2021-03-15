@@ -8,7 +8,7 @@ export default class Restriction {
   id: number
   tableAttribute?: TableAttribute
   restrictionType?: RestrictionType
-  value?: any
+  value?: any // Type any used here as there are many possible types with all the available input blocks
   isEnable: boolean
 
   /**
