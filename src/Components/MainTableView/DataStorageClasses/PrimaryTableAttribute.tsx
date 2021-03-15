@@ -56,8 +56,8 @@ export default class PrimaryTableAttribute extends TableAttribute {
   /**
    * Construct input block based on primaryTableAttribute by extracting it type and other information
    * @param tableAttribute 
-   * @param currentValue 
-   * @param handleChange 
+   * @param currentValue CurrentValue of the input block for binding. Type any used here as there are many possible types with all the available input blocks
+   * @param handleChange Call back function for when the value of the input block changes
    * @returns 
    */
   static getPrimaryAttributeInputBlock(tableAttribute: PrimaryTableAttribute, currentValue: any, handleChange: (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>, attributeName: string) => void) {
