@@ -4,6 +4,7 @@ import {faEye, faEyeSlash, faSearch, faSortAmountDown} from '@fortawesome/free-s
 import TableType from '../TableTypeEnum/TableType';
 import './TableList.css';
 import TableListLoading from '../LoadingAnimation/TableListLoading';
+import TableListDict from './TableListDict'
 
 enum TableSortMode {
   ATOZ,
@@ -61,17 +62,16 @@ class PartTableListEntry extends TableListEntry {
 
 interface TableListProps {
   token: string;
-  tableListDict: any;
+  tableListDict?: TableListDict;
   selectedTableName: string;
   selectedTableType: TableType;
-  onTableSelection: any,
+  onTableSelection: (tableName: string, tableType: TableType) => void,
   tableListIsLoading: boolean
 }
 
 interface TableListState {
   currentSort: string;
   viewAllPartTables: boolean;
-  tablesToSort: any;
   hidePartTable: Array<string>;
   tableList: Array<ParentTableListEntry>;
   restrictedTableList: Array<ParentTableListEntry>;
@@ -88,7 +88,6 @@ export default class TableList extends React.Component<TableListProps, TableList
     this.state = {
       currentSort: 'tier',
       viewAllPartTables: true,
-      tablesToSort: this.props.tableListDict,
       hidePartTable: [],
       tableList: [],
       restrictedTableList: [],
@@ -142,7 +141,7 @@ export default class TableList extends React.Component<TableListProps, TableList
     }
   
     // Check if this.props.tableListDict is valid
-    if (Object.keys(this.props.tableListDict).length === 0) {
+    if (this.props.tableListDict === undefined) {
       return;
     }
 
@@ -150,7 +149,7 @@ export default class TableList extends React.Component<TableListProps, TableList
     // Read through each part table, create the TableListEntry and store it cache it temporarly with the parent table as the key
     let partTableDict: Record<string, Array<PartTableListEntry>> = {};
 
-    for (let partTableFullName of this.props.tableListDict['part_tables']) {
+    for (let partTableFullName of this.props.tableListDict.part_tables) {
       const partTableNameSplitResult = partTableFullName.split('.');
 
       // Check if key already exist, if not initalize the array
@@ -161,50 +160,37 @@ export default class TableList extends React.Component<TableListProps, TableList
       partTableDict[partTableNameSplitResult[0]].push(new PartTableListEntry(partTableNameSplitResult[1]));
     }
 
-    // Parse through the rest of the table types of Computed, Manual, Imported and Lookup and attach Part table accordingly. Ignore all other type
-    let tableListDictKeys: Array<string> = Object.keys(this.props.tableListDict);
-
     // Create a new tableList to later use for setState
     let tableList: Array<ParentTableListEntry> = [];
 
-    // Remove part_tables entry from the key list
-    tableListDictKeys.splice(tableListDictKeys.indexOf('part_tables'));
-
-    // Looped through each type of table that is not part
-    for (let tableTypeName of tableListDictKeys) {
-      // Figure out what table type to be set
-      let tableType = null;
-
-      if (tableTypeName === 'computed_tables') {
-        tableType = TableType.COMPUTED;
-      }
-      else if (tableTypeName === 'manual_tables') {
-        tableType = TableType.MANUAL;
-      }
-      else if (tableTypeName === 'lookup_tables') {
-        tableType = TableType.LOOKUP;
-      }
-      else if (tableTypeName === 'imported_tables') {
-        tableType = TableType.IMPORTED;
-      }
-      else {
-        throw Error('Unsupported table type: ' + tableTypeName);
-      }
-
-      // Iterate through the table name list and append part tables if the parent table name match
-      for (let parentTableName of this.props.tableListDict[tableTypeName]) {
-        // Check if parent table has parts table if so inserted
-        if (parentTableName in partTableDict) {
-          tableList.push(new ParentTableListEntry(parentTableName, tableType, partTableDict[parentTableName]));
-        }
-        else {
-          tableList.push(new ParentTableListEntry(parentTableName, tableType, []));
-        }
-      }
-    }
+    this.parseTableEntry(tableList, this.props.tableListDict.computed_tables, TableType.COMPUTED, partTableDict);
+    this.parseTableEntry(tableList, this.props.tableListDict.manual_tables, TableType.MANUAL, partTableDict);
+    this.parseTableEntry(tableList, this.props.tableListDict.lookup_tables, TableType.LOOKUP, partTableDict);
+    this.parseTableEntry(tableList, this.props.tableListDict.imported_tables, TableType.IMPORTED, partTableDict);
 
      // Update the state and reset sort mode to ATOZ
      this.setState({tableList: tableList, restrictedTableList: tableList, searchString: '', currentTableSortMode: TableSortMode.ATOZ});
+  }
+
+  /**
+   * Given a list of parent table names, check if there is any partTables that belong to it, if so attach it then push to tableList, otherwise just push
+   * @param tableList 
+   * @param tableNames 
+   * @param tableType 
+   * @param partTableDict 
+   */
+  parseTableEntry(tableList: Array<ParentTableListEntry>, tableNames: Array<string>, tableType: TableType, partTableDict: Record<string, Array<PartTableListEntry>>) {
+    console.log(tableNames)
+    // Iterate through the table name list and append part tables if the parent table name match
+    for (let parentTableName of tableNames) {
+      // Check if parent table has parts table if so inserted
+      if (parentTableName in partTableDict) {
+        tableList.push(new ParentTableListEntry(parentTableName, tableType, partTableDict[parentTableName]));
+      }
+      else {
+        tableList.push(new ParentTableListEntry(parentTableName, tableType, []));
+      }
+    }
   }
 
   /**

@@ -28,7 +28,7 @@ interface UpdateTupleState {
  * Component for Update tuples in a given table
  */
 export default class UpdateTuple extends React.Component<UpdateTupleProps, UpdateTupleState> {
-  constructor(props: any) {
+  constructor(props: UpdateTupleProps) {
     super(props);
     this.state = {
       tupleBuffer: {},

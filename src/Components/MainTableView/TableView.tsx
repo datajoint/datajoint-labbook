@@ -48,7 +48,7 @@ interface TableViewState {
  * Parent component for handling displaying TableContent and TableInfo
  */
 export default class TableView extends React.Component<TableViewProps, TableViewState> {
-  constructor(props: any) {
+  constructor(props: TableViewProps) {
     super(props);
     this.state = {
       tableAttributesInfo: undefined,

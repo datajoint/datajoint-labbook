@@ -334,7 +334,7 @@ export default class TableAttribute {
     }
     else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
       var splitResult = [undefined, undefined]
-      var defaultValueSplitResult: any = ['', '']
+      var defaultValueSplitResult: Array<string> = ['', '']
 
       if (currentValue !== "undefined undefined" && currentValue !== undefined) { // Yes this is a hack for now, we will consildate this to one standard
         if (Array.isArray(currentValue)) {

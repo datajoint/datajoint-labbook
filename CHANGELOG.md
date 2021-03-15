@@ -3,10 +3,10 @@
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
 ## [Unreleased]
-## Added
+### Added
 - Docstrings for all classes and functions (#112) PR #124
 
-## Changed
+### Changed
 - Replaced usage of any with more strongly typed data types (#125) PR #124
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
