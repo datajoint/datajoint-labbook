@@ -1,6 +1,7 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSearch, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
+import './SchemaList.css'
 
 /**
  * SchemaList: list of schema names, by default it assumes the backend returns in alphabetical ascending order
