@@ -47,7 +47,7 @@ interface TableContentState {
   headerWidth: number; // part of table column resizer feature
   dragStart: number; // part of table column resizer feature
   dragDistance: number; // part of table column resizer feature
-  resizeIndex: any; // part of table column resizer feature
+  resizeIndex?: number; // part of table column resizer feature
   isWaiting: boolean; // tells the UI to display loading icon while insert/update/delete are in action
 }
 
