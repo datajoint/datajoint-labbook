@@ -20,7 +20,7 @@ interface InsertTupleProps {
 }
 
 interface InsertTupleState {
-  tupleBuffer: any; // Tuple buffer to stored the values typed in by the user
+  tupleBuffer: any; // Tuple buffer to stored the values typed in by the user. Type any used here as there are many possible types with all the available input blocks
   errorMessage: string; // Error message string for failed inserts
 }
 

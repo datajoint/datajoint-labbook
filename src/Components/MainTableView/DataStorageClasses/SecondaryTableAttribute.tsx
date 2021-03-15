@@ -66,7 +66,7 @@ export default class SecondaryTableAttribute extends TableAttribute {
   /**
    * Construct input block based on secondaryTableAttribute by extracting it type and other information
    * @param secondaryTableAttribute 
-   * @param currentValue urrentValue of the input block for binding
+   * @param currentValue CurrentValue of the input block for binding. Type any used here as there are many possible types with all the available input blocks
    * @param handleChange Call back function for when the value of the input block changes
    * @returns 
    */
