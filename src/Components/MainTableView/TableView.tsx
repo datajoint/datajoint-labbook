@@ -20,24 +20,34 @@ enum CurrentView {
   TABLE_INFO
 }
 
-type TableViewState = {
-  tableAttributesInfo?: TableAttributesInfo,
-  currentView: CurrentView,
-  tableContentNeedRefresh: boolean,
-  tableDefinitionNeedRefresh: boolean,
-  numberOfTuplesPerPage: number,
-  setNumberOFTuplesPerPageTimeout: ReturnType<typeof setTimeout>
-  totalNumOfTuples: number,
-  currentPageNumber: number,
-  maxPageNumber: number,
-  tableContentData: Array<any>,
-  tableInfoData: string,
-  errorMessage: string,
-  isLoading: boolean,
-  restrictions: Array<Restriction> // Storage for the last requested restrction to deal with case such as numberOfTuplesPerPage change
+interface TableViewProps {
+  token: string;
+  selectedSchemaName: string;
+  selectedTableName: string;
+  selectedTableType: TableType;
 }
 
-class TableView extends React.Component<{token: string, selectedSchemaName: string, selectedTableName: string, selectedTableType: TableType}, TableViewState> {
+interface TableViewState {
+  tableAttributesInfo?: TableAttributesInfo; // TableAttributesInfo object that stores all info on current table attirbutes
+  currentView: CurrentView; // Switcher between Content and Info view
+  tableContentNeedRefresh: boolean; // Boolean trigger if the tableContent needs to be refreshed
+  tableDefinitionNeedRefresh: boolean; // Boolean tirgger if the table Definition needs to be refreshed
+  numberOfTuplesPerPage: number; // Number of tuples to view per page
+  setNumberOFTuplesPerPageTimeout: ReturnType<typeof setTimeout>; // Timeout for when to actaully apply the change in numberOfTuples per page
+  totalNumOfTuples: number; // Total number of tuples for the given table
+  currentPageNumber: number; // Current page number that is being rendered
+  maxPageNumber: number; // The max page number which is computed upon fetching the table tuples
+  tableContentData: Array<any>; // The tuples of the table stored in an array
+  tableInfoData: string; // Table description obtain from backend
+  errorMessage: string; // Error message buffer
+  isLoading: boolean; // Boolean for loading animation
+  restrictions: Array<Restriction>; // Storage for the last requested restrction to deal with case such as numberOfTuplesPerPage change
+}
+
+/**
+ * Parent component for handling displaying TableContent and TableInfo
+ */
+export default class TableView extends React.Component<TableViewProps, TableViewState> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -64,6 +74,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     this.setRestrictions = this.setRestrictions.bind(this);
   }
 
+  /**
+   * Setter method to change which page is being viewed
+   * @param pageNumber Page number that the user wants to view
+   */
   setPageNumber(pageNumber: number) {
     if (pageNumber < 1 || pageNumber > this.state.maxPageNumber) {
       throw Error('Invalid pageNumber ' + pageNumber + ' requested');
@@ -72,19 +86,43 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     this.setState({currentPageNumber: pageNumber});
   }
 
+  /**
+   * Setter method for number of tuples per page
+   * @param numberOfTuplesPerPage number of tuples per page to view
+   */
   setNumberOfTuplesPerPage(numberOfTuplesPerPage: number) {
+    if (numberOfTuplesPerPage < 0) {
+      throw Error('Number of Tuples per page cannnot be less then 0');
+    }
     this.setState({numberOfTuplesPerPage: numberOfTuplesPerPage});
   }
 
+  /**
+   * Setter for valid restrictions to apply during table fetching
+   * @param restrictions Array of vaild Restrictions
+   */
   setRestrictions(restrictions: Array<Restriction>) {
     this.setState({restrictions: restrictions});
   }
 
+  /**
+   * Switch current view given to viewChoice
+   * @param viewChoice 
+   */
   switchCurrentView(viewChoice: CurrentView) {
     this.setState({currentView: viewChoice});
   }
 
-  componentDidUpdate(prevProps: any, prevState: any) {
+  /**
+   * Handle updating views based on the possiable following changes
+   * - selectedTableName changes => Fetch current view and set the other to need update
+   * - currentView changes => Fetch if data refresh is needed, if not just switch
+   * - currentPageNumber changes => Refetch the tuples with the given page and current set of restrictions
+   * - restrictions changes => Refetch tuples with updated restrictions
+   * @param prevProps 
+   * @param prevState 
+   */
+  componentDidUpdate(prevProps: TableViewProps, prevState: TableViewState) {
     // Check if table change, if so fetch the new data
     if (prevProps.selectedTableName !== this.props.selectedTableName) {
 
@@ -129,11 +167,14 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     }
   }
 
+  /**
+   * Method to fetch definition from back end and update the tableInfoData state
+   */
   fetchTableDefinition() {
     this.setState({isLoading: true})
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_definition`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
       body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
     })
     .then(result => {
@@ -156,6 +197,9 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     })
   }
 
+  /**
+   * Combination method for fetching table attribute and content. Typically use when the selected table changes
+   */
   fetchTableAttributeAndContent() {
     this.setState({isLoading: true})
     // retrieve table headers
@@ -188,8 +232,7 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
   }
 
   /**
-   * Utility function for refeshing the table view of tuples
-   * @param restrictions Array of valid restrictions used to query the back end to prevent it sending back everything
+   * Utility function for refeshing the table view of tuples with the given restriction set via this.state.restrictions
    */
   fetchTableContent() {
     // Buffer to store restrictions
@@ -492,6 +535,10 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     throw Error('Unsupported TableAttributeType: ' + tableTypeString);
   }
 
+  /**
+   * Helper function for rendering the content. Either return TableContent, TableInfo or a loading logo
+   * @returns TableContent || TableInfo || Loading logo
+   */
   getCurrentView() {
     if (!this.state.isLoading) {
       if (this.props.selectedTableName === '') {
@@ -522,13 +569,14 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
           )
         }
         else if (this.state.currentView === CurrentView.TABLE_INFO) {
-          return <TableInfo infoDefData = {this.state.tableInfoData}/>
+          return <TableInfo tableDefintionString = {this.state.tableInfoData}/>
         }
 
         // Error out cause the view selected is not valid
         throw Error('Invalid View Selected');
       }
-    } else {
+    } 
+    else {
       return (
         <div className="loadingArea">
           <BasicLoadingIcon size={100} />
@@ -551,5 +599,3 @@ class TableView extends React.Component<{token: string, selectedSchemaName: stri
     )
   }
 }
-
-export default TableView;

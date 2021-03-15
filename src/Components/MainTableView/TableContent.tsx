@@ -1,4 +1,4 @@
-import React, {createRef} from 'react';
+import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronRight, faChevronLeft, faStepBackward, faStepForward, faFilter, faPlusCircle, faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
@@ -13,13 +13,6 @@ import TableAttributeType from './enums/TableAttributeType'
 import BasicLoadingIcon from '../LoadingAnimation/BasicLoadingIcon';
 import Restriction from './DataStorageClasses/Restriction'
 
-enum PaginationCommand {
-  FORWARD,
-  BACKWARD,
-  START,
-  END
-}
-
 enum TableActionType {
   FILTER,
   INSERT,
@@ -27,51 +20,45 @@ enum TableActionType {
   DELETE,
 }
 
-type TableContentStatus = {
-  currentSelectedTableActionMenu: TableActionType,
-  hideTableActionMenu: boolean,
-  selectedTupleIndex: number,
-  selectedTuple?: {}, // Has to be an object with each attribute name as key cause the way tuple_buffer is handle in the subcomponents
-  showWarning: boolean, // text warning when duplicate selection is made for delete/update, most likely to be take out once disable checkbox feature is finished
-  isDisabledCheckbox: boolean, // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
-  newHeaderWidths: Array<number>, // part of table column resizer feature
-  dragStart: number, // part of table column resizer feature
-  resizeIndex: any, // part of table column resizer feature
-  isWaiting: boolean, // tells the UI to display loading icon while insert/update/delete are in action
-  initialTableColWidths: Array<number> // list of column widths to load initially
+interface TableContentProps {
+  token: string;
+  selectedSchemaName: string;
+  selectedTableName: string;
+  selectedTableType: TableType;
+  contentData: Array<any>; // Array of tuples obtain from the fetch of a table
+  totalNumOfTuples: number;
+  currentPageNumber: number;
+  maxPageNumber: number;
+  tuplePerPage: number;
+  tableAttributesInfo?: TableAttributesInfo; // A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
+  setPageNumber: (pageNumber: number) => void;
+  setNumberOfTuplesPerPage: (numberOfTuplesPerPage: number) => void;
+  fetchTableContent: () => void; // Callback function to tell the parent component to update the contentData
+  setRestrictions: (restrictions: Array<Restriction>) => void;
+}
+
+interface TableContentState {
+  currentSelectedTableActionMenu: TableActionType;
+  hideTableActionMenu: boolean;
+  selectedTupleIndex: number; // Index of selected tuple
+  selectedTuple?: {}; // Has to be an object with each attribute name as key cause the way tuple_buffer is handle in the subcomponents
+  showWarning: boolean; // text warning when duplicate selection is made for delete/update, most likely to be take out once disable checkbox feature is finished
+  isDisabledCheckbox: boolean; // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
+  dragStart: number; // part of table column resizer feature
+  resizeIndex: any; // part of table column resizer feature
+  isWaiting: boolean; // tells the UI to display loading icon while insert/update/delete are in action
+  newHeaderWidths: Array<number>; // list of table column header width after user resizes
+  initialTableColWidths: Array<number>; // list of initial table column width on load
 }
 
 /**
- * Class component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponetns
+ * Component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponents
  * 
- * @param token JWT token for authentaction
- * @param selectedSchemaName Name of selected schema
- * @param selectedTableName Name of selected table
- * @param selectedTableType Type of selected table, should be one of the TableType defined under TableList
- * @param contentData Array of tuples obtain from the fetch of a table
- * @param tableAttributesInfo A TableAttributeInfo object that contains everything about both primary and secondary attributes of the table
- * @param fetchTableContent Callback function to tell the parent component to update the contentData
  */
-class TableContent extends React.Component<{
-    token: string, 
-    selectedSchemaName: string, 
-    selectedTableName: string, 
-    selectedTableType: TableType, 
-    contentData: Array<any>, 
-    totalNumOfTuples: number,
-    currentPageNumber: number,
-    maxPageNumber: number,
-    tuplePerPage: number,
-    tableAttributesInfo?: TableAttributesInfo,
-    setPageNumber: any,
-    setNumberOfTuplesPerPage: any,
-    fetchTableContent: any,
-    setRestrictions: (restrictions: Array<Restriction>) => void},
-  TableContentStatus> {
+export default class TableContent extends React.Component<TableContentProps, TableContentState> {
   private headerColumnSizeRef: any;
-  private bodyColumnSizeRef: any;
   private tableBodyColumnRefs: Array<any>;
-  constructor(props: any) {
+  constructor(props: TableContentProps) {
     super(props);
     this.state = {
       currentSelectedTableActionMenu: TableActionType.FILTER,
@@ -98,6 +85,7 @@ class TableContent extends React.Component<{
     this.headerColumnSizeRef = React.createRef();
     this.tableBodyColumnRefs = [];
     // this.bodyColumnSizeRef = React.createRef();
+    this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
   /**
@@ -105,7 +93,7 @@ class TableContent extends React.Component<{
    * @param prevProps 
    * @param prevState 
    */
-  componentDidUpdate(prevProps: any, prevState: any) {
+  componentDidUpdate(prevProps: TableContentProps, prevState: TableContentState) {
     // Break if the the selectedTable did not change
     if (prevProps.selectedTableName === this.props.selectedTableName) {
       return;
@@ -175,23 +163,34 @@ class TableContent extends React.Component<{
     }
   }
 
+  /**
+   * Call back function for goToFirstPage button
+   */
   goToFirstPage() {
     this.props.setPageNumber(1);
   }
 
+  /**
+   * Call back function for goToLastPage button
+   */
   goToLastPage() {
     this.props.setPageNumber(this.props.maxPageNumber);
   }
 
+  /**
+   * Call back function for goForwardAPage button
+   */
   goForwardAPage() {
-    if (this.props.currentPageNumber != this.props.maxPageNumber) {
+    if (this.props.currentPageNumber !== this.props.maxPageNumber) {
       this.props.setPageNumber(this.props.currentPageNumber + 1);
     }
-    
   }
 
+  /**
+   * Call back function for goBackwardAPage button
+   */
   goBackwardAPage() {
-    if (this.props.currentPageNumber != 1) {
+    if (this.props.currentPageNumber !== 1) {
       this.props.setPageNumber(this.props.currentPageNumber - 1);
     } 
   }
@@ -216,7 +215,7 @@ class TableContent extends React.Component<{
             selectedTableName={this.props.selectedTableName}
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            clearEntrySelection={() => this.handleSelectionClearRequest()}
+            clearTupleSelection={() => this.clearTupleSelection()}
             selectedTableEntry={this.state.selectedTuple}
             insertInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
@@ -231,7 +230,7 @@ class TableContent extends React.Component<{
             selectedTableName={this.props.selectedTableName}
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            clearEntrySelection={() => this.handleSelectionClearRequest()}
+            clearTupleSelection={this.clearTupleSelection}
             selectedTableEntry={this.state.selectedTuple}
             updateInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
@@ -247,7 +246,7 @@ class TableContent extends React.Component<{
           selectedTableName={this.props.selectedTableName} 
           tableAttributesInfo={this.props.tableAttributesInfo}
           fetchTableContent={this.props.fetchTableContent}
-          clearEntrySelection={() => this.handleSelectionClearRequest()}
+          clearEntrySelection={this.clearTupleSelection}
           selectedTableEntry={this.state.selectedTuple}
           deleteInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
         />
@@ -266,7 +265,7 @@ class TableContent extends React.Component<{
    * @param event
    * @param tableEntry // table row selection from the checkbox
    */
-  handleCheckedEntry(event: any, tupleIndex: number) {
+  handleCheckedEntry(event: React.ChangeEvent<HTMLInputElement>, tupleIndex: number) {
     // Deal with tableAttributeInfo being undefined
     if (this.props.tableAttributesInfo === undefined) {
       return;
@@ -309,8 +308,12 @@ class TableContent extends React.Component<{
     this.setState({selectedTupleIndex: tupleIndex, selectedTuple: tupleBuffer});
   }
 
-  handleNumberOfTuplesPerPageChange(event: any) {
-    this.props.setNumberOfTuplesPerPage(event.target.value)
+  /**
+   * Call back for when the user change the number of tupples to show per page
+   * @param event Value should be the number in string format
+   */
+  handleNumberOfTuplesPerPageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    this.props.setNumberOfTuplesPerPage(parseInt(event.target.value));
   }
 
   /**
@@ -326,7 +329,7 @@ class TableContent extends React.Component<{
   /**
    * Clears the staging once delete/update is successful and table content has been modified
    */
-  handleSelectionClearRequest() {
+  clearTupleSelection() {
     this.setState({selectedTupleIndex: -1, selectedTuple: undefined});
   }
 
@@ -430,7 +433,7 @@ class TableContent extends React.Component<{
    * @param event
    * @param colIndex 
    */
-  cellResizeMouseDown(event: any, colIndex: any) {
+  cellResizeMouseDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>, colIndex: number) {
     this.setState({dragStart: event.clientX, resizeIndex: colIndex})
   }
 
@@ -438,7 +441,7 @@ class TableContent extends React.Component<{
    * Updates the distance the user drags the table column divider
    * @param event 
    */
-  cellResizeMouseMove(event: any) {
+  cellResizeMouseMove(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (this.state.dragStart) {
       // use the drag distance to calculate the new width
       let dragDistance = event.pageX - this.state.dragStart
@@ -453,7 +456,7 @@ class TableContent extends React.Component<{
    * Listens for when user is done resizing the column, resets drag position stats
    * @param event 
    */
-  cellResizeMouseUp(event: any) {
+  cellResizeMouseUp(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     // reset column drag stats
     this.setState({dragStart: 0, resizeIndex: undefined})
   }
@@ -499,6 +502,10 @@ class TableContent extends React.Component<{
     }
   }
 
+  /**
+   * Call back for subcomponents to set loading animation
+   * @param isWaiting 
+   */
   handleActionWaitTime(isWaiting: boolean) {
     this.setState({isWaiting: isWaiting});
   }
@@ -536,7 +543,7 @@ class TableContent extends React.Component<{
             <tbody>
             {this.props.contentData.map((entry: any, tupleIndex: number) => {
               // creating reference for each body column to track the width
-              let colRef: any = createRef();
+              let colRef: any = React.createRef();
               this.tableBodyColumnRefs.push(colRef);
               return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={colRef}>
                 <td colSpan={1}>
@@ -587,5 +594,3 @@ class TableContent extends React.Component<{
     )
   }
 }
-
-export default TableContent;

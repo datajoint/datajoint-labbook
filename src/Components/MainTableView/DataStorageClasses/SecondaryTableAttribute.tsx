@@ -6,10 +6,21 @@ import {faRedoAlt} from '@fortawesome/free-solid-svg-icons'
 /**
  * Class for secondary attributes of a table, deals with cases of it being nullable, defaultValue
  */
-class SecondaryTableAttribute extends TableAttribute {
+export default class SecondaryTableAttribute extends TableAttribute {
   nullable: boolean;
   defaultValue?: string;
 
+  /**
+   * Constructor for Secondary Table
+   * @param attributeName Name of attribute
+   * @param attributeType Type of attribute
+   * @param nullable Either true or false
+   * @param defaultValue Default value if exist
+   * @param stringTypeAttributeLengthInfo Valid when the type is either a char or varchar undefined
+   * @param enumOptions Valid when type is of enum, should be Array<string> undefined
+   * @param decimalNumDigits Valid when type is decimal otherwise undefined
+   * @param decimalNumDecimalDigits Valid when type is decimal otherwise undefined
+   */
   constructor(attributeName: string,
     attributeType: TableAttributeType,
     nullable: boolean,
@@ -24,7 +35,13 @@ class SecondaryTableAttribute extends TableAttribute {
     this.defaultValue = defaultValue === null || defaultValue === 'null' ? undefined : defaultValue;
   }
 
-  static getAttributeLabelBlock(secondaryTableAttribute: SecondaryTableAttribute, resetToNullCallback: any) {
+  /**
+   * Function to generate html label block for a given sedcondary attribute
+   * @param secondaryTableAttribute 
+   * @param resetToNullCallback Call back function for reset it back to null
+   * @returns 
+   */
+  static getAttributeLabelBlock(secondaryTableAttribute: SecondaryTableAttribute, resetToNullCallback: (tableAttribute: SecondaryTableAttribute) => void) {
     const typeString = super.getTypeString(secondaryTableAttribute);
     var resetButtonText = 'nullable';
 
@@ -46,9 +63,14 @@ class SecondaryTableAttribute extends TableAttribute {
     )
   }
 
-  static getAttributeInputBlock(secondaryTableAttribute: SecondaryTableAttribute, currentValue: any, handleChange: any) {
+  /**
+   * Construct input block based on secondaryTableAttribute by extracting it type and other information
+   * @param secondaryTableAttribute 
+   * @param currentValue urrentValue of the input block for binding
+   * @param handleChange Call back function for when the value of the input block changes
+   * @returns 
+   */
+  static getSecondaryAttributeInputBlock(secondaryTableAttribute: SecondaryTableAttribute, currentValue: any, handleChange: (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>, attributeName: string) => void) {
     return super.getAttributeInputBlock(secondaryTableAttribute, currentValue, secondaryTableAttribute.defaultValue, handleChange);
   }
 }
-
-export default SecondaryTableAttribute;

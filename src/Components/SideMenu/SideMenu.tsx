@@ -1,7 +1,7 @@
 import React from 'react';
-import SchemaList from './SchemaList'
-import {TableList} from './TableList'
-import TableType from '../TableTypeEnum/TableType'
+import SchemaList from './SchemaList';
+import TableList from './TableList';
+import TableType from '../TableTypeEnum/TableType';
 import './SideMenu.css';
 
 /**
@@ -18,7 +18,7 @@ type HomeSideMenuState = {
  * SideMenu component that handles listing schemas and tables
  * 
  */
-class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, selectedTableType: TableType, handleTableSelection: any}, HomeSideMenuState> {
+export default class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, selectedTableType: TableType, handleTableSelection: any}, HomeSideMenuState> {
   constructor(props: any) {
     super(props);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
@@ -45,22 +45,22 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
       body: JSON.stringify({schemaName: schema})
     })
-      .then(result => {
-        this.setState({tableListIsLoading: false})
-        // Check for error mesage 500, if so throw and error
-        if (result.status === 500) {
-          result.text().then(errorMessage => {throw new Error(errorMessage)});
-        }
-        
-        return result.json();
-      })
-      .then(result => {
-        this.setState({tableDict: result.tableTypeAndNames});
-      })
-      .catch((error) => {
-        this.setState({tableListIsLoading: false})
-        console.error('Error: ', error);
-      })
+    .then(result => {
+      this.setState({tableListIsLoading: false})
+      // Check for error mesage 500, if so throw and error
+      if (result.status === 500) {
+        result.text().then(errorMessage => {throw new Error(errorMessage)});
+      }
+      
+      return result.json();
+    })
+    .then(result => {
+      this.setState({tableDict: result.tableTypeAndNames});
+    })
+    .catch((error) => {
+      this.setState({tableListIsLoading: false})
+      console.error('Error: ', error);
+    })
   }
 
   /**
@@ -88,4 +88,3 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
     )
   }
 }
-export default SideMenu;

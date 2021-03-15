@@ -3,19 +3,24 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSearch, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
 import './SchemaList.css'
 
-/**
- * SchemaList: list of schema names, by default it assumes the backend returns in alphabetical ascending order
- * selectedSchema: Name of the current selected schema
- */
-type SchemaListState = {
-  schemaList: Array<string>,
-  restrictiedSchemaList: Array<string>,
-  searchString: string,
-  selectedSchemaIndex: number
+interface SchemaListProps {
+  token: string;
+  currentlySelectedSchema: string;
+  handleSchemaSelection: (schemaName: string) => void
 }
 
-class SchemaList extends React.Component<{token: string, currentlySelectedSchema: string, handleSchemaSelection: (schemaName: string) => void}, SchemaListState> {
-  constructor(props: any) {
+interface SchemaListState {
+  schemaList: Array<string>; // list of schema names, by default it assumes the backend returns in alphabetical ascending order
+  restrictiedSchemaList: Array<string>; // Subset of schemaList when there is a valid restriction via the search String
+  searchString: string; // String buffer for search string
+  selectedSchemaIndex: number; // Index of the selected schema 
+}
+
+/**
+ * Component for requesting and listing all schemas
+ */
+export default class SchemaList extends React.Component<{token: string, currentlySelectedSchema: string, handleSchemaSelection: (schemaName: string) => void}, SchemaListState> {
+  constructor(props: SchemaListProps) {
     super(props);
     this.state = {
       schemaList: [],
@@ -26,7 +31,7 @@ class SchemaList extends React.Component<{token: string, currentlySelectedSchema
 
     this.flipSchemaOrder = this.flipSchemaOrder.bind(this);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
-    this.handleSearchStringChange = this.handleSearchStringChange.bind(this);
+    this.onSearchStringChange = this.onSearchStringChange.bind(this);
   }
 
   /**
@@ -60,7 +65,6 @@ class SchemaList extends React.Component<{token: string, currentlySelectedSchema
 
   /**
    * Function to handle schema selection from the user
-   * 
    * @param schemaIndex Index of the selected schema
    */
   handleSchemaSelection(schemaIndex: number) {
@@ -72,7 +76,11 @@ class SchemaList extends React.Component<{token: string, currentlySelectedSchema
     }
   }
 
-  handleSearchStringChange(event: any) {
+  /**
+   * Call back for schema search input box OnChange
+   * @param event 
+   */
+  onSearchStringChange(event: React.ChangeEvent<HTMLInputElement>) {
     // Filter our the results based on the search string, assuming it is not empty
     let restrictiedSchemaList = [];
 
@@ -83,7 +91,7 @@ class SchemaList extends React.Component<{token: string, currentlySelectedSchema
         }
       }
 
-      this.setState({searchString: event.target, restrictiedSchemaList: restrictiedSchemaList});
+      this.setState({searchString: event.target.value, restrictiedSchemaList: restrictiedSchemaList});
     }
     else {
       this.setState({restrictiedSchemaList: this.state.schemaList});
@@ -94,7 +102,7 @@ class SchemaList extends React.Component<{token: string, currentlySelectedSchema
     return (
       <div className="schema-menu">
         <div className="search-schema-field">
-          <input type="text" onChange={this.handleSearchStringChange} placeholder="Search Schema"/>
+          <input type="text" onChange={this.onSearchStringChange} placeholder="Search Schema"/>
           <FontAwesomeIcon className="search-icon" icon={faSearch}/>
         </div>
         <div className="sort-schema-field">
@@ -115,5 +123,3 @@ class SchemaList extends React.Component<{token: string, currentlySelectedSchema
     )
   }
 }
-
-export default SchemaList

@@ -1,14 +1,14 @@
 import React from 'react';
 import './BasicLoadingIcon.css';
 
+interface BasicLoadingIconProps {
+  size: number;
+}
+
 /**
  * Basic Loading Icon component that shows up when user is waiting for something to load
  */
-class BasicLoadingIcon extends React.Component<{size:number}> {
-  constructor(props: any) {
-    super(props);
-  }
-
+export default class BasicLoadingIcon extends React.Component<BasicLoadingIconProps> {
   iconStyle = {
     width: this.props.size + 'px',
     height: this.props.size + 'px',
@@ -23,4 +23,3 @@ class BasicLoadingIcon extends React.Component<{size:number}> {
     )
   }
 }
-export default BasicLoadingIcon;
