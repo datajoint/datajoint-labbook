@@ -13,7 +13,7 @@ interface InsertTupleProps {
   selectedSchemaName:string;
   selectedTableName: string;
   tableAttributesInfo?: TableAttributesInfo;
-  selectedTableEntry?: any; // Tuple that that is checked
+  selectedTableEntry?: any; // Tuple that that is checked. Type any used here as there are many possible types with all the available input blocks
   fetchTableContent: () => void;
   clearTupleSelection: () => void;
   insertInAction: (isWaiting: boolean) => void; // for loading/waiting animation while insert takes place
