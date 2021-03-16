@@ -4,15 +4,14 @@ import TableAttribute from './TableAttribute'
 /**
  * Class to handle the datastorage of restrctions FilterCards
  */
-class Restriction {
+export default class Restriction {
   id: number
   tableAttribute?: TableAttribute
   restrictionType?: RestrictionType
-  value?: any
+  value?: any // Type any used here as there are many possible types with all the available input blocks
   isEnable: boolean
 
   /**
-   * 
    * @param id Unique indentify to be use for react keys so react can keep track of who is who
    * @param tableAttribute Table attribute object
    * @param restrictionType  Restrction type enum operation
@@ -57,5 +56,3 @@ class Restriction {
     throw Error('Unsupported Restriction Type for translation')
   }
 }
-
-export default Restriction

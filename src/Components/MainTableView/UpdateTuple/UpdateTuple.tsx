@@ -3,35 +3,36 @@ import TableAttribute from '../DataStorageClasses/TableAttribute';
 import TableAttributesInfo from '../DataStorageClasses/TableAttributesInfo';
 import PrimaryTableAttribute from '../DataStorageClasses/PrimaryTableAttribute';
 import TableAttributeType from '../enums/TableAttributeType';
-import './UpdateTuple.css'
 import SecondaryTableAttribute from '../DataStorageClasses/SecondaryTableAttribute';
 
-import CheckDependency from '../CheckDependency';
+import './UpdateTuple.css'
 
-type updateTupleState = {
-  tupleBuffer: any, // Object to stored the values typed in by the user
-  errorMessage: string, // Error message string for failed inserts
-  dependencies: Array<any>, // list of dependencies pushed from checkDependency Component
-  updateAccessible: boolean // disables submit button if any of the dependencies are inaccessible
+interface UpdateTupleProps {
+  token: string;
+  selectedSchemaName:string;
+  selectedTableName: string;
+  tableAttributesInfo?: TableAttributesInfo;
+  selectedTableEntry: any; // Tuple copy from the table that is checked. Type any used here as there are many possible types with all the available input blocks
+  fetchTableContent: () => void;
+  clearTupleSelection: () => void;
+  updateInAction: (isWaiting: boolean) => void; // Callback for loading animation status
 }
 
-class UpdateTuple extends React.Component<{
-    token: string, 
-    selectedSchemaName:string, 
-    selectedTableName: string, 
-    tableAttributesInfo?: TableAttributesInfo, 
-    fetchTableContent: any, 
-    clearEntrySelection: any,
-    selectedTableEntry: any,
-    updateInAction: any // for loading animation status
-  }, 
-  updateTupleState> {
-  constructor(props: any) {
+interface UpdateTupleState {
+  tupleBuffer: any; // Tuple buffer to stored the values typed in by the user. Type any used here as there are many possible types with all the available input blocks
+  errorMessage: string; // Error message string for failed inserts
+  updateAccessible: boolean; // disables submit button if any of the dependencies are inaccessible
+}
+
+/**
+ * Component for Update tuples in a given table
+ */
+export default class UpdateTuple extends React.Component<UpdateTupleProps, UpdateTupleState> {
+  constructor(props: UpdateTupleProps) {
     super(props);
     this.state = {
       tupleBuffer: {},
       errorMessage: '',
-      dependencies: [],
       updateAccessible: false
     }
 
@@ -40,8 +41,8 @@ class UpdateTuple extends React.Component<{
     this.resetToNull = this.resetToNull.bind(this);
   }
 
-   /**
-   * Handle cases with enums on load by setting the deafult value to the first enum option
+  /**
+   * Handle cases with enums on load by setting the default value to the first enum option and when there is a selectedTableEntry
    */
   componentDidMount() {
     // Figure out if any of the attribute is enum type, if so set the state ahead of time
@@ -71,7 +72,7 @@ class UpdateTuple extends React.Component<{
    * @param prevProps 
    * @param prevState 
    */
-  componentDidUpdate(prevProps: any, prevState: any) {
+  componentDidUpdate(prevProps: UpdateTupleProps, prevState: UpdateTupleState) {
     // break if there has been no change to the tuple selection 
     if (this.props.selectedTableEntry === prevProps.selectedTableEntry || this.props.selectedTableEntry === undefined) {
       return;
@@ -86,7 +87,7 @@ class UpdateTuple extends React.Component<{
    * @param attributeName Attribute name of the change, this is used to access the tupleBuffer object members to set the value
    * @param event Event object that come from the onChange function
    */
-  handleChange(event: any, attributeName: string) {
+  handleChange(event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>, attributeName: string) {
     // Create a copy, update the object, then set state
     let tupleBuffer = Object.assign({}, this.state.tupleBuffer);
     tupleBuffer[attributeName] = event.target.value;
@@ -98,7 +99,7 @@ class UpdateTuple extends React.Component<{
    * based upon the info provided by this.props.tableAttributeInfo such as nullable? autoIncrement?, etc.
    * @param event Event object from the standard OnSubmit function
    */
-  onSubmit(event: any) {
+  onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // Check that tableAttirbutesInfo is not undefined
     if (this.props.tableAttributesInfo === undefined) {
@@ -180,7 +181,7 @@ class UpdateTuple extends React.Component<{
     })
     .then(result => {
       // clear selection and buffer upon successful delete
-      this.props.clearEntrySelection();
+      this.props.clearTupleSelection();
       this.setState({tupleBuffer: {}})
 
       // Update was sucessful, tell TableView to fetch the content again
@@ -223,10 +224,6 @@ class UpdateTuple extends React.Component<{
     }
   }
 
-  handleDependencies(list: Array<any>) {
-    this.setState({dependencies: list})
-  }
-
   render() {
     return (
       <div className="updateActionContainer">
@@ -243,7 +240,7 @@ class UpdateTuple extends React.Component<{
                   return(
                     <div className='fieldUnit primary' key={primaryTableAttribute.attributeName}>
                       {PrimaryTableAttribute.getAttributeLabelBlock(primaryTableAttribute)}
-                      {PrimaryTableAttribute.getAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], this.handleChange)}
+                      {PrimaryTableAttribute.getPrimaryAttributeInputBlock(primaryTableAttribute, this.state.tupleBuffer[primaryTableAttribute.attributeName], this.handleChange)}
                     </div>
                   )
                 })
@@ -254,7 +251,7 @@ class UpdateTuple extends React.Component<{
                   return(
                     <div className='fieldUnit' key={secondaryAttribute.attributeName}>
                       {SecondaryTableAttribute.getAttributeLabelBlock(secondaryAttribute, this.resetToNull)}
-                      {SecondaryTableAttribute.getAttributeInputBlock(
+                      {SecondaryTableAttribute.getSecondaryAttributeInputBlock(
                       secondaryAttribute,
                       secondaryAttribute.attributeType === TableAttributeType.DATETIME || secondaryAttribute.attributeType === TableAttributeType.TIMESTAMP? 
                       this.state.tupleBuffer[secondaryAttribute.attributeName + '__date'] + ' ' + this.state.tupleBuffer[secondaryAttribute.attributeName + '__time'] :
@@ -269,7 +266,7 @@ class UpdateTuple extends React.Component<{
                 <p>Are you sure you want to submit form to update this entry?</p>
                 <div className="actionButtons">
                   <input className="confirmActionButton update" type="submit" value="Update"/>
-                  <button className="cancelActionButton update" onClick={() => {this.setState({dependencies: []}); this.props.clearEntrySelection();}}>Cancel</button>
+                  <button className="cancelActionButton update" onClick={() => {this.props.clearTupleSelection();}}>Cancel</button>
                 </div>
               </div>
           </form>
@@ -281,5 +278,3 @@ class UpdateTuple extends React.Component<{
     )
   }
 }
-
-export default UpdateTuple;

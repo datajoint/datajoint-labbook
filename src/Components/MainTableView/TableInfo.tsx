@@ -1,11 +1,18 @@
 import React from 'react';
 import './TableInfo.css';
 
-type TableInfoState = {
+interface TableInfoProps {
+  tableDefintionString: string; // Table definition string
 }
 
-class TableInfo extends React.Component<{infoDefData: string}, TableInfoState> {
-  constructor(props: any) {
+interface TableInfoState {
+}
+
+/**
+ * Component for displaying the table definition
+ */
+export default class TableInfo extends React.Component<TableInfoProps, TableInfoState> {
+  constructor(props: TableInfoProps) {
     super(props);
   }
 
@@ -14,11 +21,9 @@ class TableInfo extends React.Component<{infoDefData: string}, TableInfoState> {
       <div className="table-info-viewer">
         <div className="info-content">
           <h4 className="info-title">Description</h4>
-          <div className="description-info">{this.props.infoDefData}</div>
+          <div className="description-info">{this.props.tableDefintionString}</div>
         </div>
       </div>
     )
   }
 }
-
-export default TableInfo;

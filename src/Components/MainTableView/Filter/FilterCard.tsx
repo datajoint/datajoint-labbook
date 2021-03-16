@@ -8,14 +8,22 @@ import TableAttributeType from '../enums/TableAttributeType';
 
 import './FilterCard.css'
 
+interface FilterCardProps {
+  index: number;
+  restriction: Restriction;
+  tableAttributes: Array<TableAttribute>;
+  updateRestriction: (index: number, restriction: Restriction) => void;
+  deleteFilterCard: (index: number) => void;
+}
+
 type FilterCardState = {
 }
 
 /**
  * Component to handle creation of the input forms require for each restriction
  */
-class FilterCard extends React.Component<{index: number, restriction: Restriction, tableAttributes: Array<TableAttribute>, updateRestriction: any, deleteFilterCard: any}, FilterCardState> {
-  constructor(props: any) {
+export default class FilterCard extends React.Component<FilterCardProps, FilterCardState> {
+  constructor(props: FilterCardProps) {
     super(props);
 
     this.getAttributeNameSelectBlock = this.getAttributeNameSelectBlock.bind(this);
@@ -51,7 +59,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
    * @param attributeName
    * @param event 
    */
-  handleValueChange(event: any, attributeName: string) {
+  handleValueChange(event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>, attributeName: string) {
     let restriction = Object.assign({}, this.props.restriction);
     
     // Handle speical case with DateTime
@@ -85,7 +93,7 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
    * Deals with the user wanting to enable or disable a restriction, same logic as a attribute selection and so on
    * @param event 
    */
-  handleEnableChange(event: any) {
+  handleEnableChange(event: React.ChangeEvent<HTMLInputElement>) {
     let restriction = Object.assign({}, this.props.restriction);
     restriction.isEnable = event.target.checked;
     this.props.updateRestriction(this.props.index, restriction);
@@ -151,5 +159,3 @@ class FilterCard extends React.Component<{index: number, restriction: Restrictio
     )
   }
 }
-
-export default FilterCard

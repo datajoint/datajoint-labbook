@@ -9,41 +9,49 @@ import Home from './Home'
 
 window.onbeforeunload = () => '';
 
-type DJGUIAppState = {
-  currentDatabaseConnectionJWT: string;
-  hostname: string;
+interface DJGUIAppProps {
 }
 
-class App extends React.Component<{}, DJGUIAppState> {
-  constructor(props: any) {
+interface DJGUIAppState {
+  jwtToken: string; // Storage object for JWT token obtain after logging in successfully
+  hostname: string; // Name of the database that the user is connected to
+}
+
+/**
+ * React top level component for the GUI
+ */
+export default class App extends React.Component<DJGUIAppProps, DJGUIAppState> {
+  constructor(props: DJGUIAppProps) {
     super(props);
     this.state = {
-      currentDatabaseConnectionJWT: '',
+      jwtToken: '',
       hostname: ''
     };
 
-    this.setCurrentDatabaseConnectionJWT = this.setCurrentDatabaseConnectionJWT.bind(this);
+    this.setJWTTokenAndHostName = this.setJWTTokenAndHostName.bind(this);
   }
 
-  // Set the current database jwt token to use for future queries and etc.
-  setCurrentDatabaseConnectionJWT(jwt: string, hostname: string) {
-    this.setState({currentDatabaseConnectionJWT: jwt, hostname: hostname});
+  /**
+   * Setter function for jwt token and host name
+   * @param jwt JWT token obtain after logging sucessfully from the backend
+   * @param hostname Hostname of the database that is being connected to
+   */
+  setJWTTokenAndHostName(jwt: string, hostname: string) {
+    this.setState({jwtToken: jwt, hostname: hostname});
   }
 
   render() {
     return (
       <Router>
-        <NavBar hostname={this.state.hostname} isLoggedIn={this.state.currentDatabaseConnectionJWT !== '' ? true: false}></NavBar>
+        <NavBar hostname={this.state.hostname} isLoggedIn={this.state.jwtToken !== '' ? true: false}></NavBar>
         <div className='content'>
           <Switch>
-            <Route exact path='/'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Redirect to='/login'/>}</Route>
-            <Route path='/login'>{this.state.currentDatabaseConnectionJWT !== '' ? <Redirect to='/home'/> : <Login setCurrentDatabaseConnectionJWT={this.setCurrentDatabaseConnectionJWT}></Login>}</Route>
-            <Route path='/home'>{this.state.currentDatabaseConnectionJWT !== '' ? <Home token={this.state.currentDatabaseConnectionJWT}></Home> : <Redirect to='/login'/>}</Route>
+            <Route exact path='/'>{this.state.jwtToken !== '' ? <Redirect to='/home'/> : <Redirect to='/login'/>}</Route>
+            <Route path='/login'>{this.state.jwtToken !== '' ? <Redirect to='/home'/> : <Login setJWTTokenAndHostName={this.setJWTTokenAndHostName}></Login>}</Route>
+            <Route path='/home'>{this.state.jwtToken !== '' ? <Home jwtToken={this.state.jwtToken}></Home> : <Redirect to='/login'/>}</Route>
           </Switch>
         </div>
       </Router>
     );
   }
 }
-
-export default App;
