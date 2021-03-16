@@ -84,7 +84,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   
     this.headerColumnSizeRef = React.createRef();
     this.tableBodyColumnRefs = [];
-    // this.bodyColumnSizeRef = React.createRef();
     this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
@@ -109,7 +108,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   componentDidMount() {
     let tableBodyCellWidthLookup: Array<Array<number>> = []
     let tablenewHeaderWidths: Array<number> = []
-    // let headerColumns = this.headerColumnSizeRef.current.cells
     let headerColumns: HTMLCollectionOf<HTMLTableDataCellElement | HTMLTableHeaderCellElement>;
     if (this.headerColumnSizeRef && this.headerColumnSizeRef.current) {
       headerColumns = this.headerColumnSizeRef.current.cells
@@ -119,7 +117,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         tablenewHeaderWidths.push(col.clientWidth)
       }
     }
-    
 
     for (let row of this.tableBodyColumnRefs) {
       if (row.current) {
@@ -137,9 +134,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     tableBodyCellWidthLookup.forEach((col: Array<number>, index: number) => {
       if (col.length > 0) {
         let colAvg = Math.ceil(col.reduce((a: number, b: number) => (a + b)) / col.length)
-        //// checking the max width of each column just in case - implementing with rounded up average for now
-        // let colMax = Math.max(...col)
-        // console.log(`Avg: ${colAvg}...Max: ${colMax}`)
 
         // check the average body width against the header width, put the larger of the two in the final width
         if (colAvg > tablenewHeaderWidths[index]) {
