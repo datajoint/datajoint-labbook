@@ -180,7 +180,6 @@ export default class TableList extends React.Component<TableListProps, TableList
    * @param partTableDict 
    */
   parseTableEntry(tableList: Array<ParentTableListEntry>, tableNames: Array<string>, tableType: TableType, partTableDict: Record<string, Array<PartTableListEntry>>) {
-    console.log(tableNames)
     // Iterate through the table name list and append part tables if the parent table name match
     for (let parentTableName of tableNames) {
       // Check if parent table has parts table if so inserted
