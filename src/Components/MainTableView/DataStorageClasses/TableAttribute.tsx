@@ -204,7 +204,7 @@ export default class TableAttribute {
   /**
    * Helper function to handle the creation of input block based on the corresponding table attribute
    * @param tableAttribute TableAttribute object to be used for extracting type 
-   * @param currentValue Current value of the input block
+   * @param currentValue CurrentValue of the input block for binding. Type any used here as there are many possible types with all the available input blocks
    * @param defaultValue Any default value for input blocks that support it
    * @param handleChange Call back function for when the user make a change to the input block
    */
@@ -334,7 +334,7 @@ export default class TableAttribute {
     }
     else if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
       var splitResult = [undefined, undefined]
-      var defaultValueSplitResult: any = ['', '']
+      var defaultValueSplitResult: Array<string> = ['', '']
 
       if (currentValue !== "undefined undefined" && currentValue !== undefined) { // Yes this is a hack for now, we will consildate this to one standard
         if (Array.isArray(currentValue)) {

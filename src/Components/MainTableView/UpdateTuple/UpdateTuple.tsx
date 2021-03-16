@@ -12,14 +12,14 @@ interface UpdateTupleProps {
   selectedSchemaName:string;
   selectedTableName: string;
   tableAttributesInfo?: TableAttributesInfo;
-  selectedTableEntry: any; // Tuple that that is checked
+  selectedTableEntry: any; // Tuple copy from the table that is checked. Type any used here as there are many possible types with all the available input blocks
   fetchTableContent: () => void;
   clearTupleSelection: () => void;
   updateInAction: (isWaiting: boolean) => void; // Callback for loading animation status
 }
 
 interface UpdateTupleState {
-  tupleBuffer: any; // Tuple buffer to stored the values typed in by the user
+  tupleBuffer: any; // Tuple buffer to stored the values typed in by the user. Type any used here as there are many possible types with all the available input blocks
   errorMessage: string; // Error message string for failed inserts
   updateAccessible: boolean; // disables submit button if any of the dependencies are inaccessible
 }
@@ -28,7 +28,7 @@ interface UpdateTupleState {
  * Component for Update tuples in a given table
  */
 export default class UpdateTuple extends React.Component<UpdateTupleProps, UpdateTupleState> {
-  constructor(props: any) {
+  constructor(props: UpdateTupleProps) {
     super(props);
     this.state = {
       tupleBuffer: {},

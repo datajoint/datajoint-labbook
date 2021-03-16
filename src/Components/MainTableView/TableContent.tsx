@@ -25,7 +25,7 @@ interface TableContentProps {
   selectedSchemaName: string;
   selectedTableName: string;
   selectedTableType: TableType;
-  contentData: Array<any>; // Array of tuples obtain from the fetch of a table
+  contentData: Array<any>; // Array of tuples obtain from the fetch of a table. Type any used here as there are many possible types with all the available via fetching the actual tuples
   totalNumOfTuples: number;
   currentPageNumber: number;
   maxPageNumber: number;

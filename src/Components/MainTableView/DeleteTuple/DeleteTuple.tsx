@@ -12,7 +12,7 @@ interface DeleteTupleProps {
   selectedSchemaName: string;
   selectedTableName: string;
   tableAttributesInfo?: TableAttributesInfo;
-  selectedTableEntry?: any;
+  selectedTableEntry?: any; // Tuple copy over from table. Type any used here as there are many possible types with all the available input blocks
   fetchTableContent: () => void;
   clearEntrySelection: () => void;
   deleteInAction: (isWaiting: boolean) => void;

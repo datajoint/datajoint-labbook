@@ -12,8 +12,8 @@ interface FilterCardProps {
   index: number;
   restriction: Restriction;
   tableAttributes: Array<TableAttribute>;
-  updateRestriction: any;
-  deleteFilterCard: any;
+  updateRestriction: (index: number, restriction: Restriction) => void;
+  deleteFilterCard: (index: number) => void;
 }
 
 type FilterCardState = {
