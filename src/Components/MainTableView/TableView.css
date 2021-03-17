@@ -1,6 +1,6 @@
 .table-view {
-  width: 96%;
-  margin: 12px 2% auto 1%;
+  width: 98%;
+  margin: 12px 1.5% auto 0.5%;
 }
 
 .table-view .nav-tabs {
@@ -52,7 +52,7 @@
   margin: 0 0 auto;
   background-color: #F1f1f1;
   width: 100%;
-  height: 85vh;
+  height: 88.5vh;
   box-shadow: -1px 0px 3px rgb(160, 160, 160);
 }
 

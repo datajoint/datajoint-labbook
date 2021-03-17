@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {RefObject} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faChevronRight, faChevronLeft, faStepBackward, faStepForward} from '@fortawesome/free-solid-svg-icons'
+import {faChevronRight, faChevronLeft, faStepBackward, faStepForward, faFilter, faPlusCircle, faEdit, faTrashAlt} from '@fortawesome/free-solid-svg-icons'
 import './TableContent.css'
 import TableType from '../TableTypeEnum/TableType'
 import Filter from './Filter/Filter'
@@ -44,11 +44,11 @@ interface TableContentState {
   selectedTuple?: {}; // Has to be an object with each attribute name as key cause the way tuple_buffer is handle in the subcomponents
   showWarning: boolean; // text warning when duplicate selection is made for delete/update, most likely to be take out once disable checkbox feature is finished
   isDisabledCheckbox: boolean; // tells the UI to disable any other checkboxes once there is already a selection in delete/update mode
-  headerWidth: number; // part of table column resizer feature
   dragStart: number; // part of table column resizer feature
-  dragDistance: number; // part of table column resizer feature
   resizeIndex?: number; // part of table column resizer feature
   isWaiting: boolean; // tells the UI to display loading icon while insert/update/delete are in action
+  newHeaderWidths: Array<number>; // list of table column header width after user resizes
+  initialTableColWidths: Array<number>; // list of initial table column width on load
 }
 
 /**
@@ -56,6 +56,8 @@ interface TableContentState {
  * 
  */
 export default class TableContent extends React.Component<TableContentProps, TableContentState> {
+  private headerColumnSizeRef: RefObject<HTMLTableRowElement>;
+  private tableBodyColumnRefs: Array<RefObject<HTMLTableRowElement>>;
   constructor(props: TableContentProps) {
     super(props);
     this.state = {
@@ -65,11 +67,11 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       selectedTuple: undefined,
       showWarning: false,
       isDisabledCheckbox: false,
-      headerWidth: 0,
+      newHeaderWidths: [],
       dragStart: 0,
-      dragDistance: 0,
       resizeIndex: undefined,
-      isWaiting: false
+      isWaiting: false,
+      initialTableColWidths: []
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
@@ -79,6 +81,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     this.goForwardAPage = this.goForwardAPage.bind(this);
     this.goBackwardAPage = this.goBackwardAPage.bind(this);
     this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
+  
+    this.headerColumnSizeRef = React.createRef();
+    this.tableBodyColumnRefs = [];
     this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
@@ -95,6 +100,52 @@ export default class TableContent extends React.Component<TableContentProps, Tab
 
     // Reset TableActionview
     this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTuple: undefined});
+  }
+
+  /**
+   * initialzing the table column width 
+   */
+  componentDidMount() {
+    let tableBodyCellWidthLookup: Array<Array<number>> = []
+    let tablenewHeaderWidths: Array<number> = []
+    let headerColumns: HTMLCollectionOf<HTMLTableDataCellElement | HTMLTableHeaderCellElement>;
+    if (this.headerColumnSizeRef && this.headerColumnSizeRef.current) {
+      headerColumns = this.headerColumnSizeRef.current.cells
+
+      for (let col of Object.values(headerColumns)) {
+        tableBodyCellWidthLookup.push([])
+        tablenewHeaderWidths.push(col.clientWidth)
+      }
+    }
+
+    for (let row of this.tableBodyColumnRefs) {
+      if (row.current) {
+        let tableRows = row.current.cells
+        let index = 0
+        for (let col of Object.values(tableRows)) {
+          tableBodyCellWidthLookup[index].push(col.clientWidth)
+          index += 1;
+        }
+      } 
+    }
+
+    // going through the body column references to decide on the initial width of the table columns
+    let finalTableColWidths: Array<number> = []
+    tableBodyCellWidthLookup.forEach((col: Array<number>, index: number) => {
+      if (col.length > 0) {
+        let colAvg = Math.ceil(col.reduce((a: number, b: number) => (a + b)) / col.length)
+
+        // check the average body width against the header width, put the larger of the two in the final width
+        if (colAvg > tablenewHeaderWidths[index]) {
+          finalTableColWidths.push(colAvg)
+        }
+        else {
+          finalTableColWidths.push(tablenewHeaderWidths[index])
+        }
+      }
+    })
+
+    this.setState({initialTableColWidths: finalTableColWidths.slice(1)}) // not including the initial width of the checkbox
   }
 
   /**
@@ -354,10 +405,10 @@ export default class TableContent extends React.Component<TableContentProps, Tab
 
     return(
       <div className="content-controllers">
-        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.FILTER)} className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER && !this.state.hideTableActionMenu ? 'selectedButton' : ''}>Filter</button>
-        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.INSERT)} className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableInsert}>Insert</button>
-        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.UPDATE)} className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableUpdate}>Update</button>
-        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableDelete}>Delete</button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.FILTER)} className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER && !this.state.hideTableActionMenu ? 'selectedButton' : ''}><FontAwesomeIcon className="menuIcon filter" icon={faFilter} /><span>Filter</span></button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.INSERT)} className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableInsert}><FontAwesomeIcon className="menuIcon insert" icon={faPlusCircle} /><span>Insert</span></button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.UPDATE)} className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableUpdate}><FontAwesomeIcon className="menuIcon update" icon={faEdit} /><span>Update</span></button>
+        <button onClick={() => this.setCurrentTableActionMenu(TableActionType.DELETE)} className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE && !this.state.hideTableActionMenu ? 'selectedButton' : ''} disabled={disableDelete}><FontAwesomeIcon className="menuIcon delete" icon={faTrashAlt} /><span>Delete</span></button>
       </div>
     )
   }
@@ -366,12 +417,16 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * Function to set the new adjusted width (TODO: fix to make sure the fix is for each column using reference)
    * @param difference // the distance the user dragged the column divider handle
    */
-  setHeaderWidth(difference: number) {
-    if (this.state.headerWidth + difference > 0) {
-      this.setState({headerWidth: this.state.headerWidth + difference});
+  setnewHeaderWidths(difference: number) {
+    if (this.state.newHeaderWidths.length > 0 && difference !== 0) {
+      let newWidthsCopy = this.state.newHeaderWidths
+      if (this.state.resizeIndex !== undefined) {
+        newWidthsCopy[this.state.resizeIndex] = this.state.newHeaderWidths[this.state.resizeIndex] + difference
+        this.setState({newHeaderWidths: newWidthsCopy});
+      }
     }
     else {
-      this.setState({headerWidth: 1})
+      this.setState({newHeaderWidths: this.state.initialTableColWidths})
     }
   }
 
@@ -382,7 +437,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    */
   cellResizeMouseDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>, colIndex: number) {
     this.setState({dragStart: event.clientX, resizeIndex: colIndex})
-    // console.log('event.target.offsetParent.nextSibling: ', event.target.offsetParent.nextSibling)
   }
 
   /**
@@ -391,8 +445,12 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    */
   cellResizeMouseMove(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (this.state.dragStart) {
-      this.setState({dragDistance: event.pageX - this.state.dragStart})
-      this.setHeaderWidth(this.state.dragDistance);
+      // use the drag distance to calculate the new width
+      let dragDistance = event.pageX - this.state.dragStart
+      this.setnewHeaderWidths(dragDistance);
+
+      // update the new start
+      this.setState({dragStart: event.clientX})
     }
   }
 
@@ -402,7 +460,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    */
   cellResizeMouseUp(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     // reset column drag stats
-    this.setState({dragStart: 0, dragDistance: 0, resizeIndex: undefined})
+    this.setState({dragStart: 0, resizeIndex: undefined})
   }
   
   /**
@@ -410,19 +468,19 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * @param colIndex 
    */
   getCellWidth(colIndex: number) {
-    if (this.state.resizeIndex === colIndex && this.state.headerWidth) {
+    if (this.state.resizeIndex === colIndex && this.state.newHeaderWidths[colIndex]) {
       return {
-        width: this.state.headerWidth + 'px'
+        width: this.state.newHeaderWidths[colIndex] + 'px'
       }
     }
-    else if (this.state.resizeIndex !== colIndex && this.state.headerWidth) {
+    else if (this.state.resizeIndex !== colIndex && this.state.newHeaderWidths[colIndex]) {
       return {
-        width: '180px' // needs to refer to each col state
+        width: this.state.newHeaderWidths[colIndex] + 'px'
       }
     } 
     else {
       return {
-        width: '180px' // default
+        width: this.state.initialTableColWidths[colIndex] // default
       }
     }
   }
@@ -468,7 +526,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
           <div className="table-container">
           <table className="table">
             <thead>
-            <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}>
+            <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.headerColumnSizeRef}>
               <th className="buffer"><input type="checkbox" /></th>
               {this.getPrimaryKeys().map((attributeName, index) => {
                 return (<th key={attributeName} className="headings" style={this.getCellWidth(index)}>
@@ -486,7 +544,10 @@ export default class TableContent extends React.Component<TableContentProps, Tab
             </thead>
             <tbody>
             {this.props.contentData.map((entry: any, tupleIndex: number) => {
-              return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}>
+              // creating reference for each body column to track the width
+              let colRef: RefObject<HTMLTableRowElement> = React.createRef<HTMLTableRowElement>();
+              this.tableBodyColumnRefs.push(colRef);
+              return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={colRef}>
                 <td colSpan={1}>
                   <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.

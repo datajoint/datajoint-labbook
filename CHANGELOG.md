@@ -5,6 +5,10 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ## [Unreleased]
 ### Added
 - Docstrings for all classes and functions (#112) PR #124
+- Smaller screen layout (#58) PR #127
+
+### Fixed
+- Make table column width fit content or header and make it resizable (#11) PR #127
 
 ### Changed
 - Replaced usage of any with more strongly typed data types (#125) PR #124
