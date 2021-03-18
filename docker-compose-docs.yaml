@@ -6,3 +6,4 @@ services:
       context: .
     volumes:
     - ./:/src
+    command: bash -c "npm install && npx typedoc ./src --out ./docs/sphinx/_static/typedoc && cd ./docs/sphinx && make html"

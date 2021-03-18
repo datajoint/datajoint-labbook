@@ -5,5 +5,3 @@ RUN apt-get update &&\
     apt-get install python3-sphinx -y &&\
     pip install sphinx-rtd-theme m2r2 &&\
     npm install typedoc
-
-CMD npx typedoc ./src --out ./docs/sphinx/_static/typedoc && cd ./docs/sphinx && make html
