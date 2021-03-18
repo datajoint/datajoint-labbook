@@ -1,6 +1,7 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faSearch, faSortAmountDown} from '@fortawesome/free-solid-svg-icons';
+import {faSearch, faSortAmountDown} from '@fortawesome/free-solid-svg-icons'
+import './SchemaList.css'
 
 interface SchemaListProps {
   token: string;

@@ -14,6 +14,7 @@
   height: 48px;
   align-items: center;
   z-index: 500;
+  min-width: 420px;
 }
 
 .table-type-tag {
@@ -43,13 +44,16 @@
 }
 
 .content-controllers button {
-  padding: 4px 32px;
+  padding: 4px 24px;
   margin-left: 12px;
   border: 2px solid #262A22;
   background-color: #F1f1f1;
   border-radius: 4px;
   color: #262A22;
   font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  font-size: 0.8rem;
 }
 
 .content-controllers button:hover {
@@ -69,6 +73,11 @@
   background-color: #399E5A;
   border-color: #399E5A;
   color: white;
+}
+
+.content-controllers button .menuIcon {
+  margin-right: 8px;
+  margin-top: 1px;
 }
 
 .table-content-viewer .content-view-header.computed {
@@ -246,4 +255,42 @@ input[type="checkbox"][disabled] {
   position: absolute;
   z-index: 999;
   bottom: 16px;
+}
+
+@media only screen and (max-width: 1366px) {
+  .content-controllers button {
+    padding: 4px 16px;
+    margin-left: 6px;
+    font-size: 0.7em;
+  }
+
+  table.table {
+    font-size: 0.8rem;
+  }
+
+
+}
+
+@media only screen and (max-width: 960px) {
+  .content-controllers button {
+    padding: auto;
+    width: 40px;
+    margin-left: 6px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .content-controllers button .menuIcon {
+    margin-right: 0;
+    margin-bottom: 2px;
+    font-size: 0.9rem;
+  }
+
+  .content-controllers button span {
+    font-size: 0.5rem;
+  }
+
+  table.table {
+    font-size: 0.75rem;
+  }
 }
