@@ -1,12 +1,12 @@
 import React from 'react';
 import {NavLink} from 'react-router-dom';
 import {Helmet} from 'react-helmet';
-import {version} from '../../package.json';
+import {version} from '../../../package.json';
 
 import './NavBar.css'
 
 // Assets
-import logo from '../images/logo_default.svg'
+import logo from '../../images/logo_default.svg'
 
 interface NavBarProps {
   hostname: string;
