@@ -2,8 +2,17 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './Components/App';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test('renders login page', () => {
+    render(<App />);
+    const linkElements = [
+        screen.getByText("Host\/Database Address"),
+        screen.getByText("Username"),
+        screen.getByText("Password"),
+        screen.getByText("Remember Me"),
+        screen.getByText("Connect")
+    ];
+    linkElements.forEach(element => {
+        expect(element).toBeInTheDocument();
+    })
+
 });
