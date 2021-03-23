@@ -270,7 +270,7 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
                 </div>
               </div>
           </form>
-        } 
+        }
         {this.state.errorMessage ? (
           <div className="errorMessage">{this.state.errorMessage}<button className="dismiss" onClick={() => this.setState({errorMessage: ''})}>dismiss</button></div>
         ) : ''}
