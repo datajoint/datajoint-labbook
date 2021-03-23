@@ -130,12 +130,12 @@ export default class TableView extends React.Component<TableViewProps, TableView
       if (this.state.currentView === CurrentView.TABLE_CONTENT) {
         // User is on TableContent, fetch data related to that view and set tableInfoNeedRefresh to true
         this.fetchTableAttributeAndContent();
-        this.setState({tableContentNeedRefresh: false, tableDefinitionNeedRefresh: true});
+        this.setState({tableContentNeedRefresh: false, tableDefinitionNeedRefresh: true, restrictions: []});
       }
       else if (this.state.currentView === CurrentView.TABLE_INFO) {
         // User is on TableInfo, fetch data related to that view nad set tableContentNeedRefresh to true
         this.fetchTableDefinition();
-        this.setState({tableContentNeedRefresh: true, tableDefinitionNeedRefresh: false});
+        this.setState({tableContentNeedRefresh: true, tableDefinitionNeedRefresh: false, restrictions: []});
       }
     }
     else if (this.state.currentView !== prevState.currentView) {
