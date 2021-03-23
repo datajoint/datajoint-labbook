@@ -1,3 +1,5 @@
+# Docker-compose file to built both the typedocs and sphinx for this repo locally (outputs to docs/html/)
+# COMMMAND TO RUN FOR BUILDING: docker-compose -f docker-compose-docs.yaml up
 version: "2.4"
 services: 
   docs-build:
@@ -6,4 +8,11 @@ services:
       context: .
     volumes:
     - ./:/src
-    command: bash -c "npm install && npx typedoc ./src --out ./docs/sphinx/_static/typedoc && cd ./docs/sphinx && make html"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        npm install
+        npx typedoc ./src --out ./docs/sphinx/_static/typedocs
+        cd ./docs/sphinx
+        make html

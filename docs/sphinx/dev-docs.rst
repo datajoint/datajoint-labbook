@@ -2,9 +2,9 @@
 Developer Documentation
 =======================
  
-This section is meant to give an overview of the design behind DJ-LabBook for developers who are interested in playing with the code.
+ meant to give an overview of the design behind DJ-LabBook for developers who are interested in contributing to the code base.
  
-The code is based built on react typescript with the backend being built on flask and datajoint, thus it is highly recommended to get familiar with React's components and typical architecture design
+The code is built using ``react-cra`` using ``typescript`` with the backend being built on ``flask`` and ``datajoint``. Thus, it is highly recommended to get familiar with React's components and typical architecture design.
  
 Requirements:
 =============
@@ -15,7 +15,7 @@ Requirements:
 Architecture Overview
 =====================
  
-All the major app react components are stored under /src/Components and are comprised of the following parts:
+All of the major app's react components are stored under ``./src/Components`` and are comprised of the following parts:
  
 - :ref:`Login Component`
 - :ref:`Navigation Bar Component`
@@ -27,94 +27,99 @@ Login Component
 ===============
 .. image:: _static/images/Login.png
  
-The login component only parent is the App.tsx which is the parent component of the entire app
+The login component's only parent is ``App.tsx`` which is the parent component of the entire app.
  
-At the moment the login progress and authentication is done in the following step:
+At the moment, the login progress and authentication is done in the following steps:
  
-- User types in database, username, and password.
-- Front end sends the information to the back end /api/login route to authenticate.
-- If authentication was successful then front end will receive a jwt token containing the information above including the password in the payload (NOTE: We aware that this is unsecure, but this will fix later)
-- All following api requests will use the JWT for authentication. JWT is stored at the App.tsx level
+- User supplies the database, username, and password.
+- Front end sends the information to the back end ``/api/login`` route to authenticate.
+- If authentication was successful, then front end will receive a JWT token containing the credential information in the payload (NOTE: See `Pharus Docs <https://datajoint.github.io/pharus/pharus.html#pharus.server.login>`_ for more details on this).
+- Subsequent API requests will use the JWT for authentication. The active JWT is stored at the ``App.tsx`` level.
  
 Navigation Bar Component
 ========================
 .. image:: _static/images/NavBarHighlight.png
  
-The navigation bar handles getting the front end and the api version number and displaying. Also handles displaying the logo and login and sign out.
+The navigation bar handles getting the API versions for the frontend and backend along with displaying them. It also handles displaying the logo, login, and sign out.
  
 Side Menu Navigator Component
 =============================
 .. image:: _static/images/SideMenuHighlight.png
  
-The side menu navigator consists of two sub components, namely the schema and table list view.
+The side menu navigator consists of two sub components: the schema and table list view.
  
-It also store a few buffer variables to keep track what schema the user select so far and only reports
+It also store a few buffer variables to keep track of what schema the user has selected so far and only reports back to the home component.
 back to the home component
  
 Schema List Component
 ---------------------
 Schema List view is responsible for the following:
-- Upon being loaded, fetch all available schema under the given database connection
-- Display all the schemas and restrict if the user types a non empty string into search box
-- Upon selection of schema, use the callback to send the selected schema back to SideMenu component
+- Upon being loaded, fetch all available schema under the given database connection.
+- Display all the schemas and restrict if the user types a non empty string into the search box.
+- Upon selection of a schema, use the callback to send the selected schema back to ``SideMenu`` component.
  
 Table List Component
 --------------------
 Table List view is responsible for the following:
-- After the user selected a schema, fetch all the tables and its type from the backend
-- Display all the tables and restrict if the user types a non empty string into the search box
-- Upon the selection of a table, use the callback to send the table info back to the SideMenu component where it will send the info back to the home component.
+- After the user selected a schema, fetch all the tables and its type from the backend.
+- Display all the tables and restrict if the user types a non-empty string into the search box.
+- Upon the selection of a table, use the callback to send the table info back to the ``SideMenu`` component where it will send the info back to the ``Home`` component.
  
 Table View Component
 ====================
 .. image:: _static/images/TableViewHighlight.png
  
-Responsible for the handling of two sub components, the TableContent and TableInfo, along with fetching of the data required by both of them once 
-this component receive a valid table name
+Responsible for the handling of two sub components: the ``TableContent`` and ``TableInfo``. It also fetches the data required by both of them once this component receive a valid table name.
  
 Table Content
 -------------
- 
-TODO: Need to add image here
-Table Content is mainly responsible for the viewing, filtering, insertion, update, and deletion of tuples given a table, as such it is divided into 5 components:
-- Table Content View (Display the tuples of the table)
-- Filter Component (Filter the tuples of the table)
-- Insert Component (Single tuple at a time)
-- Update Component (Single tuple at a time)
-- Deletion Component (Single tuple at a time, uses delete_quick on the backend thus the tuple must not have any dependencies)
+.. image:: _static/images/TableContentHighlight.png
+
+Table Content is mainly responsible for viewing, filtering, inserting, updating, and deleting records of a given table. It is divided into 5 components:
+- Table Content View (Display the records of the table)
+- Filter Component (Filter the records of the table)
+- Insert Component (Insert a single record)
+- Update Component (Insert a single record))
+- Deletion Component (Delete a single record at a time. Currently, the record must not have any child dependencies.)
  
 Table Content View
 ~~~~~~~~~~~~~~~~~~
+.. image:: _static/images/TableViewHighlight.png
+
 Table Content View is responsible for:
-- Fetching and display tuple
-- Contain the Filter, Insert, Update, and Delete
-- Allowing the user to check a specific tuple to send one of the specific subcomponent such as insert, update, and delete_quick
+- Fetch and display a record
+- Contain the ``Filter``, ``Insert``, ``Update``, and ``Delete`` components.
+- Allow user to check a specific record to send one of the specific subcomponent (such as insert, update, and delete).
  
 Filter Component
 ~~~~~~~~~~~~~~~~
 .. image:: _static/images/FilterComponentHighlight.png
+
 Filter Component Notes:
-- Allow the user to filter the tuples based on the available attributes (Cannot filter by blob or long blob)
-- Upon each change, all the restrictions (represented by filter cards) are checked to see if they are valid, if so then trigger fetch with the new restrictions
-- There is 1 second delay from the last change (such as typing) before the back end get queried and the view updates
+- Allow the user to filter the records based on the available attributes (Currently, filtering by blob or long blob is not supported).
+- Upon each change, all the restrictions (represented by filter cards) are checked to see if they are valid. If so, a fetch is performed with the new restrictions.
+- There is a 1-second delay from the last change (such as typing) before the back end is queried and the view is updated.
  
 Insert Component
 ~~~~~~~~~~~~~~~~
 .. image:: _static/images/InsertComponentHighlight.png
+
 Insert Components Notes:
-- Allow the users to insert tuple using html inputs elements
-- If there is a checked tuple in the content viewer than ask the user if they want to copy overview
+- Allow the users to insert a record using HTML inputs elements.
+- If there is a checked record in the content viewer, it will ask the user if they want to copy over the record to the view.
  
 Update Component
 ~~~~~~~~~~~~~~~~
 .. image:: _static/images/UpdateComponentHighlight.png
+
 Notes:
-- User must select a tuple from table content viewer which will be copy over to this component for update
-- Only allow update of none primary and none blob fields
+- User must select a record from the table content viewer which will be copy over to this component to perform the update.
+- Only allows updates of non-primary and non-blob fields.
  
 Delete Component
 ~~~~~~~~~~~~~~~~
 .. image:: _static/images/DeleteComponentHighlight.png
+
 Notes:
-- User must select a tuple from a table content viewer which will be copied over to this component for deletion.
-- Delete is using delete_quick which means the tuple cannot have any child dependencies otherwise delete will fail.
+- User must select a record from a table content viewer which will be copied over to this component for deletion.
+- Currently, ``Delete`` uses a quick delete operation (you may find more details on this in the ``datajoint`` pip package in ``datajoint.table.Table.delete_quick``). This means the record cannot have any child dependencies otherwise the delete will fail and return a message with additional details.

@@ -1,3 +1,4 @@
+import json
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -18,11 +19,12 @@
 # -- Project information -----------------------------------------------------
 
 project = 'datajoint-labbook'
-copyright = '2021, Vathes'
-author = 'Vathes'
+copyright = '2021, DataJoint Contributors'
+author = 'DataJoint Contributors'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0-beta.1'
+# Load from package.json
+release = json.loads(open('../../package.json').read())['version']
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,7 +35,7 @@ release = '0.1.0-beta.1'
 extensions = [
     "sphinx_rtd_theme",
     'm2r2',
-    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.autosectionlabel"
 ]
 
 source_suffix = ['.rst', '.md']

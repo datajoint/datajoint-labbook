@@ -52,7 +52,7 @@ For now, development observes the following policy for branches:
 `git submodule add -b master git@github.com:datajoint/pharus.git`
 
 ## Building the docs
-Docs are based off sphinx and typedocs where the latter is use for autodocing the typescript code base
+Docs are based off sphinx and typedocs where the latter is used for autodoc-ing the typescript code base
 
 To build docs simply run: `docker-compose -f docker-compose-docs.yaml up`. The build docs should be located under `/docs/build/html/index.html`
 
