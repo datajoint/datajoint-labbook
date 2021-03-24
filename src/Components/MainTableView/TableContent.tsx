@@ -110,12 +110,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   }
 
   /**
-   * initialzing the table column width 
+   * Upon the mounting of the component, determine the inital width of each column based on the max of (header cell width vs average of tuple cell width for that column)
    */
   componentDidMount() {
-
-    // Rewrite
-    console.log(typeof(this.state.headerRowReference?.current))
     // Storage buffer for initialTableColWidths
     let initialTableColWidths: Array<number> = [];
     if (this.state.headerRowReference.current) {
@@ -151,6 +148,10 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     this.setState({initialTableColWidths: initialTableColWidths});
   }
 
+  /**
+   * Helper function to construct the ReactRef arrays for the number of tuples shown per page
+   * @returns an Array of RefObject for each of the entry in the table on the current page
+   */
   constructTupleReferenceArray() {
     let tuplesReference: Array<RefObject<HTMLTableRowElement>> = [];
     for (let i = 0; i < this.props.tuplePerPage; i++) {
