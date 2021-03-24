@@ -9,7 +9,7 @@ The code is built using ``react-cra`` using ``typescript`` with the backend bein
 Architecture Overview
 =====================
  
-All of the major app's eact components are stored under ``./src/Components`` and are comprised of the following parts:
+All of the major app's react components are stored under ``./src/Components`` and are comprised of the following parts:
  
 - :ref:`Login Component`
 - :ref:`Navigation Bar Component`
