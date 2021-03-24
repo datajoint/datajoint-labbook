@@ -10,6 +10,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 
 ### Fixed
 - Make table column width fit content or header and make it resizable (#11) PR #127
+- Fixed buggy and inefficient computation related to PR #127 TODO add PR
 
 ### Changed
 - Replaced usage of any with more strongly typed data types (#125) PR #124
