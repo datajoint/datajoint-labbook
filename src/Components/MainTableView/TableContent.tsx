@@ -49,17 +49,19 @@ interface TableContentState {
   isWaiting: boolean; // tells the UI to display loading icon while insert/update/delete are in action
   newHeaderWidths: Array<number>; // list of table column header width after user resizes
   initialTableColWidths: Array<number>; // list of initial table column width on load
+  headerRowReference: RefObject<HTMLTableRowElement>;
+  tuplesReference: Array<RefObject<HTMLTableRowElement>>;
 }
 
 /**
  * Component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponents
  * 
  */
-export default class TableContent extends React.Component<TableContentProps, TableContentState> {
-  private headerColumnSizeRef: RefObject<HTMLTableRowElement>;
-  private tableBodyColumnRefs: Array<RefObject<HTMLTableRowElement>>;
+export default class TableContent extends React.Component<TableContentProps, TableContentState> {  
   constructor(props: TableContentProps) {
     super(props);
+    this.constructTupleReferenceArray = this.constructTupleReferenceArray.bind(this);
+
     this.state = {
       currentSelectedTableActionMenu: TableActionType.FILTER,
       hideTableActionMenu: true,
@@ -71,7 +73,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       dragStart: 0,
       resizeIndex: undefined,
       isWaiting: false,
-      initialTableColWidths: []
+      initialTableColWidths: [],
+      headerRowReference: React.createRef(),
+      tuplesReference: this.constructTupleReferenceArray()
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
@@ -82,8 +86,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     this.goBackwardAPage = this.goBackwardAPage.bind(this);
     this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
   
-    this.headerColumnSizeRef = React.createRef();
-    this.tableBodyColumnRefs = [];
     this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
@@ -93,6 +95,11 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * @param prevState 
    */
   componentDidUpdate(prevProps: TableContentProps, prevState: TableContentState) {
+    // Check if the tuplePerPage change, if so update tupleReferenceArray
+    if (prevProps.tuplePerPage !== this.props.tuplePerPage) {
+      this.setState({tuplesReference: this.constructTupleReferenceArray()});
+    }
+
     // Break if the the selectedTable did not change
     if (prevProps.selectedTableName === this.props.selectedTableName) {
       return;
@@ -106,46 +113,51 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * initialzing the table column width 
    */
   componentDidMount() {
-    let tableBodyCellWidthLookup: Array<Array<number>> = []
-    let tablenewHeaderWidths: Array<number> = []
-    let headerColumns: HTMLCollectionOf<HTMLTableDataCellElement | HTMLTableHeaderCellElement>;
-    if (this.headerColumnSizeRef && this.headerColumnSizeRef.current) {
-      headerColumns = this.headerColumnSizeRef.current.cells
 
-      for (let col of Object.values(headerColumns)) {
-        tableBodyCellWidthLookup.push([])
-        tablenewHeaderWidths.push(col.clientWidth)
-      }
-    }
-
-    for (let row of this.tableBodyColumnRefs) {
-      if (row.current) {
-        let tableRows = row.current.cells
-        let index = 0
-        for (let col of Object.values(tableRows)) {
-          tableBodyCellWidthLookup[index].push(col.clientWidth)
-          index += 1;
+    // Rewrite
+    console.log(typeof(this.state.headerRowReference?.current))
+    // Storage buffer for initialTableColWidths
+    let initialTableColWidths: Array<number> = [];
+    if (this.state.headerRowReference.current) {
+      // Iterate though each column and take the max between the header cell width verses the tuple average width
+      for (let i = 1; i < this.state.headerRowReference.current.cells.length; i++) {
+        // Compute the average width for tuples that are currently displayed for this column
+        let averageTupleCellWidth = 0;
+        let numOfValidTupleDOMS = 0;
+        for (let j = 0; j < this.state.tuplesReference.length; j++) {
+          let tupleDOM = this.state.tuplesReference[j]; // Work around for annoying typescript could be undefined error
+          if (tupleDOM.current) {
+            // Add to the averageTupleCellWidth
+            averageTupleCellWidth += tupleDOM.current.cells[i].clientWidth;
+            numOfValidTupleDOMS++;
+          }
         }
-      } 
-    }
 
-    // going through the body column references to decide on the initial width of the table columns
-    let finalTableColWidths: Array<number> = []
-    tableBodyCellWidthLookup.forEach((col: Array<number>, index: number) => {
-      if (col.length > 0) {
-        let colAvg = Math.ceil(col.reduce((a: number, b: number) => (a + b)) / col.length)
-
-        // check the average body width against the header width, put the larger of the two in the final width
-        if (colAvg > tablenewHeaderWidths[index]) {
-          finalTableColWidths.push(colAvg)
+        // Compute the actual average and replace the value in the averageTupleCellWidth
+        if (numOfValidTupleDOMS !== 0) {
+          // Take the averageTupleCellWidth / numOfValidTuplesDOMS (should be equal to this.props.tuplePerPage) to compute the average
+          averageTupleCellWidth = averageTupleCellWidth / numOfValidTupleDOMS;
         }
         else {
-          finalTableColWidths.push(tablenewHeaderWidths[index])
+          // Handle edge case of divding by zero
+          averageTupleCellWidth = 0;
         }
-      }
-    })
 
-    this.setState({initialTableColWidths: finalTableColWidths.slice(1)}) // not including the initial width of the checkbox
+        // Pushed the max between headerCellWidth vs averageTupleCellWidth into initalTableColWidths
+        initialTableColWidths.push(Math.max(this.state.headerRowReference.current.cells[i].clientWidth, averageTupleCellWidth));
+      }
+    }
+
+    this.setState({initialTableColWidths: initialTableColWidths});
+  }
+
+  constructTupleReferenceArray() {
+    let tuplesReference: Array<RefObject<HTMLTableRowElement>> = [];
+    for (let i = 0; i < this.props.tuplePerPage; i++) {
+      tuplesReference.push(React.createRef());
+    }
+
+    return tuplesReference;
   }
 
   /**
@@ -393,7 +405,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     let disableUpdate: boolean = false;
     let disableDelete: boolean = false;
 
-    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED || this.checkIfTableHasBlobs()) {
+    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED) {
       disableInsert = true;
       disableUpdate = true;
     }
@@ -401,6 +413,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       disableInsert = true;
       disableUpdate = true;
       disableDelete = true;
+    }
+    else if (this.checkIfTableHasBlobs()) {
+      disableUpdate = true;
     }
 
     return(
@@ -417,7 +432,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * Function to set the new adjusted width (TODO: fix to make sure the fix is for each column using reference)
    * @param difference // the distance the user dragged the column divider handle
    */
-  setnewHeaderWidths(difference: number) {
+  setNewHeaderWidths(difference: number) {
     if (this.state.newHeaderWidths.length > 0 && difference !== 0) {
       let newWidthsCopy = this.state.newHeaderWidths
       if (this.state.resizeIndex !== undefined) {
@@ -447,7 +462,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     if (this.state.dragStart) {
       // use the drag distance to calculate the new width
       let dragDistance = event.pageX - this.state.dragStart
-      this.setnewHeaderWidths(dragDistance);
+      this.setNewHeaderWidths(dragDistance);
 
       // update the new start
       this.setState({dragStart: event.clientX})
@@ -526,7 +541,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
           <div className="table-container">
           <table className="table">
             <thead>
-            <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.headerColumnSizeRef}>
+            <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.headerRowReference}>
               <th className="buffer"><input type="checkbox" /></th>
               {this.getPrimaryKeys().map((attributeName, index) => {
                 return (<th key={attributeName} className="headings" style={this.getCellWidth(index)}>
@@ -545,9 +560,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
             <tbody>
             {this.props.contentData.map((entry: any, tupleIndex: number) => {
               // creating reference for each body column to track the width
-              let colRef: RefObject<HTMLTableRowElement> = React.createRef<HTMLTableRowElement>();
-              this.tableBodyColumnRefs.push(colRef);
-              return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={colRef}>
+              return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.tuplesReference[tupleIndex]}>
                 <td colSpan={1}>
                   <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.
