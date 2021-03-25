@@ -7,12 +7,13 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Docstrings for all classes and functions (#112) PR #124
 - Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See ReadMe for details. (#126) PR #129
 - Smaller screen layout (#58) PR #127
+- Added ability to insert null into nullable blobs TODO ADD PR
 
 ### Fixed
-- Make table column width fit content or header and make it resizable (#11) PR #127
 - Fixed buggy and inefficient computation related to PR #127 TODO add PR
 
 ### Changed
+- Replaced buggy column resizer with auto fit CSS table cells for now TODO ADD PR
 - Replaced usage of any with more strongly typed data types (#125) PR #124
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
