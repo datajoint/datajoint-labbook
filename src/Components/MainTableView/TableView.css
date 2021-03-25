@@ -48,7 +48,7 @@
 
 .actionMenuContainer {
   height: 300px;
-  overflow: auto;
+  overflow: visible;
   border-bottom: 1px solid gray;
 }
 
