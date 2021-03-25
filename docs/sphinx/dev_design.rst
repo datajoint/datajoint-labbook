@@ -1,22 +1,10 @@
-=======================
-Developer Documentation
-=======================
+======
+Design
+======
  
- meant to give an overview of the design behind DJ-LabBook for developers who are interested in contributing to the code base.
+This section is meant to give an overview of the design behind DataJoint LabBook for developers who are interested in contributing to the code base.
  
 The code is built using ``react-cra`` using ``typescript`` with the backend being built on ``flask`` and ``datajoint``. Thus, it is highly recommended to get familiar with React's components and typical architecture design.
- 
-Requirements:
-=============
-`Docker <https://www.docker.com/>`_
- 
-`Docker Compose <https://docs.docker.com/compose/>`_
-
-Building the docs
-=================
-Docs are based off sphinx and typedocs where the latter is used for autodoc-ing the typescript code base
-
-To build docs simply run: `docker-compose -f docker-compose-docs.yaml up`. The build docs should be located under `/docs/build/html/index.html`
  
 Architecture Overview
 =====================
@@ -35,7 +23,7 @@ Login Component
  
 The login component's only parent is ``App.tsx`` which is the parent component of the entire app.
  
-At the moment, the login progress and authentication is done in the following steps:
+At the moment, the login process and authentication is done in the following steps:
  
 - User supplies the database, username, and password.
 - Front end sends the information to the back end ``/api/login`` route to authenticate.
@@ -54,14 +42,13 @@ Side Menu Navigator Component
  
 The side menu navigator consists of two sub components: the schema and table list view.
  
-It also store a few buffer variables to keep track of what schema the user has selected so far and only reports back to the home component.
-back to the home component
+It also stores a few buffer variables to keep track of what schema the user has selected so far and only reports back to the home component.
  
 Schema List Component
 ---------------------
 Schema List view is responsible for the following:
 - Upon being loaded, fetch all available schema under the given database connection.
-- Display all the schemas and restrict if the user types a non empty string into the search box.
+- Display all the schemas and restrict if the user types a non-empty string into the search box.
 - Upon selection of a schema, use the callback to send the selected schema back to ``SideMenu`` component.
  
 Table List Component
@@ -75,7 +62,7 @@ Table View Component
 ====================
 .. image:: _static/images/TableViewHighlight.png
  
-Responsible for the handling of two sub components: the ``TableContent`` and ``TableInfo``. It also fetches the data required by both of them once this component receive a valid table name.
+Responsible for the handling of two sub components: the ``TableContent`` and ``TableInfo``. It also fetches the data required by both of them once this component receives a valid table name.
  
 Table Content
 -------------
@@ -85,7 +72,7 @@ Table Content is mainly responsible for viewing, filtering, inserting, updating,
 - Table Content View (Display the records of the table)
 - Filter Component (Filter the records of the table)
 - Insert Component (Insert a single record)
-- Update Component (Insert a single record))
+- Update Component (Update a single record))
 - Deletion Component (Delete a single record at a time. Currently, the record must not have any child dependencies.)
  
 Table Content View
@@ -102,7 +89,7 @@ Filter Component
 .. image:: _static/images/FilterComponentHighlight.png
 
 Filter Component Notes:
-- Allow the user to filter the records based on the available attributes (Currently, filtering by blob or long blob is not supported).
+- Allow the user to filter the records based on the available attributes (Currently, filtering by blob or longblob is not supported).
 - Upon each change, all the restrictions (represented by filter cards) are checked to see if they are valid. If so, a fetch is performed with the new restrictions.
 - There is a 1-second delay from the last change (such as typing) before the back end is queried and the view is updated.
  
