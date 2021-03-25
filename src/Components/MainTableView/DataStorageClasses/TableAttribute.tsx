@@ -378,11 +378,17 @@ export default class TableAttribute {
           </select>
       )}
     }
+    else if (tableAttribute.attributeType === TableAttributeType.BLOB) {
+      return(
+        <input disabled></input>
+      )
+    }
 
     // Handle number return types
     if (type === "number") {
       return <input value={currentValue} type={type} min={min} max={max} defaultValue={defaultValue} id={tableAttribute.attributeName} onChange={(e) => handleChange(e, tableAttribute.attributeName)}></input>
     }
-    throw Error("Unsupported Type found for attribute: " + tableAttribute.attributeName);
+
+    throw Error("Unsupported Type found for attribute: " + tableAttribute.attributeName + ' of type ' + tableAttribute.attributeType);
   }
 }

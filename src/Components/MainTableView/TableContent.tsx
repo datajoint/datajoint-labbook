@@ -85,7 +85,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     this.goForwardAPage = this.goForwardAPage.bind(this);
     this.goBackwardAPage = this.goBackwardAPage.bind(this);
     this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
-  
+    this.computeInitialTableColWidths = this.computeInitialTableColWidths.bind(this);
     this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
@@ -105,6 +105,8 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       return;
     }
 
+    this.computeInitialTableColWidths();
+
     // Reset TableActionview
     this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTuple: undefined});
   }
@@ -113,20 +115,32 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * Upon the mounting of the component, determine the inital width of each column based on the max of (header cell width vs average of tuple cell width for that column)
    */
   componentDidMount() {
+    console.log('componente mounted')
+    this.computeInitialTableColWidths();
+  }
+
+  computeInitialTableColWidths() {
     // Storage buffer for initialTableColWidths
+    console.log(this.props.selectedTableName)
+    console.log(this.state.headerRowReference.current)
     let initialTableColWidths: Array<number> = [];
     if (this.state.headerRowReference.current) {
       // Iterate though each column and take the max between the header cell width verses the tuple average width
+      console.log(this.state.headerRowReference.current.cells)
+      console.log(this.state.headerRowReference.current.cells.length)
       for (let i = 1; i < this.state.headerRowReference.current.cells.length; i++) {
+        console.log(i);
         // Compute the average width for tuples that are currently displayed for this column
         let averageTupleCellWidth = 0;
         let numOfValidTupleDOMS = 0;
         for (let j = 0; j < this.state.tuplesReference.length; j++) {
           let tupleDOM = this.state.tuplesReference[j]; // Work around for annoying typescript could be undefined error
           if (tupleDOM.current) {
-            // Add to the averageTupleCellWidth
-            averageTupleCellWidth += tupleDOM.current.cells[i].clientWidth;
-            numOfValidTupleDOMS++;
+            if (tupleDOM.current.cells[i]) {
+              // Add to the averageTupleCellWidth
+              averageTupleCellWidth += tupleDOM.current.cells[i].clientWidth;
+              numOfValidTupleDOMS++;
+            }
           }
         }
 
@@ -144,8 +158,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         initialTableColWidths.push(Math.max(this.state.headerRowReference.current.cells[i].clientWidth, averageTupleCellWidth));
       }
     }
-
+    console.log(initialTableColWidths)
     this.setState({initialTableColWidths: initialTableColWidths});
+    
   }
 
   /**
@@ -381,16 +396,20 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   /**
    * Check if the current table has blob attributes
    */
-  checkIfTableHasBlobs(): boolean {
+  checkIfTableHasNonNullableBlobs(): boolean {
     if (this.props.tableAttributesInfo === undefined) {
       return false;
     }
     
-    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
-    tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
-    
-    for (let tableAttribute of tableAttributes) {
+    for (let tableAttribute of this.props.tableAttributesInfo?.primaryAttributes) {
       if (tableAttribute.attributeType === TableAttributeType.BLOB) {
+        return true;
+      }
+    }
+
+    // Check secondary attributes
+    for (let tableAttribute of this.props.tableAttributesInfo?.secondaryAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.BLOB || !tableAttribute.nullable) {
         return true;
       }
     }
@@ -415,7 +434,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       disableUpdate = true;
       disableDelete = true;
     }
-    else if (this.checkIfTableHasBlobs()) {
+    else if (this.checkIfTableHasNonNullableBlobs()) {
       disableUpdate = true;
     }
 
@@ -452,6 +471,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * @param colIndex 
    */
   cellResizeMouseDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>, colIndex: number) {
+    return;
     this.setState({dragStart: event.clientX, resizeIndex: colIndex})
   }
 
@@ -460,6 +480,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * @param event 
    */
   cellResizeMouseMove(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    return;
     if (this.state.dragStart) {
       // use the drag distance to calculate the new width
       let dragDistance = event.pageX - this.state.dragStart
@@ -540,45 +561,47 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         {this.state.showWarning ? <this.getShowWarningComponent />: ''}
         <div className="content-view-area">
           <div className="table-container">
-          <table className="table">
-            <thead>
-            <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.headerRowReference}>
-              <th className="buffer"><input type="checkbox" /></th>
-              {this.getPrimaryKeys().map((attributeName, index) => {
-                return (<th key={attributeName} className="headings" style={this.getCellWidth(index)}>
-                  <div className="headerContent primary" style={{color: '#4A9F5A'}}>{attributeName}</div>
-                  <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
-                </th>)
-              })}
-              {this.getSecondaryKeys().map((attributeName, index) => {
-                return (<th key={attributeName} className="headings" style={this.getCellWidth(index + this.getPrimaryKeys().length)}>
-                  <div className="headerContent secondary" style={{color: 'inherit'}}>{attributeName}</div>
-                  <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index + this.getPrimaryKeys().length)}}></div>
-                </th>)
-              })}
-            </tr>
-            </thead>
-            <tbody>
-            {this.props.contentData.map((entry: any, tupleIndex: number) => {
-              // creating reference for each body column to track the width
-              return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.tuplesReference[tupleIndex]}>
-                <td colSpan={1}>
-                  <input type="checkbox" 
+            <table className="table">
+              <thead>
+                <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.headerRowReference}>
+                  <th className="buffer"></th>
+                  {this.getPrimaryKeys().map((attributeName, index) => {
+                    return(
+                      <th key={attributeName} className="headings">
+                        <div className="headerContent primary">{attributeName}</div>
+                      </th>
+                    )
+                  })}
+                  {this.getSecondaryKeys().map((attributeName, index) => {
+                    return(
+                      <th key={attributeName} className="headings">
+                        <div className="headerContent secondary" style={{color: 'inherit'}}>{attributeName}</div>
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+              {this.props.contentData.map((entry: any, tupleIndex: number) => {
+                // creating reference for each body column to track the width
+                return (
+                  <tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.tuplesReference[tupleIndex]}>
+                    <td className="check-box-cell">
+                      <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.
-                         disabled={this.state.selectedTupleIndex > -1 && this.state.selectedTupleIndex !== tupleIndex} 
-                         onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
-                         checked={this.state.selectedTupleIndex === tupleIndex}/>
-                </td>
-                {entry.map((column: any, index: number) => {
-                  return (
-                    <td key={`${column}-${index}`} className="tableCell" style={this.getCellWidth(index)}>{column} 
-                      <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
-                    </td>)
-                })
-                }</tr>)
-            })}
-            </tbody>
-          </table>
+                        disabled={this.state.selectedTupleIndex > -1 && this.state.selectedTupleIndex !== tupleIndex} 
+                        onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
+                        checked={this.state.selectedTupleIndex === tupleIndex}/>
+                    </td>
+                    {entry.map((column: any, index: number) => {
+                      return (
+                        <td key={`${column}-${index}`} className="tableCell">{column} 
+                        </td>)
+                    })
+                    }</tr>)
+                })}
+              </tbody>
+            </table>
           </div>
             <div className="paginator">
               <p>Total Table Entries: {this.props.totalNumOfTuples}</p>

@@ -532,7 +532,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
       return TableAttributeType.BLOB;
     }
     
-    throw Error('Unsupported TableAttributeType: ' + tableTypeString);
+    throw Error('Unsupported TableAttributeType: ' + tableTypeString + ' of type ' + tableTypeString);
   }
 
   /**

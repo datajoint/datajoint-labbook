@@ -122,9 +122,11 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
     // Check primary attributes first that everything is filled out correctly in tupleBuffer
     for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
       // Check if attribute exist, if not then complain
-      if (!tupleBuffer.hasOwnProperty(primaryAttribute.attributeName) && primaryAttribute.autoIncrement === false) {
-        this.setState({errorMessage: 'Missing require field: ' + primaryAttribute.attributeName});
-        return;
+      if (primaryAttribute.attributeType !== TableAttributeType.BLOB) {
+        if (!tupleBuffer.hasOwnProperty(primaryAttribute.attributeName) && primaryAttribute.autoIncrement === false) {
+          this.setState({errorMessage: 'Missing require field: ' + primaryAttribute.attributeName});
+          return;
+        }
       }
     }
 

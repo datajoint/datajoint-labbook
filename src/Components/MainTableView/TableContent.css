@@ -1,11 +1,17 @@
+.content-view-area {
+  height: 100%;
+}
+
 .table-content-viewer {
   position: relative;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   padding: 12px;
   width: 100%;
   height: 100%;
-  overflow: auto;
 }
+
 .content-view-header {
   box-sizing: border-box;
   position: relative;
@@ -57,7 +63,6 @@
 }
 
 .content-controllers button:hover {
-  /* background-color: #82D088; */
   border-color: #399E5A;
   color: #399E5A
 }
@@ -124,30 +129,42 @@
 
 .content-view-area .table-container {
   width: 100%;
+  height: auto;
+  max-height: 80%;
   overflow-x: auto;
+  overflow-y: auto;
 }
 
-table.table {
+.table {
   position: relative;
   font-size: 0.85rem;
   width: 100%;
+  border-collapse: collapse;
+  text-align: left;
 }
 
-.table tbody {
-  display: inline-block;
-  /* height: 60%; */
-  overflow: auto;
-  width: 100%;
-  padding-bottom: 8px;
+.table th {
+  border-bottom: 3px solid rgb(110, 110, 110);
 }
 
-.content-view-area .table .headerRow {
-  border-bottom: 1px solid rgb(0, 0, 0);
-  display: flex;
+.table th div, .table td{
+  padding: 2px 2px 2px 7px;
 }
+
+.check-box-cell {
+  width: 1%;
+  height: 1%;
+}
+
+.table td {
+  border-right: 1px solid rgb(196, 196, 196);
+  border-bottom: 1px solid rgb(196, 196, 196);
+}
+
 
 .content-view-area .table .headerRow .headings .headerContent.primary {
   font-weight: bolder;
+  color: #4B9A5F;
 }
 
 .content-view-area .table .headerRow .headings .headerContent.secondary {
@@ -155,20 +172,7 @@ table.table {
 }
 
 .content-view-area .table .tableRow {
-  display: flex;
   border-bottom: 1px solid rgb(221, 221, 221);
-}
-
-.content-view-area .table .tableRow td.tableCell,
-.content-view-area .table .headerRow th.headings {
-  position: relative;
-  padding: 0 4px;
-  text-align: left;
-  border-right: 1px solid rgb(221, 221, 221);
-  padding-top: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 div.cellDivider {
@@ -181,16 +185,6 @@ div.cellDivider {
   bottom: 0;
 }
 
-.content-view-area .table .tableRow td.tableCell:hover {
-  /* overflow: auto; */
-}
-.headerRow th.buffer {
-  /* width: 82px; */
-}
-
-.headerRow th.buffer input {
-  visibility: hidden;
-}
 
 input[type="checkbox"] {
   cursor: pointer;
