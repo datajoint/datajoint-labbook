@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 import './Login.css'
 
 // Assets
-import logo from '../images/logo_default.svg'
+import logo from '../../images/logo_default.svg'
 
 interface LoginProps {
   setJWTTokenAndHostName: (jwt: string, hostname: string) => void; // Call back function to setting the jwtToken

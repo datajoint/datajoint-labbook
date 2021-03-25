@@ -491,16 +491,16 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    */
   tableActionEnumToString(currentTableActionType: TableActionType) {
     if (currentTableActionType === TableActionType.INSERT) {
-      return 'Insert'
+      return 'Insert';
     }
     else if (currentTableActionType === TableActionType.UPDATE) {
-      return 'Update'
+      return 'Update';
     }
     else if (currentTableActionType === TableActionType.DELETE) {
-      return 'Delete'
+      return 'Delete';
     }
     else {
-      return ''
+      return '';
     }
   }
 
@@ -511,7 +511,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   handleActionWaitTime(isWaiting: boolean) {
     this.setState({isWaiting: isWaiting});
   }
-
+  
   render() {
     return(
       <div className="table-content-viewer">
