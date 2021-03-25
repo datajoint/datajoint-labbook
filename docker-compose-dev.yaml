@@ -8,11 +8,21 @@
 # it is running properly by navigating in your browser to `https://fakeservices.datajoint.io`.
 # If you don't update your hosts file, you will still have access at `https://localhost`
 # however it should simply display 'Not secure' since the cert will be invalid.
+# Additionally, there is now a local-only database + account for development and testing. To
+# access it, connect using: database:local-db, user:root, password:labbook. Feel free to
+# alter any part of it as it will be reset between docker-compose down/up commands.
 version: "2.4"
 x-net: &net
   networks:
       - main
 services:
+  local-db:
+    <<: *net
+    image: datajoint/mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=labbook
+    volumes:
+      - ./tests/init/init.sql:/docker-entrypoint-initdb.d/init.sql
   pharus:
     <<: *net
     extends:
@@ -20,8 +30,9 @@ services:
       service: pharus
     environment:
       - PHARUS_PORT=5000
-    volumes:
-      - ./pharus/pharus:/opt/conda/lib/python3.8/site-packages/pharus
+    depends_on:
+      local-db:
+        condition: service_healthy
   datajoint-labbook:
     <<: *net
     extends:

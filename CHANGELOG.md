@@ -6,6 +6,8 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ### Added
 - Docstrings for all classes and functions (#112) PR #124
 - Smaller screen layout (#58) PR #127
+- Documentation on running Jest tests w/ Docker. PR #130
+- Local testing database for `dev` Docker environment. PR #130
 
 ### Fixed
 - Make table column width fit content or header and make it resizable (#11) PR #127
@@ -14,6 +16,9 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Replaced usage of any with more strongly typed data types (#125) PR #124
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
+
+### Removed
+- Duplicate `volume` config for `pharus` service in `dev` Docker environment. PR #130
 
 ## [0.1.0-beta.2] - 2021-03-11
 ### Added
