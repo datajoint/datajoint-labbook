@@ -172,16 +172,15 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * Switching return code based this.state.currentSelectedTableActionMenu. Mainly used in the render() function below
    */
   getCurrentTableActionMenuComponent() {
-    if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
-      return (<div className="actionMenuContainer">
+    return(
+      <div className="actionMenuContainer">
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
           <Filter 
             tableAttributesInfo={this.props.tableAttributesInfo}
             setRestrictions={this.props.setRestrictions}
           />
-        </div>)
-    }
-    else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return (<div className="actionMenuContainer">
+        </div>
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
           <InsertTuple 
             token={this.props.token}
             selectedSchemaName={this.props.selectedSchemaName}
@@ -192,42 +191,34 @@ export default class TableContent extends React.Component<TableContentProps, Tab
             selectedTableEntry={this.state.selectedTuple}
             insertInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
-        </div>)
-    }
-    else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
-      return (<div className="actionMenuContainer">
-        <h1>Update</h1>
-        <UpdateTuple 
+        </div>
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
+          <UpdateTuple 
+              token={this.props.token}
+              selectedSchemaName={this.props.selectedSchemaName}
+              selectedTableName={this.props.selectedTableName}
+              tableAttributesInfo={this.props.tableAttributesInfo}
+              fetchTableContent={this.props.fetchTableContent}
+              clearTupleSelection={this.clearTupleSelection}
+              selectedTableEntry={this.state.selectedTuple}
+              updateInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
+          />
+        </div>
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
+          <DeleteTuple  
             token={this.props.token}
-            selectedSchemaName={this.props.selectedSchemaName}
-            selectedTableName={this.props.selectedTableName}
+            // tupleToDelete={this.state.selectedTableEntry}
+            selectedSchemaName={this.props.selectedSchemaName} 
+            selectedTableName={this.props.selectedTableName} 
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            clearTupleSelection={this.clearTupleSelection}
+            clearEntrySelection={this.clearTupleSelection}
             selectedTableEntry={this.state.selectedTuple}
-            updateInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
+            deleteInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
-      </div>)
-    }
-    else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
-      return (<div className="actionMenuContainer">
-        <h1>Delete</h1>
-        <DeleteTuple  
-          token={this.props.token}
-          // tupleToDelete={this.state.selectedTableEntry}
-          selectedSchemaName={this.props.selectedSchemaName} 
-          selectedTableName={this.props.selectedTableName} 
-          tableAttributesInfo={this.props.tableAttributesInfo}
-          fetchTableContent={this.props.fetchTableContent}
-          clearEntrySelection={this.clearTupleSelection}
-          selectedTableEntry={this.state.selectedTuple}
-          deleteInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
-        />
-      </div>)
-    }
-
-    // Raise and error if none of the other conditions above trigger
-    throw Error('Unsupported TableActionType');
+        </div>
+      </div>
+    )
   }
 
   /**

@@ -288,3 +288,8 @@ input[type="checkbox"][disabled] {
     font-size: 0.75rem;
   }
 }
+
+.hidden-action-menu-container {
+  visibility: hidden;
+  height: 0px;
+}
