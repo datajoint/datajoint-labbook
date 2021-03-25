@@ -5,6 +5,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ## [Unreleased]
 ### Added
 - Docstrings for all classes and functions (#112) PR #124
+- Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See `Developer Documentation/General Notes` for details. (#126) PR #129
 - Smaller screen layout (#58) PR #127
 - Documentation on running Jest tests w/ Docker. PR #130
 - Local testing database for `dev` Docker environment. PR #130

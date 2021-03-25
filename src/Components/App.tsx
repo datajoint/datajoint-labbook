@@ -3,8 +3,8 @@ import {Route, BrowserRouter as Router, Switch, Redirect} from 'react-router-dom
 import './App.css';
 
 // Component imports
-import NavBar from './NavBar';
-import Login from './Login';
+import NavBar from './NavBar/NavBar';
+import Login from './Login/Login';
 import Home from './Home'
 
 window.onbeforeunload = () => '';
