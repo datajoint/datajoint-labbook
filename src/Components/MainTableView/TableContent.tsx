@@ -85,7 +85,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     this.goForwardAPage = this.goForwardAPage.bind(this);
     this.goBackwardAPage = this.goBackwardAPage.bind(this);
     this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
-    this.computeInitialTableColWidths = this.computeInitialTableColWidths.bind(this);
     this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
@@ -105,62 +104,8 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       return;
     }
 
-    this.computeInitialTableColWidths();
-
     // Reset TableActionview
     this.setState({currentSelectedTableActionMenu: TableActionType.FILTER, hideTableActionMenu: true, selectedTuple: undefined});
-  }
-
-  /**
-   * Upon the mounting of the component, determine the inital width of each column based on the max of (header cell width vs average of tuple cell width for that column)
-   */
-  componentDidMount() {
-    console.log('componente mounted')
-    this.computeInitialTableColWidths();
-  }
-
-  computeInitialTableColWidths() {
-    // Storage buffer for initialTableColWidths
-    console.log(this.props.selectedTableName)
-    console.log(this.state.headerRowReference.current)
-    let initialTableColWidths: Array<number> = [];
-    if (this.state.headerRowReference.current) {
-      // Iterate though each column and take the max between the header cell width verses the tuple average width
-      console.log(this.state.headerRowReference.current.cells)
-      console.log(this.state.headerRowReference.current.cells.length)
-      for (let i = 1; i < this.state.headerRowReference.current.cells.length; i++) {
-        console.log(i);
-        // Compute the average width for tuples that are currently displayed for this column
-        let averageTupleCellWidth = 0;
-        let numOfValidTupleDOMS = 0;
-        for (let j = 0; j < this.state.tuplesReference.length; j++) {
-          let tupleDOM = this.state.tuplesReference[j]; // Work around for annoying typescript could be undefined error
-          if (tupleDOM.current) {
-            if (tupleDOM.current.cells[i]) {
-              // Add to the averageTupleCellWidth
-              averageTupleCellWidth += tupleDOM.current.cells[i].clientWidth;
-              numOfValidTupleDOMS++;
-            }
-          }
-        }
-
-        // Compute the actual average and replace the value in the averageTupleCellWidth
-        if (numOfValidTupleDOMS !== 0) {
-          // Take the averageTupleCellWidth / numOfValidTuplesDOMS (should be equal to this.props.tuplePerPage) to compute the average
-          averageTupleCellWidth = averageTupleCellWidth / numOfValidTupleDOMS;
-        }
-        else {
-          // Handle edge case of divding by zero
-          averageTupleCellWidth = 0;
-        }
-
-        // Pushed the max between headerCellWidth vs averageTupleCellWidth into initalTableColWidths
-        initialTableColWidths.push(Math.max(this.state.headerRowReference.current.cells[i].clientWidth, averageTupleCellWidth));
-      }
-    }
-    console.log(initialTableColWidths)
-    this.setState({initialTableColWidths: initialTableColWidths});
-    
   }
 
   /**
@@ -471,7 +416,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * @param colIndex 
    */
   cellResizeMouseDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>, colIndex: number) {
-    return;
     this.setState({dragStart: event.clientX, resizeIndex: colIndex})
   }
 
@@ -480,7 +424,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * @param event 
    */
   cellResizeMouseMove(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    return;
     if (this.state.dragStart) {
       // use the drag distance to calculate the new width
       let dragDistance = event.pageX - this.state.dragStart
