@@ -42,17 +42,16 @@ export default class SideMenu extends React.Component<SideMenuProps, HomeSideMen
   /**
    * Handle when the user select a schema and store it in the selectedSchemaBuffer then
    * query the backend to get the update table dict 
-   * @param schema 
+   * @param schemaName 
    */
-  handleSchemaSelection(schema: string) {
+  handleSchemaSelection(schemaName: string) {
     // Update selectedSchemaBuffer
-    this.setState({selectedSchemaBuffer: schema, tableListIsLoading: true})
+    this.setState({selectedSchemaBuffer: schemaName, tableListIsLoading: true})
     
     // Run api fetch for list tables and deal with result
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/list_tables`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      body: JSON.stringify({schemaName: schema})
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/table?schemaName=` + schemaName, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token }
     })
     .then(result => {
       this.setState({tableListIsLoading: false})
