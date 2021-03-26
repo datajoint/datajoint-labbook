@@ -147,8 +147,11 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
           return;
         }
       }
-      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=') {
+      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=' && secondaryAttribute.nullable) {
         delete tupleBuffer[secondaryAttribute.attributeName];
+      }
+      else {
+        this.setState({errorMessage: 'Missing require field: ' + secondaryAttribute.attributeName});
       }
     }
 
