@@ -156,9 +156,6 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
       else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=' && secondaryAttribute.nullable) {
         delete tupleBuffer[secondaryAttribute.attributeName];
       }
-      else {
-        this.setState({errorMessage: 'Missing require field: ' + secondaryAttribute.attributeName});
-      }
     }
 
     // start update in action wait animation and stop when api responds

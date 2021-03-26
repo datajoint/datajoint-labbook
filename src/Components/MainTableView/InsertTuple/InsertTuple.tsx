@@ -133,6 +133,7 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
     // Check for secondary attributes are filled out correctly
     for (let secondaryAttribute of this.props.tableAttributesInfo.secondaryAttributes) {
       if (!tupleBuffer.hasOwnProperty(secondaryAttribute.attributeName)) {
+        // If the attribute is not found
         if (secondaryAttribute.nullable === true) {
           // Nullable is allow
           delete tupleBuffer[secondaryAttribute.attributeName];
@@ -149,9 +150,6 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
       }
       else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=' && secondaryAttribute.nullable) {
         delete tupleBuffer[secondaryAttribute.attributeName];
-      }
-      else {
-        this.setState({errorMessage: 'Missing require field: ' + secondaryAttribute.attributeName});
       }
     }
 
