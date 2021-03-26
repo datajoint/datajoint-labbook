@@ -157,10 +157,10 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
     this.props.insertInAction(true);
 
     // All checks passed thus attempt insert
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/insert_tuple`, {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/record`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: tupleBuffer})
+      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, record: tupleBuffer})
     })
     .then(result => {
       this.props.insertInAction(false);
