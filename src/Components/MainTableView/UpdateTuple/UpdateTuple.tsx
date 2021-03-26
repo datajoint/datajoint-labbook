@@ -115,7 +115,7 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
     for (let tableAttribute of tableAttributes) {
       if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         // Check if attribute exists, if not break
-        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + 'time')) {
+        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__time')) {
           break;
         }
         // Construct the insert string 
