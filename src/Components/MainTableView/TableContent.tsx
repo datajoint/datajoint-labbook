@@ -348,7 +348,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
 
     // Check secondary attributes
     for (let tableAttribute of this.props.tableAttributesInfo?.secondaryAttributes) {
-      if (tableAttribute.attributeType === TableAttributeType.BLOB || !tableAttribute.nullable) {
+      if (tableAttribute.attributeType === TableAttributeType.BLOB && !tableAttribute.nullable) {
         return true;
       }
     }
