@@ -380,7 +380,7 @@ export default class TableAttribute {
     }
     else if (tableAttribute.attributeType === TableAttributeType.BLOB) {
       return(
-        <input disabled></input>
+        <input disabled value="=NULL="/>
       )
     }
 
