@@ -238,17 +238,19 @@ export default class TableView extends React.Component<TableViewProps, TableView
     // Buffer to store restrictions
     let urlParams: Array<string> = []
 
+    // Add schema name and table name
+    urlParams.push('schemaName=' + this.props.selectedSchemaName);
+    urlParams.push('tableName=' + this.props.selectedTableName);
+
     // Add limit to url
     urlParams.push('limit=' + this.state.numberOfTuplesPerPage);
 
     // Add page param
     urlParams.push('page=' + this.state.currentPageNumber);
 
-    if (this.state.restrictions !== []) {
+    if (this.state.restrictions.length !== 0) {
       let restrictionsInAPIFormat = []
-
       for (let restriction of this.state.restrictions) {
-
         if (restriction.tableAttribute?.attributeType === TableAttributeType.DATETIME) {
           restrictionsInAPIFormat.push({
             attributeName: restriction.tableAttribute?.attributeName,
@@ -270,7 +272,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
     }
 
     // Build the url with params
-    let apiUrl = `${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/fetch_tuples`;
+    let apiUrl = `${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/record`;
     if (urlParams.length > 0) {
       apiUrl += '?';
 
@@ -284,9 +286,8 @@ export default class TableView extends React.Component<TableViewProps, TableView
     
     // Call get fetch_tuple with params
     fetch(apiUrl, {
-      method: 'POST',
+      method: 'GET',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
     })
     .then(result => {
       if (!result.ok) {
