@@ -262,6 +262,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         tupleBuffer[tableAttributesInfo[i].attributeName + '__date'] = splitResult[0];
         tupleBuffer[tableAttributesInfo[i].attributeName + '__time'] = splitResult[1]; // YES I know this is dumb, will fix it later
       }
+      else if (tableAttributesInfo[i].attributeType === TableAttributeType.BLOB) {
+        continue;
+      }
       else {
         tupleBuffer[tableAttributesInfo[i].attributeName] = rawTupleValues[i];
       }
