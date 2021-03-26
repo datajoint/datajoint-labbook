@@ -37,27 +37,23 @@ export default class SecondaryTableAttribute extends TableAttribute {
 
   /**
    * Function to generate html label block for a given sedcondary attribute
+   * NOTE: Currently disabled reset to null, will add support for it at some other point.
    * @param secondaryTableAttribute 
    * @param resetToNullCallback Call back function for reset it back to null
    * @returns 
    */
   static getAttributeLabelBlock(secondaryTableAttribute: SecondaryTableAttribute, resetToNullCallback: (tableAttribute: SecondaryTableAttribute) => void) {
     const typeString = super.getTypeString(secondaryTableAttribute);
-    var resetButtonText = 'nullable';
-
-    if (secondaryTableAttribute.defaultValue !== undefined) {
-      resetButtonText = 'default';
-    }
     
     return(
       <div className="attributeHead">
         <label className="secondary-attribute-label" htmlFor={secondaryTableAttribute.attributeName}>{secondaryTableAttribute.attributeName + ' (' + typeString + ')'}</label>
         { 
-            secondaryTableAttribute.nullable || secondaryTableAttribute.defaultValue ? 
-            <div className="nullableControls">
-              <div className="nullableTag">{resetButtonText}</div>
-              <FontAwesomeIcon className="resetIcon" icon={faRedoAlt} onClick={() => {resetToNullCallback(secondaryTableAttribute)}} />
-            </div> : ''
+          secondaryTableAttribute.defaultValue !== undefined ? 
+          <div className="nullableControls">
+            <div className="nullableTag">{'default'}</div>
+            <FontAwesomeIcon className="resetIcon" icon={faRedoAlt} onClick={() => {resetToNullCallback(secondaryTableAttribute)}} />
+          </div> : ''
         }
       </div>
     )

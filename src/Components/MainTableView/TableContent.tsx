@@ -49,17 +49,19 @@ interface TableContentState {
   isWaiting: boolean; // tells the UI to display loading icon while insert/update/delete are in action
   newHeaderWidths: Array<number>; // list of table column header width after user resizes
   initialTableColWidths: Array<number>; // list of initial table column width on load
+  headerRowReference: RefObject<HTMLTableRowElement>;
+  tuplesReference: Array<RefObject<HTMLTableRowElement>>;
 }
 
 /**
  * Component to handle rendering of the tuples as well as Filter, Insert, Update, and Delete subcomponents
  * 
  */
-export default class TableContent extends React.Component<TableContentProps, TableContentState> {
-  private headerColumnSizeRef: RefObject<HTMLTableRowElement>;
-  private tableBodyColumnRefs: Array<RefObject<HTMLTableRowElement>>;
+export default class TableContent extends React.Component<TableContentProps, TableContentState> {  
   constructor(props: TableContentProps) {
     super(props);
+    this.constructTupleReferenceArray = this.constructTupleReferenceArray.bind(this);
+
     this.state = {
       currentSelectedTableActionMenu: TableActionType.FILTER,
       hideTableActionMenu: true,
@@ -71,7 +73,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       dragStart: 0,
       resizeIndex: undefined,
       isWaiting: false,
-      initialTableColWidths: []
+      initialTableColWidths: [],
+      headerRowReference: React.createRef(),
+      tuplesReference: this.constructTupleReferenceArray()
     }
 
     this.getCurrentTableActionMenuComponent = this.getCurrentTableActionMenuComponent.bind(this);
@@ -81,9 +85,6 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     this.goForwardAPage = this.goForwardAPage.bind(this);
     this.goBackwardAPage = this.goBackwardAPage.bind(this);
     this.handleNumberOfTuplesPerPageChange = this.handleNumberOfTuplesPerPageChange.bind(this);
-  
-    this.headerColumnSizeRef = React.createRef();
-    this.tableBodyColumnRefs = [];
     this.clearTupleSelection = this.clearTupleSelection.bind(this);
   }
 
@@ -93,6 +94,11 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * @param prevState 
    */
   componentDidUpdate(prevProps: TableContentProps, prevState: TableContentState) {
+    // Check if the tuplePerPage change, if so update tupleReferenceArray
+    if (prevProps.tuplePerPage !== this.props.tuplePerPage) {
+      this.setState({tuplesReference: this.constructTupleReferenceArray()});
+    }
+
     // Break if the the selectedTable did not change
     if (prevProps.selectedTableName === this.props.selectedTableName) {
       return;
@@ -103,49 +109,16 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   }
 
   /**
-   * initialzing the table column width 
+   * Helper function to construct the ReactRef arrays for the number of tuples shown per page
+   * @returns an Array of RefObject for each of the entry in the table on the current page
    */
-  componentDidMount() {
-    let tableBodyCellWidthLookup: Array<Array<number>> = []
-    let tablenewHeaderWidths: Array<number> = []
-    let headerColumns: HTMLCollectionOf<HTMLTableDataCellElement | HTMLTableHeaderCellElement>;
-    if (this.headerColumnSizeRef && this.headerColumnSizeRef.current) {
-      headerColumns = this.headerColumnSizeRef.current.cells
-
-      for (let col of Object.values(headerColumns)) {
-        tableBodyCellWidthLookup.push([])
-        tablenewHeaderWidths.push(col.clientWidth)
-      }
+  constructTupleReferenceArray() {
+    let tuplesReference: Array<RefObject<HTMLTableRowElement>> = [];
+    for (let i = 0; i < this.props.tuplePerPage; i++) {
+      tuplesReference.push(React.createRef());
     }
 
-    for (let row of this.tableBodyColumnRefs) {
-      if (row.current) {
-        let tableRows = row.current.cells
-        let index = 0
-        for (let col of Object.values(tableRows)) {
-          tableBodyCellWidthLookup[index].push(col.clientWidth)
-          index += 1;
-        }
-      } 
-    }
-
-    // going through the body column references to decide on the initial width of the table columns
-    let finalTableColWidths: Array<number> = []
-    tableBodyCellWidthLookup.forEach((col: Array<number>, index: number) => {
-      if (col.length > 0) {
-        let colAvg = Math.ceil(col.reduce((a: number, b: number) => (a + b)) / col.length)
-
-        // check the average body width against the header width, put the larger of the two in the final width
-        if (colAvg > tablenewHeaderWidths[index]) {
-          finalTableColWidths.push(colAvg)
-        }
-        else {
-          finalTableColWidths.push(tablenewHeaderWidths[index])
-        }
-      }
-    })
-
-    this.setState({initialTableColWidths: finalTableColWidths.slice(1)}) // not including the initial width of the checkbox
+    return tuplesReference;
   }
 
   /**
@@ -199,16 +172,15 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * Switching return code based this.state.currentSelectedTableActionMenu. Mainly used in the render() function below
    */
   getCurrentTableActionMenuComponent() {
-    if (this.state.currentSelectedTableActionMenu === TableActionType.FILTER) {
-      return (<div className="actionMenuContainer">
+    return(
+      <div className="actionMenuContainer">
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.FILTER ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
           <Filter 
             tableAttributesInfo={this.props.tableAttributesInfo}
             setRestrictions={this.props.setRestrictions}
           />
-        </div>)
-    }
-    else if (this.state.currentSelectedTableActionMenu === TableActionType.INSERT) {
-      return (<div className="actionMenuContainer">
+        </div>
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.INSERT ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
           <InsertTuple 
             token={this.props.token}
             selectedSchemaName={this.props.selectedSchemaName}
@@ -219,42 +191,34 @@ export default class TableContent extends React.Component<TableContentProps, Tab
             selectedTableEntry={this.state.selectedTuple}
             insertInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
-        </div>)
-    }
-    else if (this.state.currentSelectedTableActionMenu === TableActionType.UPDATE) {
-      return (<div className="actionMenuContainer">
-        <h1>Update</h1>
-        <UpdateTuple 
+        </div>
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.UPDATE ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
+          <UpdateTuple 
+              token={this.props.token}
+              selectedSchemaName={this.props.selectedSchemaName}
+              selectedTableName={this.props.selectedTableName}
+              tableAttributesInfo={this.props.tableAttributesInfo}
+              fetchTableContent={this.props.fetchTableContent}
+              clearTupleSelection={this.clearTupleSelection}
+              selectedTableEntry={this.state.selectedTuple}
+              updateInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
+          />
+        </div>
+        <div className={this.state.currentSelectedTableActionMenu === TableActionType.DELETE ? 'visable-action-menu-container' : 'hidden-action-menu-container'}>
+          <DeleteTuple  
             token={this.props.token}
-            selectedSchemaName={this.props.selectedSchemaName}
-            selectedTableName={this.props.selectedTableName}
+            // tupleToDelete={this.state.selectedTableEntry}
+            selectedSchemaName={this.props.selectedSchemaName} 
+            selectedTableName={this.props.selectedTableName} 
             tableAttributesInfo={this.props.tableAttributesInfo}
             fetchTableContent={this.props.fetchTableContent}
-            clearTupleSelection={this.clearTupleSelection}
+            clearEntrySelection={this.clearTupleSelection}
             selectedTableEntry={this.state.selectedTuple}
-            updateInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
+            deleteInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
           />
-      </div>)
-    }
-    else if (this.state.currentSelectedTableActionMenu === TableActionType.DELETE) {
-      return (<div className="actionMenuContainer">
-        <h1>Delete</h1>
-        <DeleteTuple  
-          token={this.props.token}
-          // tupleToDelete={this.state.selectedTableEntry}
-          selectedSchemaName={this.props.selectedSchemaName} 
-          selectedTableName={this.props.selectedTableName} 
-          tableAttributesInfo={this.props.tableAttributesInfo}
-          fetchTableContent={this.props.fetchTableContent}
-          clearEntrySelection={this.clearTupleSelection}
-          selectedTableEntry={this.state.selectedTuple}
-          deleteInAction={(isWaiting: boolean) => this.handleActionWaitTime(isWaiting)}
-        />
-      </div>)
-    }
-
-    // Raise and error if none of the other conditions above trigger
-    throw Error('Unsupported TableActionType');
+        </div>
+      </div>
+    )
   }
 
   /**
@@ -297,6 +261,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         const splitResult = tupleBuffer[tableAttributesInfo[i].attributeName].split(' ')
         tupleBuffer[tableAttributesInfo[i].attributeName + '__date'] = splitResult[0];
         tupleBuffer[tableAttributesInfo[i].attributeName + '__time'] = splitResult[1]; // YES I know this is dumb, will fix it later
+      }
+      else if (tableAttributesInfo[i].attributeType === TableAttributeType.BLOB) {
+        continue;
       }
       else {
         tupleBuffer[tableAttributesInfo[i].attributeName] = rawTupleValues[i];
@@ -368,16 +335,20 @@ export default class TableContent extends React.Component<TableContentProps, Tab
   /**
    * Check if the current table has blob attributes
    */
-  checkIfTableHasBlobs(): boolean {
+  checkIfTableHasNonNullableBlobs(): boolean {
     if (this.props.tableAttributesInfo === undefined) {
       return false;
     }
     
-    let tableAttributes: Array<TableAttribute> = this.props.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;
-    tableAttributes = tableAttributes.concat(this.props.tableAttributesInfo?.secondaryAttributes as Array<TableAttribute>);
-    
-    for (let tableAttribute of tableAttributes) {
+    for (let tableAttribute of this.props.tableAttributesInfo?.primaryAttributes) {
       if (tableAttribute.attributeType === TableAttributeType.BLOB) {
+        return true;
+      }
+    }
+
+    // Check secondary attributes
+    for (let tableAttribute of this.props.tableAttributesInfo?.secondaryAttributes) {
+      if (tableAttribute.attributeType === TableAttributeType.BLOB && tableAttribute.nullable) {
         return true;
       }
     }
@@ -393,7 +364,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     let disableUpdate: boolean = false;
     let disableDelete: boolean = false;
 
-    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED || this.checkIfTableHasBlobs()) {
+    if (this.props.selectedTableType === TableType.COMPUTED || this.props.selectedTableType === TableType.IMPORTED) {
       disableInsert = true;
       disableUpdate = true;
     }
@@ -401,6 +372,9 @@ export default class TableContent extends React.Component<TableContentProps, Tab
       disableInsert = true;
       disableUpdate = true;
       disableDelete = true;
+    }
+    else if (this.checkIfTableHasNonNullableBlobs()) {
+      disableUpdate = true;
     }
 
     return(
@@ -417,7 +391,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
    * Function to set the new adjusted width (TODO: fix to make sure the fix is for each column using reference)
    * @param difference // the distance the user dragged the column divider handle
    */
-  setnewHeaderWidths(difference: number) {
+  setNewHeaderWidths(difference: number) {
     if (this.state.newHeaderWidths.length > 0 && difference !== 0) {
       let newWidthsCopy = this.state.newHeaderWidths
       if (this.state.resizeIndex !== undefined) {
@@ -447,7 +421,7 @@ export default class TableContent extends React.Component<TableContentProps, Tab
     if (this.state.dragStart) {
       // use the drag distance to calculate the new width
       let dragDistance = event.pageX - this.state.dragStart
-      this.setnewHeaderWidths(dragDistance);
+      this.setNewHeaderWidths(dragDistance);
 
       // update the new start
       this.setState({dragStart: event.clientX})
@@ -524,47 +498,47 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         {this.state.showWarning ? <this.getShowWarningComponent />: ''}
         <div className="content-view-area">
           <div className="table-container">
-          <table className="table">
-            <thead>
-            <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.headerColumnSizeRef}>
-              <th className="buffer"><input type="checkbox" /></th>
-              {this.getPrimaryKeys().map((attributeName, index) => {
-                return (<th key={attributeName} className="headings" style={this.getCellWidth(index)}>
-                  <div className="headerContent primary" style={{color: '#4A9F5A'}}>{attributeName}</div>
-                  <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
-                </th>)
-              })}
-              {this.getSecondaryKeys().map((attributeName, index) => {
-                return (<th key={attributeName} className="headings" style={this.getCellWidth(index + this.getPrimaryKeys().length)}>
-                  <div className="headerContent secondary" style={{color: 'inherit'}}>{attributeName}</div>
-                  <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index + this.getPrimaryKeys().length)}}></div>
-                </th>)
-              })}
-            </tr>
-            </thead>
-            <tbody>
-            {this.props.contentData.map((entry: any, tupleIndex: number) => {
-              // creating reference for each body column to track the width
-              let colRef: RefObject<HTMLTableRowElement> = React.createRef<HTMLTableRowElement>();
-              this.tableBodyColumnRefs.push(colRef);
-              return (<tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={colRef}>
-                <td colSpan={1}>
-                  <input type="checkbox" 
+            <table className="table">
+              <thead>
+                <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.headerRowReference}>
+                  <th className="buffer"></th>
+                  {this.getPrimaryKeys().map((attributeName, index) => {
+                    return(
+                      <th key={attributeName} className="headings">
+                        <div className="headerContent primary">{attributeName}</div>
+                      </th>
+                    )
+                  })}
+                  {this.getSecondaryKeys().map((attributeName, index) => {
+                    return(
+                      <th key={attributeName} className="headings">
+                        <div className="headerContent secondary" style={{color: 'inherit'}}>{attributeName}</div>
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+              {this.props.contentData.map((entry: any, tupleIndex: number) => {
+                // creating reference for each body column to track the width
+                return (
+                  <tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.tuplesReference[tupleIndex]}>
+                    <td className="check-box-cell">
+                      <input type="checkbox" 
                         // disable multiple check for insert mode as well until multiple insert is supported.
-                         disabled={this.state.selectedTupleIndex > -1 && this.state.selectedTupleIndex !== tupleIndex} 
-                         onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
-                         checked={this.state.selectedTupleIndex === tupleIndex}/>
-                </td>
-                {entry.map((column: any, index: number) => {
-                  return (
-                    <td key={`${column}-${index}`} className="tableCell" style={this.getCellWidth(index)}>{column} 
-                      <div className="cellDivider" onMouseDown={(event) => {this.cellResizeMouseDown(event, index)}}></div>
-                    </td>)
-                })
-                }</tr>)
-            })}
-            </tbody>
-          </table>
+                        disabled={this.state.selectedTupleIndex > -1 && this.state.selectedTupleIndex !== tupleIndex} 
+                        onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
+                        checked={this.state.selectedTupleIndex === tupleIndex}/>
+                    </td>
+                    {entry.map((column: any, index: number) => {
+                      return (
+                        <td key={`${column}-${index}`} className="tableCell">{column} 
+                        </td>)
+                    })
+                    }</tr>)
+                })}
+              </tbody>
+            </table>
           </div>
             <div className="paginator">
               <p>Total Table Entries: {this.props.totalNumOfTuples}</p>

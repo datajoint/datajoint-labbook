@@ -5,9 +5,11 @@
 }
 
 .side-menu-container {
+  height: 100%;
   width: 30%;
 }
 
 .table-view-container {
+  height: 100%;
   width: 70%;
 }

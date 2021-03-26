@@ -12,7 +12,7 @@ interface FilterProps {
 }
 
 interface FilterState {
-  restrictions: Array<Restriction>; // Array of Restrictions objects
+  restrictionsBuffer: Array<Restriction>; // Array of Restrictions objects
   tableAttributes: Array<TableAttribute>; // List of TableAttributes which is derive from primary_attribute + secondary_attributes
   currentRestrictionIDCount: number; // Used to give a unique ID to each restriction object to allow react to keep track of what is being deleted
   restrictionChangeTimeout: ReturnType<typeof setTimeout>;
@@ -25,7 +25,7 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
   constructor(props: FilterProps) {
     super(props);
     this.state = {
-      restrictions: [new Restriction(0)],
+      restrictionsBuffer: [new Restriction(0)],
       tableAttributes: [],
       currentRestrictionIDCount: 1,
       restrictionChangeTimeout: setTimeout(() => {}, 0)
@@ -39,9 +39,9 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
    * Add a restriction with the currentRestrictionIDCount as its ID then increment and update the state
    */
   addRestriction() {
-    let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
+    let restrictions: Array<Restriction> = Object.assign([], this.state.restrictionsBuffer);
     restrictions.push(new Restriction(this.state.currentRestrictionIDCount));
-    this.setState({restrictions: restrictions, currentRestrictionIDCount: this.state.currentRestrictionIDCount + 1});
+    this.setState({restrictionsBuffer: restrictions, currentRestrictionIDCount: this.state.currentRestrictionIDCount + 1});
   }
 
   /**
@@ -50,9 +50,9 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
    * @param restriction The new restriction to replace the old restriction object
    */
   updateRestriction(index: number, restriction: Restriction) {
-    let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
+    let restrictions: Array<Restriction> = Object.assign([], this.state.restrictionsBuffer);
     restrictions[index] = restriction;
-    this.setState({restrictions: restrictions});
+    this.setState({restrictionsBuffer: restrictions});
   }
 
   /**
@@ -60,9 +60,9 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
    * @param index Location of the restriction object to be deleted
    */
   deleteFilterCard(index: number) {
-    let restrictions: Array<Restriction> = Object.assign([], this.state.restrictions);
+    let restrictions: Array<Restriction> = Object.assign([], this.state.restrictionsBuffer);
     restrictions.splice(index, 1)
-    this.setState({restrictions: restrictions});
+    this.setState({restrictionsBuffer: restrictions});
   }
 
   /**
@@ -91,7 +91,7 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
    */
   componentDidUpdate(prevProps: FilterProps, prevState: FilterState) {
     // If state didn't change then don't do anything
-    if (prevState.restrictions === this.state.restrictions) {
+    if (prevState.restrictionsBuffer === this.state.restrictionsBuffer) {
       return;
     }
 
@@ -101,7 +101,7 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
     const restrictionChangeTimeout = setTimeout(() => {
       // Check if any of the restrictions are valid, if so then send them to TableView fetchTuples
       let validRestrictions: Array<Restriction> = []
-      for (let restriction of this.state.restrictions) {
+      for (let restriction of this.state.restrictionsBuffer) {
         if (restriction.tableAttribute !== undefined && restriction.restrictionType !== undefined && restriction.value !== undefined && restriction.isEnable === true) {
 
           // Check if it is of date time varient
@@ -130,7 +130,7 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
     return(
       <div className="filterComponentDiv">
         <div className="filterCardsDiv">
-          {this.state.restrictions.map((restriction, index) => {
+          {this.state.restrictionsBuffer.map((restriction, index) => {
             return(<FilterCard key={restriction.id} index={index} restriction={restriction} tableAttributes={this.state.tableAttributes} updateRestriction={this.updateRestriction} deleteFilterCard={this.deleteFilterCard}></FilterCard>)
           })}
         </div>
