@@ -107,7 +107,7 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
     for (let tableAttribute of tableAttributes) {
       if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         // Check if attribute exists, if not break
-        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + 'time')) {
+        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__time')) {
           break;
         }
         // Construct the insert string 
@@ -122,15 +122,18 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
     // Check primary attributes first that everything is filled out correctly in tupleBuffer
     for (let primaryAttribute of this.props.tableAttributesInfo.primaryAttributes) {
       // Check if attribute exist, if not then complain
-      if (!tupleBuffer.hasOwnProperty(primaryAttribute.attributeName) && primaryAttribute.autoIncrement === false) {
-        this.setState({errorMessage: 'Missing require field: ' + primaryAttribute.attributeName});
-        return;
+      if (primaryAttribute.attributeType !== TableAttributeType.BLOB) {
+        if (!tupleBuffer.hasOwnProperty(primaryAttribute.attributeName) && primaryAttribute.autoIncrement === false) {
+          this.setState({errorMessage: 'Missing require field: ' + primaryAttribute.attributeName});
+          return;
+        }
       }
     }
 
     // Check for secondary attributes are filled out correctly
     for (let secondaryAttribute of this.props.tableAttributesInfo.secondaryAttributes) {
       if (!tupleBuffer.hasOwnProperty(secondaryAttribute.attributeName)) {
+        // If the attribute is not found
         if (secondaryAttribute.nullable === true) {
           // Nullable is allow
           delete tupleBuffer[secondaryAttribute.attributeName];
@@ -145,7 +148,7 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
           return;
         }
       }
-      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=') {
+      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=' && secondaryAttribute.nullable) {
         delete tupleBuffer[secondaryAttribute.attributeName];
       }
     }

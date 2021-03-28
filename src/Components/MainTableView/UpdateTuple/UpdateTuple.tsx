@@ -115,7 +115,7 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
     for (let tableAttribute of tableAttributes) {
       if (tableAttribute.attributeType === TableAttributeType.DATETIME || tableAttribute.attributeType === TableAttributeType.TIMESTAMP) {
         // Check if attribute exists, if not break
-        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + 'time')) {
+        if (!tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__date') && !tupleBuffer.hasOwnProperty(tableAttribute.attributeName + '__time')) {
           break;
         }
         // Construct the insert string 
@@ -153,7 +153,7 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
           return;
         }
       }
-      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=') {
+      else if (tupleBuffer[secondaryAttribute.attributeName] === '=NULL=' && secondaryAttribute.nullable) {
         delete tupleBuffer[secondaryAttribute.attributeName];
       }
     }
@@ -270,7 +270,7 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
                 </div>
               </div>
           </form>
-        } 
+        }
         {this.state.errorMessage ? (
           <div className="errorMessage">{this.state.errorMessage}<button className="dismiss" onClick={() => this.setState({errorMessage: ''})}>dismiss</button></div>
         ) : ''}

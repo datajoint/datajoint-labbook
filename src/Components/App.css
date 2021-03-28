@@ -6,4 +6,5 @@
   align-items: center;
   justify-content: center;
   background-color: #C8C9C7;
+  overflow-y: hidden;
 }

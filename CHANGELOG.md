@@ -9,14 +9,19 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Smaller screen layout (#58) PR #127
 - Documentation on running Jest tests w/ Docker. PR #130
 - Local testing database for `dev` Docker environment. PR #130
+- Added ability to insert null into nullable blobs (#122) PR #135
+
 
 ### Fixed
-- Make table column width fit content or header and make it resizable (#11) PR #127
+- Fixed bug related to old table restrictions being applied to the new selected table (#128) PR #135
+- Fixed behavior with table actions being dismounted instead of being hidden which also fix the filter not being remembered problem (#57) PR #135
 
 ### Changed
+- Replaced buggy column resizer with auto fit CSS table cells for now PR #135
 - Replaced usage of any with more strongly typed data types (#125) PR #124
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
+- Hide reset to default to button due to inconsitent behavior between different attribute types (#131) PR #135
 
 ### Removed
 - Duplicate `volume` config for `pharus` service in `dev` Docker environment. PR #130
