@@ -33,6 +33,20 @@ Run Locally w/ Docker
     IMAGE=djtest  # (pharus) Image type:     djbase|djtest|djlab|djlabhub
     DISTRO=alpine # (pharus) Distribution:   alpine|debian
 
+Run Tests w/ Docker
+-------------------
+
+To run the test watcher, perform the following:
+
+#. In one terminal, start the ``dev`` Docker environment with the above instructions to start LabBook and Pharus with hot-reload support.
+#. In another terminal, you can run the watcher using:
+
+  .. code-block:: bash
+
+    docker exec -it datajoint-labbook_datajoint-labbook_1 npm test -- --coverage
+    # OR to just run it once:
+    docker exec -ite CI=true datajoint-labbook_datajoint-labbook_1 npm test -- --coverage
+
 Building the Docs
 -----------------
 

@@ -7,6 +7,9 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Docstrings for all classes and functions (#112) PR #124
 - Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See `Developer Documentation/General Notes` for details. (#126) PR #129
 - Smaller screen layout (#58) PR #127
+- Documentation on running Jest tests w/ Docker. PR #130
+- Test cases for `/login` page. PR #130
+- Local testing database for `dev` Docker environment. PR #130
 - Added ability to insert null into nullable blobs (#122) PR #135
 
 ### Fixed
@@ -19,6 +22,9 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
 - Hide reset to default to button due to inconsitent behavior between different attribute types (#131) PR #135
+
+### Removed
+- Duplicate `volume` config for `pharus` service in `dev` Docker environment. PR #130
 
 ## [0.1.0-beta.2] - 2021-03-11
 ### Added
