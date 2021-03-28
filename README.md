@@ -13,10 +13,8 @@ DataJoint LabBook is a graphical user interface built using React to facilitate 
 
 If you have not done so already, please install the following dependencies:
 
-
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
-
 
 ## Prerequisites
 

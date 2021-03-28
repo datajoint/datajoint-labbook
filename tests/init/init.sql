@@ -3,7 +3,7 @@ CREATE DATABASE `empty`;
 
 CREATE TABLE `alpha_company`.`computer` (
   `computer_id` binary(16) NOT NULL COMMENT ':uuid:unique id',
-  `computer_serial` varchar(9) NOT NULL COMMENT 'manufacturer serial number',
+  `computer_serial` varchar(9) NOT NULL DEFAULT 'ABC101' COMMENT 'manufacturer serial number',
   `computer_brand` enum('HP','Dell') NOT NULL COMMENT 'manufacturer brand',
   `computer_built` date NOT NULL COMMENT 'manufactured date',
   `computer_processor` double NOT NULL COMMENT 'processing power in GHz',
@@ -13,13 +13,14 @@ CREATE TABLE `alpha_company`.`computer` (
   `computer_preowned` tinyint(1) NOT NULL COMMENT 'purchased as new or used',
   `computer_purchased` datetime NOT NULL COMMENT 'purchased date and time',
   `computer_updates` time DEFAULT NULL COMMENT 'scheduled daily update timeslot',
+  `computer_accessories` longblob COMMENT 'included additional accessories',
   PRIMARY KEY (`computer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Computers that belong to the company';
 
-INSERT INTO `alpha_company`.`computer` (computer_id, computer_serial, computer_brand, computer_built, computer_processor, computer_memory, computer_weight, computer_cost, computer_preowned, computer_purchased, computer_updates)
+INSERT INTO `alpha_company`.`computer` (computer_id, computer_serial, computer_brand, computer_built, computer_processor, computer_memory, computer_weight, computer_cost, computer_preowned, computer_purchased, computer_updates, computer_accessories)
 VALUES
-(X'4e41491a86d54af7a01389bde75528bd', 'DJS1JA17G', 'Dell', '2020-05-25', 2.2, 16, 4.4, 700.99, 0, '2020-10-20 08:04:21', NULL)
-,(X'dcd4cfd96791433ca805f391c289e6ea', 'HUA20K9LL', 'HP', '2020-07-12', 2.8, 32, 5.7, 693.54, 1, '2020-11-05 13:58:02', '23:30:05');
+(X'4E41491A86D54AF7A01389BDE75528BD', 'DJS1JA17G', 'Dell', '2020-05-25', 2.2, 16, 4.4, 700.99, 0, '2020-10-20 08:04:21', NULL, NULL)
+,(X'DCD4CFD96791433CA805F391C289E6EA', 'HUA20K9LL', 'HP', '2020-07-12', 2.8, 32, 5.7, 693.54, 1, '2020-11-05 13:58:02', '23:30:05', X'646A30000403000000000000001400000000000000050B00000000000000706F7765725F6361626C6504000000000000000A0100010E000000000000000505000000000000006D6F75736504000000000000000A01000111000000000000000508000000000000006B6579626F61726404000000000000000A010001');
 
 CREATE TABLE `alpha_company`.`#employee` (
   `computer_id` binary(16) NOT NULL COMMENT ':uuid:unique id',
@@ -30,5 +31,5 @@ CREATE TABLE `alpha_company`.`#employee` (
 
 INSERT INTO `alpha_company`.`#employee` (computer_id, employee_name)
 VALUES
-(X'4e41491a86d54af7a01389bde75528bd', 'Raphael Guzman')
-,(X'dcd4cfd96791433ca805f391c289e6ea', 'John Doe');
+(X'4E41491A86D54AF7A01389BDE75528BD', 'Raphael Guzman')
+,(X'DCD4CFD96791433CA805F391C289E6EA', 'John Doe');
