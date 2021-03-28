@@ -8,6 +8,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See `Developer Documentation/General Notes` for details. (#126) PR #129
 - Smaller screen layout (#58) PR #127
 - Documentation on running Jest tests w/ Docker. PR #130
+- Test cases for `/login` page. PR #130
 - Local testing database for `dev` Docker environment. PR #130
 - Added ability to insert null into nullable blobs (#122) PR #135
 
