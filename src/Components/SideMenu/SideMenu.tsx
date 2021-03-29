@@ -63,7 +63,7 @@ export default class SideMenu extends React.Component<SideMenuProps, HomeSideMen
       return result.json();
     })
     .then(result => {
-      this.setState({tableListDict: new TableListDict(result.tableTypeAndNames)});
+      this.setState({tableListDict: new TableListDict(result.tableTypes)});
     })
     .catch((error) => {
       this.setState({tableListIsLoading: false})

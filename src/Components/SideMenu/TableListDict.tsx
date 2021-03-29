@@ -6,10 +6,10 @@ export default class TableListDict {
     imported_tables: Array<string>;
 
     constructor(tableDict: any) {
-        this.part_tables = tableDict['part_tables'];
-        this.computed_tables = tableDict['computed_tables'];
-        this.manual_tables = tableDict['manual_tables'];
-        this.lookup_tables = tableDict['lookup_tables'];
-        this.imported_tables = tableDict['imported_tables'];
+        this.part_tables = tableDict['part'];
+        this.computed_tables = tableDict['computed'];
+        this.manual_tables = tableDict['manual'];
+        this.lookup_tables = tableDict['lookup'];
+        this.imported_tables = tableDict['imported'];
     }
 }

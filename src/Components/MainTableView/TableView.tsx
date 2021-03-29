@@ -172,7 +172,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
    */
   fetchTableDefinition() {
     this.setState({isLoading: true})
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_definition`, {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/attribute`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
       body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
@@ -203,10 +203,9 @@ export default class TableView extends React.Component<TableViewProps, TableView
   fetchTableAttributeAndContent() {
     this.setState({isLoading: true})
     // retrieve table headers
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/get_table_attributes`, {
-      method: 'POST',
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/attribute?schemaName=` + this.props.selectedSchemaName + '&tableName=' + this.props.selectedTableName, {
+      method: 'GET',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName})
     })
     .then(result => {
       if (!result.ok) {
