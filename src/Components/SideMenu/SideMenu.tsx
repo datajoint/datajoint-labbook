@@ -49,7 +49,7 @@ export default class SideMenu extends React.Component<SideMenuProps, HomeSideMen
     this.setState({selectedSchemaBuffer: schemaName, tableListIsLoading: true})
     
     // Run api fetch for list tables and deal with result
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/table?schemaName=` + schemaName, {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema/` + schemaName + '/table', {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token }
     })

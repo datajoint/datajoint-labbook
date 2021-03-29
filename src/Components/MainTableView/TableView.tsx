@@ -70,6 +70,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
     this.fetchTableAttributeAndContent = this.fetchTableAttributeAndContent.bind(this);
     this.setPageNumber = this.setPageNumber.bind(this);
     this.setNumberOfTuplesPerPage = this.setNumberOfTuplesPerPage.bind(this);
+    this.fetchTableAttribute = this.fetchTableAttribute.bind(this);
     this.fetchTableContent = this.fetchTableContent.bind(this);
     this.setRestrictions = this.setRestrictions.bind(this);
   }
@@ -172,10 +173,9 @@ export default class TableView extends React.Component<TableViewProps, TableView
    */
   fetchTableDefinition() {
     this.setState({isLoading: true})
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/attribute`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-      body: JSON.stringify({ schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName })
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema/` + this.props.selectedSchemaName + '/table/' + this.props.selectedTableName + '/definition', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token}
     })
     .then(result => {
       if (!result.ok) {
@@ -189,7 +189,6 @@ export default class TableView extends React.Component<TableViewProps, TableView
       }
       return result.text()})
     .then(result => {
-      console.log(result);
       this.setState({tableInfoData: result, errorMessage: '', isLoading: false})
     })
     .catch(error => {
@@ -200,10 +199,20 @@ export default class TableView extends React.Component<TableViewProps, TableView
   /**
    * Combination method for fetching table attribute and content. Typically use when the selected table changes
    */
-  fetchTableAttributeAndContent() {
+  async fetchTableAttributeAndContent() {
     this.setState({isLoading: true})
     // retrieve table headers
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/attribute?schemaName=` + this.props.selectedSchemaName + '&tableName=' + this.props.selectedTableName, {
+    await this.fetchTableAttribute();
+    await this.fetchTableContent();
+
+    return 1;
+  }
+
+  /**
+   * Function to query the back end to get infomation about the table attributes
+   */
+  fetchTableAttribute() {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema/` + this.props.selectedSchemaName + '/table/' + this.props.selectedTableName + '/attribute', {
       method: 'GET',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
     })
@@ -221,13 +230,6 @@ export default class TableView extends React.Component<TableViewProps, TableView
     .then(result => {
       this.setState({tableAttributesInfo: this.parseTableAttributes(result), errorMessage: ''})
     })
-    .then(() => {
-      // Fetch table content after getting the table attribute info
-      this.fetchTableContent();
-    })
-    .catch(error => {
-      this.setState({tableAttributesInfo: undefined, errorMessage: 'Problem fetching table attributes: ' + error, isLoading: false})
-    })
   }
 
   /**
@@ -236,10 +238,6 @@ export default class TableView extends React.Component<TableViewProps, TableView
   fetchTableContent() {
     // Buffer to store restrictions
     let urlParams: Array<string> = []
-
-    // Add schema name and table name
-    urlParams.push('schemaName=' + this.props.selectedSchemaName);
-    urlParams.push('tableName=' + this.props.selectedTableName);
 
     // Add limit to url
     urlParams.push('limit=' + this.state.numberOfTuplesPerPage);
@@ -271,7 +269,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
     }
 
     // Build the url with params
-    let apiUrl = `${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/record`;
+    let apiUrl = `${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema/` + this.props.selectedSchemaName + '/table/' + this.props.selectedTableName + '/record';
     if (urlParams.length > 0) {
       apiUrl += '?';
 
@@ -308,23 +306,23 @@ export default class TableView extends React.Component<TableViewProps, TableView
       // Iterate though each tableAttribute and deal with TEMPORAL types
       for (let i = 0; i < tableAttributes.length; i++) {
         if (tableAttributes[i].attributeType === TableAttributeType.TIME) {
-          for (let tuple of result.tuples) {
+          for (let tuple of result.records) {
             tuple[i] = TableAttribute.parseTimeString(tuple[i]);
           }
         }
         else if (tableAttributes[i].attributeType === TableAttributeType.TIMESTAMP || tableAttributes[i].attributeType === TableAttributeType.DATETIME) {
-          for (let tuple of result.tuples) {
+          for (let tuple of result.records) {
             tuple[i] = TableAttribute.parseDateTime(tuple[i]);
           }
         }
         else if (tableAttributes[i].attributeType === TableAttributeType.DATE) {
-          for (let tuple of result.tuples) {
+          for (let tuple of result.records) {
             tuple[i] = TableAttribute.parseDate(tuple[i]);
           }
         }
       }
 
-      this.setState({tableContentData: result.tuples, totalNumOfTuples: result.total_count, errorMessage: '', maxPageNumber:  Math.ceil(result.total_count / this.state.numberOfTuplesPerPage), isLoading: false})
+      this.setState({tableContentData: result.records, totalNumOfTuples: result.totalCount, errorMessage: '', maxPageNumber:  Math.ceil(result.totalCount / this.state.numberOfTuplesPerPage), isLoading: false})
     })
     .catch(error => {
       this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
@@ -340,7 +338,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
     let tableAttributesInfo = new TableAttributesInfo([], []);
 
     // Deal with primary attributes
-    for (let primaryAttributeInfoArray of jsonResult.primary_attributes) {
+    for (let primaryAttributeInfoArray of jsonResult.attributes.primary) {
       let tableAttributeType: TableAttributeType = this.parseTableTypeString(primaryAttributeInfoArray[1]);
 
       // If the datatype is of type VarChar or Char record the limit or range of it
@@ -391,7 +389,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
     }
 
     // Deal with secondary attributes
-    for (let secondaryAttributesInfoArray of jsonResult.secondary_attributes) {
+    for (let secondaryAttributesInfoArray of jsonResult.attributes.secondary) {
       let tableAttributeType: TableAttributeType = this.parseTableTypeString(secondaryAttributesInfoArray[1]);
 
       // If the datatype is of type VarChar or Char record the limit or range of it
