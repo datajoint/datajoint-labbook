@@ -91,10 +91,9 @@ export default class DeleteTuple extends React.Component<DeleteTupleProps, Delet
     this.props.deleteInAction(true)
 
     // TODO: Run api fetch for list of dependencies/permission
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/delete_tuple`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, restrictionTuple: tupleToDelete})
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/record?schemaName=` + this.props.selectedSchemaName + '&tableName=' + this.props.selectedTableName + '&restriction=' + encodeURIComponent(btoa(JSON.stringify(tupleToDelete))), {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token}
     })
       .then(result => {
         // set deleting status to done

@@ -38,7 +38,7 @@ export default class SchemaList extends React.Component<{token: string, currentl
    * Upon being mounted query the backend for list of schemas that is avaliable on the database
    */
   componentDidMount() {
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/list_schemas`, {
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token }
     })

@@ -22,6 +22,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
 - Hide reset to default to button due to inconsitent behavior between different attribute types (#131) PR #135
+- Updated backend routes to match with new api routes conventions (#114) PR #137
 
 ### Removed
 - Duplicate `volume` config for `pharus` service in `dev` Docker environment. PR #130
