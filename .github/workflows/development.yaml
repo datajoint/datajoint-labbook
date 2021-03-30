@@ -4,8 +4,8 @@ on:
   push:
     tags:
       - '*.*.*'
-  branches:
-    - github-actions
+    branches:
+      - github-actions
 jobs:
   test-changelog:
     runs-on: ubuntu-latest
