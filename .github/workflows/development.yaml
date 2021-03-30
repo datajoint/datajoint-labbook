@@ -94,39 +94,32 @@ jobs:
           asset_name: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
           asset_content_type: application/zip
           # fail_on_unmatched_files: true
+  build-docs:
+    needs: test-changelog
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CLIENT_TIMEOUT: "120"
+      COMPOSE_HTTP_TIMEOUT: "120"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Compile docs static artifacts
+        run: |
+        export DJ_LABBOOK_VERSION=$awk 'FNR==3' package.json | awk '{split($0,a,":"); print a[2]}' | awk -F'"' '{$0=$2}1'
+        docker-compose -f docker-compose-docs.yaml up --exit-code-from pharus --build
+        echo "DJ_LABBOOK_VERSION=${DJ_LABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Add docs static artifacts
+        users: actions/upload-artifact@v2
+        with:
+          name: docs-static-dj-labook-${{env.DJ_LABBOOK_VERSION}}
+          path: docs/_build/html
+          retention-days: 1
   # publish-docs:
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  #   if: github.event_name = 'push'
+  #   needs: publish-release
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v1
-  #     - name: Build docs
-  #       uses: ammaraskar/sphinx-action@master
-  #       with:
-  #         docs-folder: "docs/"
-  #     # - name: Upload docs artifact
-  #     #   uses: actions/upload-artifact@v1
-  #     #   with:
-  #     #     name: docs-html
-  #     #     path: docs/_build/html/
-  #     #     retention-days: 1
-  #     - name: Commit documentation changes
+  #     - uses: actions/checkout@v2
+  #     - name: 
   #       run: |
-  #         git clone https://github.com/${GITHUB_REPOSITORY}.git \
-  #             --branch gh-pages --single-branch gh-pages
-  #         rm -R gh-pages/*
-  #         cp -r docs/_build/html/* gh-pages/
-  #         cp .gitignore gh-pages/
-  #         touch gh-pages/.nojekyll
-  #         cd gh-pages
-  #         git config --local user.email "action@github.com"
-  #         git config --local user.name "GitHub Action"
-  #         git add . --all
-  #         git commit -m "Update documentation" -a || true
-  #         # The above command will fail if no changes were present, so we ignore
-  #         # the return code.
-  #     - name: Push changes
-  #       uses: ad-m/github-push-action@master
-  #       with:
-  #         branch: gh-pages
-  #         directory: gh-pages
-  #         github_token: ${{secrets.GITHUB_TOKEN}}
+  #         DJ_LABBOOK_VERSION=$awk 'FNR==3' package.json | awk '{split($0,a,":"); print a[2]}' | awk -F'"' '{$0=$2}1'
+  #         echo "DJ_LABBOOK_VERSION=${DJ_LABBOOK_VERSION}" >> $GITHUB_ENV
