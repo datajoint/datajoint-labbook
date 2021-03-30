@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - '*.*.*'
-    branches:
-      - github-actions
 jobs:
   test-changelog:
     runs-on: ubuntu-latest
@@ -52,50 +50,50 @@ jobs:
           name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
           path: build
           retention-days: 1
-  # publish-release:
-  #   if: github.event_name == 'push'
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Determine package version
-  #       run: |
-  #         DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
-  #         echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
-  #     - name: Get changelog entry
-  #       id: changelog_reader
-  #       uses: guzman-raphael/changelog-reader-action@v5
-  #       with:
-  #         path: ./CHANGELOG.md
-  #         version: ${{env.DJLABBOOK_VERSION}}
-  #     - name: Fetch static artifacts
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
-  #         path: build
-  #     - name: Compress static site artifacts
-  #       run: zip -r static-djlabbook-${DJLABBOOK_VERSION}.zip build
-  #     - name: Create GH release
-  #       id: create_gh_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #       with:
-  #         tag_name: ${{steps.changelog_reader.outputs.version}}
-  #         release_name: Release ${{steps.changelog_reader.outputs.version}}
-  #         body: ${{steps.changelog_reader.outputs.changes}}
-  #         prerelease: ${{steps.changelog_reader.outputs.status == 'prereleased'}}
-  #         draft: ${{steps.changelog_reader.outputs.status == 'unreleased'}}
-  #     - name: Upload static site to release
-  #       uses: actions/upload-release-asset@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  #       with:
-  #         upload_url: ${{steps.create_gh_release.outputs.upload_url}}
-  #         asset_path: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
-  #         asset_name: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
-  #         asset_content_type: application/zip
-  #         # fail_on_unmatched_files: true
+  publish-release:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Determine package version
+        run: |
+          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Get changelog entry
+        id: changelog_reader
+        uses: guzman-raphael/changelog-reader-action@v5
+        with:
+          path: ./CHANGELOG.md
+          version: ${{env.DJLABBOOK_VERSION}}
+      - name: Fetch static artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
+          path: build
+      - name: Compress static site artifacts
+        run: zip -r static-djlabbook-${DJLABBOOK_VERSION}.zip build
+      - name: Create GH release
+        id: create_gh_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{steps.changelog_reader.outputs.version}}
+          release_name: Release ${{steps.changelog_reader.outputs.version}}
+          body: ${{steps.changelog_reader.outputs.changes}}
+          prerelease: ${{steps.changelog_reader.outputs.status == 'prereleased'}}
+          draft: ${{steps.changelog_reader.outputs.status == 'unreleased'}}
+      - name: Upload static site to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_gh_release.outputs.upload_url}}
+          asset_path: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
+          asset_name: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
+          asset_content_type: application/zip
+          # fail_on_unmatched_files: true
   build-docs:
     needs: test-changelog
     runs-on: ubuntu-latest
@@ -115,13 +113,3 @@ jobs:
           name: docs-static-dj-labook-${{env.DJ_LABBOOK_VERSION}}
           path: docs/_build/html
           retention-days: 1
-  # publish-docs:
-  #   if: github.event_name = 'push'
-  #   needs: publish-release
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: 
-  #       run: |
-  #         DJ_LABBOOK_VERSION=$awk 'FNR==3' package.json | awk '{split($0,a,":"); print a[2]}' | awk -F'"' '{$0=$2}1'
-  #         echo "DJ_LABBOOK_VERSION=${DJ_LABBOOK_VERSION}" >> $GITHUB_ENV
