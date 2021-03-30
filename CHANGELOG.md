@@ -4,6 +4,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 
 ## [Unreleased]
 ### Added
+- Added sphinx docs for styleguide PR #138
 - Docstrings for all classes and functions (#112) PR #124
 - Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See `Developer Documentation/General Notes` for details. (#126) PR #129
 - Smaller screen layout (#58) PR #127
@@ -17,6 +18,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Fixed behavior with table actions being dismounted instead of being hidden which also fix the filter not being remembered problem (#57) PR #135
 
 ### Changed
+- Changed the colors in CSS to match the styleguide PR #138
 - Replaced buggy column resizer with auto fit CSS table cells for now PR #135
 - Replaced usage of any with more strongly typed data types (#125) PR #124
 - Replaced the direct react component props definition with interface PR #124
