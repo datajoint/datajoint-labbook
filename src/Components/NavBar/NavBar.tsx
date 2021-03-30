@@ -49,6 +49,7 @@ export default class NavBar extends React.Component<NavBarProps, NavBarState> {
       this.setState({backendVersion: result});
     })
     .catch(error => {
+      this.setState({backendVersion: 'Unable to get version number'});
       console.log(error);
     })
   }

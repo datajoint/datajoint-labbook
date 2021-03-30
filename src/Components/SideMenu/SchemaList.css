@@ -1,12 +1,12 @@
 .schema-menu {
-  background-color: white;
+  background-color: #FBFBFB;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 43%;
   margin-left: 2%;
-  box-shadow: 3px 3px 6px gray;
-  border-left: 1px solid lightgray;
+  box-shadow: 3px 3px 6px #91938F;
+  border-left: 1px solid #C8C9C7;
 }
 
 .search-schema-field {
@@ -21,8 +21,8 @@
   font-size: 0.75rem;
   width: 100%;
   border-radius: 2px;
-  border: 1px solid lightgray;
-  background-color: #f1f1f1;
+  border: 1px solid #C8C9C7;
+  background-color: ##F1F1F1;
   padding-left: 4px;
 }
 
@@ -42,7 +42,7 @@
 .sort-field-head {
   height: 20px;
   background-color: #399E5A;
-  color: rgb(245, 245, 245);
+  color: #F1F1F1;
   display: flex;
   padding: 4px 2px;
   align-items: center;
@@ -71,8 +71,8 @@ select.sort-schema-options {
   padding-left: 8px;
   border-radius: 0;
   border: none;
-  border-top: 1px solid rgba(128, 128, 128, 0.5);
-  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+  border-top: 1px solid #C8C9C7;
+  border-bottom: 1px solid #C8C9C7;
 }
 
 .schema-listing {
@@ -96,7 +96,7 @@ select.sort-schema-options {
 .schema-name:hover,
 .schema-name.selected {
   border: 2px solid #399E5A;
-  box-shadow: 1px 2px 3px lightgray;
+  box-shadow: 1px 2px 3px #C8C9C7;
 }
 
 @media only screen and (max-width: 1366px) {
