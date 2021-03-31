@@ -12,7 +12,7 @@ test('Verifying components appear on login page.', async () => {
     const linkElements = [
         screen.getByText("Host\/Database Address"),
         screen.getByText("Username"),
-        screen.getByText("Passyword"),
+        screen.getByText("Password"),
         screen.getByText("Remember Me"),
         screen.getByText("Connect"),
         screen.getByText("Log In")

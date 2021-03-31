@@ -96,7 +96,6 @@ jobs:
           echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Run primary tests
         run: |
-          ls -la pharus
           export PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | \
             awk -F\' '{print $2}')
           export HOST_UID=$(id -u)
