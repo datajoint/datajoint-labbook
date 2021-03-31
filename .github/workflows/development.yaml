@@ -37,8 +37,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Compile static artifacts
         run: |
-          export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
-            awk -F\" '{print $4}')
+          export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
           export HOST_UID=$(id -u)
           mkdir build
           docker-compose -f docker-compose-build.yaml up \
@@ -58,7 +57,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Determine package version
         run: |
-          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}'
+          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
           echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Get changelog entry
         id: changelog_reader
