@@ -1,5 +1,5 @@
-# PHARUS_VERSION=0.1.0b2 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml pull
-# PHARUS_VERSION=0.1.0b2 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml up -d
+# PHARUS_VERSION=0.1.0 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml pull
+# PHARUS_VERSION=0.1.0 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml up -d
 #
 # Intended for production deployment.
 # Note: You must run both commands above for minimal outage.

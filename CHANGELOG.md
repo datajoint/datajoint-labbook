@@ -4,28 +4,38 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 
 ## [0.1.0] - 2021-03-31
 ### Added
-- Docstrings for all classes and functions (#112) PR #124
+- Docstrings for all classes and functions. (#112) PR #124
 - Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See `Developer Documentation/General Notes` for details. (#126) PR #129
-- Smaller screen layout (#58) PR #127
+- Smaller screen layout. (#58) PR #127
 - Documentation on running Jest tests w/ Docker. PR #130
 - Test cases for `/login` page. PR #130
 - Local testing database for `dev` Docker environment. PR #130
-- Added ability to insert null into nullable blobs (#122) PR #135
-- Added github actions for auto building docs (#110) PR #139
+- Added ability to insert null into nullable blobs. (#122) PR #135
+- Added github actions for auto building docs. (#110) PR #139
+- Issue templates for bug reports and feature requests. PR #140
+- `test` job that will run tests in GitHub Actions. PR #140
+- Upload `docker-compose-deploy.yaml` environment on releases. PR #140
+- Publish job that will deploy documentation updates on release. PR #140
 
 ### Fixed
-- Fixed bug related to old table restrictions being applied to the new selected table (#128) PR #135
-- Fixed behavior with table actions being dismounted instead of being hidden which also fix the filter not being remembered problem (#57) PR #135
+- Fixed bug related to old table restrictions being applied to the new selected table. (#128) PR #135
+- Fixed behavior with table actions being dismounted instead of being hidden which also fix the filter not being remembered problem. (#57) PR #135
+- License copyright issue. PR #140
+- Fix issue in testing `local-db` where deletes prone to failure if logging table missing. PR #140
 
 ### Changed
-- Replaced buggy column resizer with auto fit CSS table cells for now PR #135
-- Replaced usage of any with more strongly typed data types (#125) PR #124
-- Replaced the direct react component props definition with interface PR #124
-- Replaced state and props with interface instead of types PR #124
-- Hide reset to default to button due to inconsitent behavior between different attribute types (#131) PR #135
+- Replaced buggy column resizer with auto fit CSS table cells for now. PR #135
+- Replaced usage of any with more strongly typed data types. (#125) PR #124
+- Replaced the direct react component props definition with interface. PR #124
+- Replaced state and props with interface instead of types. PR #124
+- Hide reset to default to button due to inconsitent behavior between different attribute types. (#131) PR #135
+- Point contribution guideline to standard DataJoint policy document. PR #140
+- Update `pharus` version reference in gitsubmodule. PR #140
 
 ### Removed
 - Duplicate `volume` config for `pharus` service in `dev` Docker environment. PR #130
+- `ALPHA`/`BETA` warning in README. PR #140
+- Note on `dev` branch to prepare to consolidate. PR #140
 
 ## [0.1.0-beta.2] - 2021-03-11
 ### Added
