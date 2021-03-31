@@ -72,7 +72,7 @@ jobs:
           path: build
           retention-days: 1
   test:
-    needs: build
+    needs: test-changelog
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -97,11 +97,18 @@ jobs:
           export PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | \
             awk -F\' '{print $2}')
           export HOST_UID=$(id -u)
+          ls -la pharus
+          git submodule init
+          git submodule update
+          ls -la pharus
           docker-compose -f docker-compose-dev.yaml run -e CI=true datajoint-labbook \
             npm test -- --coverage
   publish-release:
     if: github.event_name == 'push'
-    needs: test
+    needs:
+      - build
+      - build-docs
+      - test
     runs-on: ubuntu-latest
     outputs:
       release_upload_url: ${{steps.create_gh_release.outputs.upload_url}}
