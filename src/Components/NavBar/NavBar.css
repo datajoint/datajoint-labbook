@@ -3,8 +3,8 @@
   align-items: center;
   height: 6vh;
   width: 100vw;
-  background-color: #fff;
-  box-shadow: 0px 3px 3px rgb(190, 190, 190);
+  background-color: #FBFBFB;
+  box-shadow: 0px 3px 3px #C8C9C7;
 }
 
 .nav-logo {
@@ -23,7 +23,7 @@
   height: 70%;
 }
 
-.left-nav {
+.left-nav { /* currently unused */
   display: flex;
   align-items: center;
   margin: 0;
@@ -32,16 +32,16 @@
   list-style-type: none;
 }
 
-.left-nav li {
+.left-nav li { /* currently unused */
   height: 100%;
-  color: rgb(245, 245, 245);
+  color: #F1F1F1;
 }
 
-.nav-link {
+.nav-link { /* currently unused */
   display: flex;
   align-items: center;
   height: 100%;
-  color: rgb(245, 245, 245);
+  color: #F1F1F1;
   text-decoration: none;
   font-size: 1.5vh;
   text-align: center;
@@ -50,14 +50,14 @@
   transition: color 0.5s, background-color 0.5s;
 }
 
-.nav-link:hover {
+.nav-link:hover { /* currently unused */
   color: #000000;
-  background-color: rgb(245, 245, 245);
+  background-color: #F1F1F1;
 }
 
-li .active{
+li .active { /* currently unused */
   color: #000000;
-  background-color: rgb(245, 245, 245);
+  background-color: #F1F1F1;
 }
 
 .right-nav {
@@ -93,20 +93,10 @@ li .active{
 .right-nav-li.hostname label {
   margin: 0;
   font-size: 0.7rem;
-  color: #4A9F5A;
+  color: #399E5A;
 }
 
 .right-nav-li a {
   text-decoration: none;
-  color: #4A9F5A;
-}
-
-.version-info-div {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.version-number {
-  margin: 2px;
+  color: #399E5A;
 }

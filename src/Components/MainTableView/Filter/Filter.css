@@ -23,5 +23,9 @@
   background-color: #399E5A;
   font-size: 30px;
   border: none;
-  color: white;
+  color: #FBFBFB;
+}
+
+.filterComponentFilterCardAddDiv button:hover {
+  background-color: #295829;
 }

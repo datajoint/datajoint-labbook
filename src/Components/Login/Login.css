@@ -1,5 +1,4 @@
 .login-div {
-  /* background-color: rgba(0, 0, 0, 0.8); */
   background-color: #C8C9C7;
   width: 100vw;
   height: 94vh;
@@ -17,9 +16,8 @@
   min-width: 600px;
   max-width: 900px;
   margin: 0 auto;
-  /* box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9); */
-  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
-  background-color: rgb(245, 245, 245);
+  box-shadow: 3px 3px 6px #91938F;
+  background-color: #F1F1F1;
   padding-top: 24px;
   padding-bottom: 12px;
 }
@@ -44,7 +42,7 @@ img.login-top-logo {
 
 .login-form input.login-input {
   background-color: #F7F7F7;
-  border: 0.5px solid #b4b4b4;
+  border: 0.5px solid #C8C9C7;
   border-radius: 2px;
   margin-bottom: 8px;
   height: 1.4rem;
@@ -66,23 +64,29 @@ button.login-input-button {
   padding: 8px 32px;
   width: fit-content;
   align-self: flex-end;
-  color: rgb(156, 156, 156);
-  background-color: rgb(124, 123, 123);
+  color: #C8C9C7;
+  background-color: #91938F;
   border-radius: 2px;
   border-color: transparent;
   box-shadow: none;
 }
 
 button.login-input-button.ready {
-  background-color: #4A9F5A;
-  color: rgb(245, 245, 245);
-  box-shadow: 1px 1px 3px rgb(124, 123, 123);
+  background-color: #399E5A;
+  color: #F1F1F1;
+  box-shadow: 1px 1px 3px #91938F;
+  cursor: pointer;
+}
+
+button.login-input-button.ready:hover {
+  color: #F1F1F1;
+  box-shadow: 1px 1px 1px #91938F;
   cursor: pointer;
 }
 
 .form-message {
   align-self: flex-end;
-  color: rgb(185, 2, 2);
+  color: #970000;
   margin-top: 4px;
   font-size: 0.9rem;
 }
