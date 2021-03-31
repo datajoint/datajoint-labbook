@@ -16,6 +16,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ### Fixed
 - Fixed bug related to old table restrictions being applied to the new selected table (#128) PR #135
 - Fixed behavior with table actions being dismounted instead of being hidden which also fix the filter not being remembered problem (#57) PR #135
+- Fixed filter behavior when the user puts and empty string in a number type, the restriction doesn't become invalid PR #137
 
 ### Changed
 - Replaced buggy column resizer with auto fit CSS table cells for now PR #135
@@ -23,6 +24,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Replaced the direct react component props definition with interface PR #124
 - Replaced state and props with interface instead of types PR #124
 - Hide reset to default to button due to inconsitent behavior between different attribute types (#131) PR #135
+- Updated backend routes to match with new api routes conventions (#114) PR #137
 
 ### Removed
 - Duplicate `volume` config for `pharus` service in `dev` Docker environment. PR #130

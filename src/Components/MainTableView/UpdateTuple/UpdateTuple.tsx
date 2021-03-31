@@ -162,10 +162,10 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
     this.props.updateInAction(true);
 
     // All checks passed thus attempt insert
-    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/update_tuple`, {
-      method: 'POST',
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema/` + this.props.selectedSchemaName + '/table/' + this.props.selectedTableName + '/record', {
+      method: 'PATCH',
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
-      body: JSON.stringify({schemaName: this.props.selectedSchemaName, tableName: this.props.selectedTableName, tuple: tupleBuffer})
+      body: JSON.stringify({records: [tupleBuffer]})
     })
     .then(result => {
       this.props.updateInAction(false);
