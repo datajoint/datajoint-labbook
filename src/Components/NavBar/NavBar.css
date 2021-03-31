@@ -100,13 +100,3 @@ li .active { /* currently unused */
   text-decoration: none;
   color: #399E5A;
 }
-
-.version-info-div {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.version-number {
-  margin: 2px;
-}

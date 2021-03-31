@@ -5,7 +5,8 @@ import './App.css';
 // Component imports
 import NavBar from './NavBar/NavBar';
 import Login from './Login/Login';
-import Home from './Home'
+import Home from './Home';
+import Footer from './Footer/Footer';
 
 window.onbeforeunload = () => '';
 
@@ -51,6 +52,7 @@ export default class App extends React.Component<DJGUIAppProps, DJGUIAppState> {
             <Route path='/home'>{this.state.jwtToken !== '' ? <Home jwtToken={this.state.jwtToken}></Home> : <Redirect to='/login'/>}</Route>
           </Switch>
         </div>
+        <Footer />
       </Router>
     );
   }
