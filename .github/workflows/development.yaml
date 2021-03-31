@@ -88,19 +88,18 @@ jobs:
       COMPOSE_HTTP_TIMEOUT: "120"
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Determine package version
         run: |
           DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
           echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Run primary tests
         run: |
+          ls -la pharus
           export PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | \
             awk -F\' '{print $2}')
           export HOST_UID=$(id -u)
-          ls -la pharus
-          git submodule init
-          git submodule update
-          ls -la pharus
           docker-compose -f docker-compose-dev.yaml run -e CI=true datajoint-labbook \
             npm test -- --coverage
   publish-release:
