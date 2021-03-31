@@ -19,7 +19,7 @@
   color: #FBFBFB;
   background-color: #399E5A;
   font-weight: 600;
-  margin-top: -1px; /* Note: this is to adjust for the funky margin-top misalignment for .table-view */
+  margin-top: -2px; /* Note: this is to adjust for the funky margin-top misalignment for .table-view */
   margin-right: 8px;
   border-radius: 2px 2px 0 0;
   box-shadow: -1px -1px 2px #91938F;
