@@ -24,6 +24,7 @@
   font-size: 30px;
   border: none;
   color: #FBFBFB;
+  margin-top: -12px;
 }
 
 .filterComponentFilterCardAddDiv button:hover {
