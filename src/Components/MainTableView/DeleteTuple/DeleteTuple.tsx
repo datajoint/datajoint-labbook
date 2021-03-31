@@ -99,7 +99,6 @@ export default class DeleteTuple extends React.Component<DeleteTupleProps, Delet
         value: String(value)
       })
     }
-    console.log(restrictionsInAPIFormat)
 
     // TODO: Run api fetch for list of dependencies/permission
     fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema/` + this.props.selectedSchemaName + '/table/' + this.props.selectedTableName + '/record?restriction=' + encodeURIComponent(btoa(JSON.stringify(restrictionsInAPIFormat))), {
