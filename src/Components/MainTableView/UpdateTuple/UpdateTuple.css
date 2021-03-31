@@ -14,31 +14,31 @@ form {
 
 .rowControls .icon {
   margin-right: 8px;
-  color: rgb(80, 80, 80);
+  color: #505050;
   cursor: pointer;
 }
 
 .rowControls .icon.deleteRow:hover {
-  color: rgb(151, 0, 0);
+  color: #970000;
 }
 
 .rowControls .icon.addRow:hover {
-  color: rgb(5, 114, 5);
+  color: #399E5A;
 }
 
 .fieldUnit.primary input {
-  color: gray;
+  color: #91938F;
   cursor: not-allowed;
 }
 
 .confirmActionButton.update {
-  border: 2px solid rgb(189, 138, 28);
-  color: rgb(189, 138, 28);
+  border: 2px solid #BD8A1C;
+  color: #BD8A1C;
 }
 
 .confirmActionButton.update:hover {
-  background-color: rgb(189, 138, 28);
-  color: white;
+  background-color: #BD8A1C;
+  color: #FBFBFB;
 }
 
 .updateActionContainer .errorMessage {
@@ -47,10 +47,10 @@ form {
 
 .updateActionContainer button.dismiss {
   margin-left: 8px;
-  border: 1px solid gray;
+  border: 1px solid #91938F;
   border-radius: 4px;
 }
 
 .updateActionContainer button.dismiss:hover {
-  background-color: rgb(212, 212, 212);
+  background-color: #C8C9C7;
 }

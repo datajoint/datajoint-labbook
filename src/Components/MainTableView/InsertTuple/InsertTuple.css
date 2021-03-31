@@ -14,16 +14,16 @@ form {
 
 .rowControls .icon {
   margin-right: 8px;
-  color: rgb(80, 80, 80);
+  color: #505050;
   cursor: pointer;
 }
 
 .rowControls .icon.deleteRow:hover {
-  color: rgb(151, 0, 0);
+  color: #970000;
 }
 
 .rowControls .icon.addRow:hover {
-  color: rgb(5, 114, 5);
+  color: #399E5A;
 }
 
 .copyOverPrompt {
@@ -32,16 +32,17 @@ form {
 }
 
 .copyOverPrompt button {
-  border: 2px solid rgb(189, 138, 28);
-  color: rgb(189, 138, 28);
+  border: 2px solid #BD8A1C;
+  color: #BD8A1C;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 0.8rem;
+  background-color: #FBFBFB;
 }
 
 .copyOverPrompt button:hover {
-  background-color: rgb(189, 138, 28);
-  color: white;
+  background-color: #BD8A1C;
+  color: #FBFBFB;
 }
 
 .copyOverPrompt button:focus,
@@ -50,7 +51,7 @@ form {
 }
 
 .copyOverPrompt .icon {
-  color: rgb(189, 138, 28);
+  color: #BD8A1C;
 }
 
 .copyOverPrompt span {
