@@ -2,7 +2,7 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
-## [Unreleased]
+## [0.1.0] - 2021-03-31
 ### Added
 - Docstrings for all classes and functions (#112) PR #124
 - Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See `Developer Documentation/General Notes` for details. (#126) PR #129
@@ -89,7 +89,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
-[Unreleased]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.2...HEAD
+[0.1.0]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.2...0.1.0
 [0.1.0-beta.2]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.1...0.1.0-beta.2
 [0.1.0-beta.1]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-alpha.2...0.1.0-beta.1
 [0.1.0-alpha.2]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.0-alpha.2

@@ -11,16 +11,6 @@ Requirements
 Working with Source
 ===================
 
-Branch Targets
---------------
-
-The source repo is the single source of truth for development efforts on DataJoint LabBook frontend development.
-
-For now, development observes the following policy for branches so you should use this to determine appropriate branch to target in PR's.
-
-- ``dev``: Feature-complete, DEMO-ready progress. Might be a bit rough around the edges or lacking in docs, tests but functional. Demonstrates latest features that have been completed.
-- ``master``: Polished, release-ready source with relevant docs, tests. More stable and less likely to undergo any refactoring/restructuring.
-
 Run Locally w/ Docker
 ---------------------
 

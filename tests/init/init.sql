@@ -1,5 +1,14 @@
 CREATE DATABASE `alpha_company`;
-CREATE DATABASE `empty`;
+
+CREATE TABLE `alpha_company`.`~log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'event order id',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'event timestamp',
+  `version` varchar(12) NOT NULL COMMENT 'datajoint version',
+  `user` varchar(255) NOT NULL COMMENT 'user@host',
+  `host` varchar(255) NOT NULL DEFAULT '' COMMENT 'system hostname',
+  `event` varchar(255) NOT NULL DEFAULT '' COMMENT 'event message',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='event logging table for `alpha_company`';
 
 CREATE TABLE `alpha_company`.`computer` (
   `computer_id` binary(16) NOT NULL COMMENT ':uuid:unique id',
@@ -33,3 +42,5 @@ INSERT INTO `alpha_company`.`#employee` (computer_id, employee_name)
 VALUES
 (X'4E41491A86D54AF7A01389BDE75528BD', 'Raphael Guzman')
 ,(X'DCD4CFD96791433CA805F391C289E6EA', 'John Doe');
+
+CREATE DATABASE `empty`;
