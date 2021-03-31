@@ -8,7 +8,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Added sphinx docs and typedoc along with the docker and docker-compose file to build them. See `Developer Documentation/General Notes` for details. (#126) PR #129
 - Smaller screen layout. (#58) PR #127
 - Documentation on running Jest tests w/ Docker. PR #130
-- Test cases for `/login` page. PR #130
+- Test cases for `/login` page. (#80) PR #130
 - Local testing database for `dev` Docker environment. PR #130
 - Added ability to insert null into nullable blobs. (#122) PR #135
 - Added github actions for auto building docs. (#110) PR #139
@@ -16,6 +16,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - `test` job that will run tests in GitHub Actions. PR #140
 - Upload `docker-compose-deploy.yaml` environment on releases. PR #140
 - Publish job that will deploy documentation updates on release. PR #140
+- Include a `test` job into CI to verify Jest tests pass. (#80) PR #140
 
 ### Fixed
 - Fixed bug related to old table restrictions being applied to the new selected table. (#128) PR #135
@@ -29,7 +30,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Replaced the direct react component props definition with interface. PR #124
 - Replaced state and props with interface instead of types. PR #124
 - Hide reset to default to button due to inconsitent behavior between different attribute types. (#131) PR #135
-- Point contribution guideline to standard DataJoint policy document. PR #140
+- Point contribution guideline to standard DataJoint policy document. (#113) PR #140
 - Update `pharus` version reference in gitsubmodule. PR #140
 
 ### Removed
