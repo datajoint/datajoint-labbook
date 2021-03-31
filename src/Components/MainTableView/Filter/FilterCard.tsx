@@ -62,8 +62,13 @@ export default class FilterCard extends React.Component<FilterCardProps, FilterC
   handleValueChange(event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>, attributeName: string) {
     let restriction = Object.assign({}, this.props.restriction);
     
+    // Check if table attribute is defined
+    if (!restriction.tableAttribute){
+      throw Error('Restriction tableAttribute is undefined');
+    }
+
     // Handle speical case with DateTime
-    if (restriction.tableAttribute?.attributeType === TableAttributeType.DATETIME) {
+    if (restriction.tableAttribute.attributeType === TableAttributeType.DATETIME) {
       // Defined the value attribute if it is undefined as an array
       if (restriction.value === undefined) {
         restriction.value = ['', ''];
@@ -81,6 +86,12 @@ export default class FilterCard extends React.Component<FilterCardProps, FilterC
       else {
         throw Error('Unknown Component for date time attribute')
       }
+    }
+    else if (
+      ![TableAttributeType.VAR_CHAR, TableAttributeType.CHAR].includes(restriction.tableAttribute.attributeType) && 
+      event.target.value === "") {
+      // If the type is not varchar or char and the value is equal to '' then set it to undefined
+      restriction.value = undefined;
     }
     else {
       restriction.value = event.target.value;
