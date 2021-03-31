@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Determine package version
         run: |
-          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
+          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}'
           echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Get changelog entry
         id: changelog_reader
