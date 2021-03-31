@@ -223,8 +223,7 @@ input[type="checkbox"][disabled] {
 
 .loadingBackdrop {
   position: absolute;
-  background-color: #262A22;
-  opacity: 70%;
+  background-color: rgba(38, 42, 34, 0.7); /* equivalent to #262A22 at 70% opacity */
   top: 0;
   left: 0;
   width: 100%;
@@ -237,8 +236,7 @@ input[type="checkbox"][disabled] {
 
 .loadingPopup {
   position: relative;
-  background-color: #FBFBFB;
-  opacity: 60%;
+  background-color: rgba(251, 251, 251. 0.6); /* equivalent to #FBFBFB at 60% opacity*/
   border-radius: 2px;
   width: 300px;
   height: 200px;
