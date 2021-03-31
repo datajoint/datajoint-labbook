@@ -1,8 +1,8 @@
 .table-view {
   width: 98%;
-  height: 98%;
-  max-height: 98%;
-  margin: 12px 1.5% 0px 0.5%; /* Note sure why 2% isn't lining up with the 2% for margin top... */
+  height: 97.8%;
+  max-height: 97.8%;
+  margin: 1% 1.5% auto 0.5%; /* Note: look into why 2% margin-top isn't lining up with the 2% for margin top for side-menu. */
   display: flex;
   flex-direction: column;
 }
@@ -13,20 +13,21 @@
 }
 
 .table-view .nav-tabs .tab {
-  box-sizing: border-box;
+  position: relative;
   padding: 8px 24px;
   text-align: center;
-  color: #FFF;
+  color: #FBFBFB;
   background-color: #399E5A;
   font-weight: 600;
+  margin-top: -2px; /* Note: this is to adjust for the funky margin-top misalignment for .table-view */
   margin-right: 8px;
   border-radius: 2px 2px 0 0;
-  box-shadow: -1px -1px 2px rgb(160, 160, 160);
+  box-shadow: -1px -1px 2px #91938F;
   border: none;
 }
 
 .table-view .nav-tabs .tab:hover {
-  box-shadow: -1px -2px 3px rgb(160, 160, 160);
+  box-shadow: -1px -2px 3px #91938F;
   background-color: #82D088; /* light alternative green */
 }
 
@@ -35,30 +36,30 @@
 }
 
 .table-view .nav-tabs .tab:disabled {
-  color:rgb(160, 160, 160);
-  background-color: #609b74;
+  color: #C8C9C7;
+  background-color: #609b74; /* muted main green */
   cursor: not-allowed;
 }
 
 .table-view .nav-tabs .tab.inView {
   color: #262A22;
-  background-color: #F1f1f1;
-  box-shadow: -1px -2px 3px rgb(160, 160, 160);
+  background-color: #FBFBFB;
+  box-shadow: -1px -2px 3px #91938F;
 }
 
 .actionMenuContainer {
-  height: 300px;
-  overflow: visible;
-  border-bottom: 1px solid gray;
+  min-height: 300px;
+  overflow: auto;
+  border-bottom: 1px solid #91938F;
 }
 
 .view-area {
   margin: 0 0 auto;
-  background-color: #F1f1f1;
+  background-color: #FBFBFB;
   width: 100%;
   overflow-y: hidden;
   flex-grow: 1;
-  box-shadow: -1px 0px 3px rgb(160, 160, 160);
+  box-shadow: -1px 0px 3px #91938F;
 }
 
 .loadingArea {
@@ -76,7 +77,7 @@
   display: flex;
   flex-direction: column;
   width: fit-content;
-  border: 1px solid gray;
+  border: 1px solid #91938F;
 }
 
 .fieldUnit input,
@@ -88,14 +89,14 @@
   box-sizing: border-box;
   border-radius: 0;
   border: none;
-  border-top: 1px solid gray;
+  border-top: 1px solid #91938F;
   outline: none;
   height: 100%;
   padding: 4px;
 }
 
 .fieldUnit input:disabled {
-  color: rgb(163, 163, 163);
+  color: #91938F;
 }
 
 .fieldUnit .dateTimeFields {
@@ -103,7 +104,7 @@
 }
 
 .fieldUnit .dateTimeFields input:first-of-type {
-  border-right: 1px solid gray;
+  border-right: 1px solid #91938F;
 }
 
 .inputRow {
@@ -124,7 +125,7 @@
 .attributeHead {
   display: table-cell;
   padding: 4px;
-  background-color: rgb(228, 228, 228);
+  background-color: #F1F1F1;
   font-size: 0.8rem;
   display: flex;
   align-items: center;
@@ -139,8 +140,8 @@
 }
 
 .nullableTag {
-  color: white;
-  background-color: rgb(82, 82, 82);
+  color: #FBFBFB;
+  background-color: #505050;
   border-radius: 4px;
   font-size: 0.7rem;
   margin: 0 4px;
@@ -148,40 +149,42 @@
 }
 
 .nullableControls .resetIcon {
-  color: rgb(82, 82, 82);
+  color: #505050;
   cursor: pointer;
 }
 
 .nullableControls .resetIcon:hover {
-  color: rgb(153, 153, 153);
+  color: #91938F;
 }
 
 /* change colors in each action css if necessary */
 .confirmActionButton {
   margin-top: 16px;
-  border: 2px solid rgb(5, 114, 5);
+  border: 2px solid #399E5A;
   padding: 8px 20px;
   border-radius: 4px;
-  color: rgb(5, 114, 5);
+  color: #399E5A;
   cursor: pointer;
+  background-color: #FBFBFB;
 }
 
 .confirmActionButton:hover {
-  background-color: rgb(5, 114, 5);
-  color: white;
+  background-color: #399E5A;
+  color: #FBFBFB;
 }
 
 .cancelActionButton {
   margin-left: 8px;
   margin-top: 16px;
-  border: 2px solid rgb(80, 80, 80);
+  border: 2px solid #505050;
   padding: 8px 20px;
   border-radius: 4px;
-  color: rgb(80, 80, 80);
+  color: #505050;
   cursor: pointer;
+  background-color: #FBFBFB;
 }
 
 .cancelActionButton:hover {
-  background-color: rgb(80, 80, 80);
-  color: white;
+  background-color: #505050;
+  color: #FBFBFB;
 }

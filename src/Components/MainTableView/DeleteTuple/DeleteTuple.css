@@ -14,7 +14,7 @@ table.tupleToDelete {
 
 table.tupleToDelete thead th,
 table.tupleToDelete tbody td {
-  border: 0.5px solid gray;
+  border: 0.5px solid #91938F;
   padding: 4px;
   white-space: nowrap;
   width: auto;
@@ -23,7 +23,7 @@ table.tupleToDelete tbody td {
 }
 
 table.tupleToDelete thead th {
-  background-color: rgb(228, 228, 228);
+  background-color: #F1F1F1;
   font-size: 0.8rem;
 }
 
@@ -49,20 +49,20 @@ table.tupleToDelete tbody {
 
 .deleting button.dismiss {
   margin-left: 8px;
-  border: 1px solid gray;
+  border: 1px solid #91938F;
   border-radius: 4px;
 }
 
 .deleting button.dismiss:hover {
-  background-color: rgb(212, 212, 212);
+  background-color: #C8C9C7;
 }
 
 .confirmActionButton.delete {
-  border: 2px solid rgb(151, 0, 0);
-  color: rgb(151, 0, 0);
+  border: 2px solid #970000;
+  color: #970000;
 }
 
 .confirmActionButton.delete:hover {
-  background-color: rgb(151, 0, 0);
-  color: white;
+  background-color: #970000;
+  color: #F1F1F1;
 }
