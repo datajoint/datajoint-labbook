@@ -11,6 +11,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Test cases for `/login` page. PR #130
 - Local testing database for `dev` Docker environment. PR #130
 - Added ability to insert null into nullable blobs (#122) PR #135
+- Added github actions for auto building docs (#110) PR #139
 
 ### Fixed
 - Fixed bug related to old table restrictions being applied to the new selected table (#128) PR #135
