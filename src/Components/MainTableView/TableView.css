@@ -1,8 +1,8 @@
 .table-view {
   width: 98%;
-  height: 98%;
-  max-height: 98%;
-  margin: 12px 1.5% 0px 0.5%; /* Note sure why 2% isn't lining up with the 2% for margin top... */
+  height: 97.8%;
+  max-height: 97.8%;
+  margin: 1% 1.5% auto 0.5%; /* Note: look into why 2% margin-top isn't lining up with the 2% for margin top for side-menu. */
   display: flex;
   flex-direction: column;
 }
@@ -14,13 +14,12 @@
 
 .table-view .nav-tabs .tab {
   position: relative;
-  box-sizing: border-box;
   padding: 8px 24px;
   text-align: center;
   color: #FBFBFB;
   background-color: #399E5A;
   font-weight: 600;
-  margin-top: 2px;
+  margin-top: -1px; /* Note: this is to adjust for the funky margin-top misalignment for .table-view */
   margin-right: 8px;
   border-radius: 2px 2px 0 0;
   box-shadow: -1px -1px 2px #91938F;

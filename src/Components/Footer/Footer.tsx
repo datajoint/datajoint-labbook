@@ -56,8 +56,7 @@ export default class Footer extends React.Component<FooterProps, FooterState> {
           <p>© 2021, DataJoint LabBook</p>
           </div>
         <div className='version-info-div'>
-          <div className='version-number'>Front End Version: {version}</div>
-          <div className='version-number'>Back End Version: {this.state.backendVersion}</div>
+          <div className='version-number'><b>Front End Version:</b> {version}  <b>Back End Version:</b> {this.state.backendVersion}</div>
         </div>
       </footer>
     );

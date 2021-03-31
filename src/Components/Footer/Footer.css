@@ -1,11 +1,11 @@
 footer {
   display: flex;
-  position: relative;
-  height: fit-content;
+  position: absolute;
+  bottom: 0;
   width: 100vw;
   background-color: #F1F1F1;
   box-shadow: 0px -3px 3px #C8C9C7;
-  padding: 2px;
+  padding: 4px;
 }
 
 .footer-content {
@@ -23,10 +23,10 @@ footer {
 }
 
 .version-info-div {
+  position: absolute;
+  text-align: right;
+  right: 2%;
   font-size: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   color: #399E5A;
 }
 
@@ -52,7 +52,7 @@ footer {
   }
   
   .footer-content p {
-    margin: 0 15% 0 45%;
+    margin-left: 2%;
     font-size: 0.8rem;
   }
 }
