@@ -1,8 +1,6 @@
 .table-view {
-  width: 98%;
-  height: 97.8%;
-  max-height: 97.8%;
-  margin: 1% 1.5% auto 0.5%; /* Note: look into why 2% margin-top isn't lining up with the 2% for margin top for side-menu. */
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -13,13 +11,11 @@
 }
 
 .table-view .nav-tabs .tab {
-  position: relative;
   padding: 8px 24px;
   text-align: center;
   color: #FBFBFB;
   background-color: #399E5A;
   font-weight: 600;
-  margin-top: -1px; /* Note: this is to adjust for the funky margin-top misalignment for .table-view */
   margin-right: 8px;
   border-radius: 2px 2px 0 0;
   box-shadow: -1px -1px 2px #91938F;
@@ -48,23 +44,15 @@
 }
 
 .actionMenuContainer {
-  min-height: 300px;
-  overflow: auto;
-  border-bottom: 1px solid #91938F;
-}
-
-.view-area {
-  margin: 0 0 auto;
-  background-color: #FBFBFB;
-  width: 100%;
-  overflow-y: hidden;
-  flex-grow: 1;
-  box-shadow: -1px 0px 3px #91938F;
+  overflow-y: visible;
+  border-bottom: 0.2em solid #91938F;
+  padding: 1% 0%;
 }
 
 .loadingArea {
   position: relative;
   height: 100%;
+  width: 100%;
 }
 
 .errorMessage,

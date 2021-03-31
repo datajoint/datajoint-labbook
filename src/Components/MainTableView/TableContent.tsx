@@ -497,66 +497,64 @@ export default class TableContent extends React.Component<TableContentProps, Tab
         {this.state.hideTableActionMenu ? '' : <this.getCurrentTableActionMenuComponent/>}
         {this.state.showWarning ? <this.getShowWarningComponent />: ''}
         <div className="content-view-area">
-          <div className="table-container">
-            <table className="table">
-              <thead>
-                <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.headerRowReference}>
-                  <th className="buffer"></th>
-                  {this.getPrimaryKeys().map((attributeName, index) => {
-                    return(
-                      <th key={attributeName} className="headings">
-                        <div className="headerContent primary">{attributeName}</div>
-                      </th>
-                    )
-                  })}
-                  {this.getSecondaryKeys().map((attributeName, index) => {
-                    return(
-                      <th key={attributeName} className="headings">
-                        <div className="headerContent secondary" style={{color: 'inherit'}}>{attributeName}</div>
-                      </th>
-                    )
-                  })}
-                </tr>
-              </thead>
-              <tbody>
-              {this.props.contentData.map((entry: any, tupleIndex: number) => {
-                // creating reference for each body column to track the width
-                return (
-                  <tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.tuplesReference[tupleIndex]}>
-                    <td className="check-box-cell">
-                      <input type="checkbox" 
-                        // disable multiple check for insert mode as well until multiple insert is supported.
-                        disabled={this.state.selectedTupleIndex > -1 && this.state.selectedTupleIndex !== tupleIndex} 
-                        onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
-                        checked={this.state.selectedTupleIndex === tupleIndex}/>
-                    </td>
-                    {entry.map((column: any, index: number) => {
-                      return (
-                        <td key={`${column}-${index}`} className="tableCell">{column} 
-                        </td>)
-                    })
-                    }</tr>)
+          <table className="table">
+            <thead>
+              <tr className="headerRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.headerRowReference}>
+                <th className="buffer"></th>
+                {this.getPrimaryKeys().map((attributeName, index) => {
+                  return(
+                    <th key={attributeName} className="headings">
+                      <div className="headerContent primary">{attributeName}</div>
+                    </th>
+                  )
                 })}
-              </tbody>
-            </table>
-          </div>
-            <div className="paginator">
-              <p>Total Table Entries: {this.props.totalNumOfTuples}</p>
-              <div className="number-of-rows-per-page-input">
-                <p>Number of row per page</p>
-                <input type='number' value={this.props.tuplePerPage} onChange={this.handleNumberOfTuplesPerPageChange}></input>
-              </div>
-              {Object.entries(this.props.contentData).length ?
-                <div className="controls">
-                  <FontAwesomeIcon className={true ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.goToFirstPage()} />
-                  <FontAwesomeIcon className={true  ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.goBackwardAPage()} />
-                  Page: ({this.props.currentPageNumber + ' / ' + this.props.maxPageNumber})
-                  <FontAwesomeIcon className={true  ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.goForwardAPage()} />
-                  <FontAwesomeIcon className={true  ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.goToLastPage()} />
-                </div>
-                : ''
-              }
+                {this.getSecondaryKeys().map((attributeName, index) => {
+                  return(
+                    <th key={attributeName} className="headings">
+                      <div className="headerContent secondary" style={{color: 'inherit'}}>{attributeName}</div>
+                    </th>
+                  )
+                })}
+              </tr>
+            </thead>
+            <tbody>
+            {this.props.contentData.map((entry: any, tupleIndex: number) => {
+              // creating reference for each body column to track the width
+              return (
+                <tr key={entry} className="tableRow" onMouseMove={(event) => {this.cellResizeMouseMove(event)}} onMouseUp={(event) => {this.cellResizeMouseUp(event)}}　ref={this.state.tuplesReference[tupleIndex]}>
+                  <td className="check-box-cell">
+                    <input type="checkbox" 
+                      // disable multiple check for insert mode as well until multiple insert is supported.
+                      disabled={this.state.selectedTupleIndex > -1 && this.state.selectedTupleIndex !== tupleIndex} 
+                      onChange={(event) => this.handleCheckedEntry(event, tupleIndex)} 
+                      checked={this.state.selectedTupleIndex === tupleIndex}/>
+                  </td>
+                  {entry.map((column: any, index: number) => {
+                    return (
+                      <td key={`${column}-${index}`} className="tableCell">{column} 
+                      </td>)
+                  })
+                  }</tr>)
+              })}
+            </tbody>
+          </table>
+          <div className="paginator">
+            <p>Total Table Entries: {this.props.totalNumOfTuples}</p>
+            <div className="number-of-rows-per-page-input">
+              <p>Number of row per page</p>
+              <input type='number' value={this.props.tuplePerPage} onChange={this.handleNumberOfTuplesPerPageChange}></input>
             </div>
+            {Object.entries(this.props.contentData).length ?
+              <div className="controls">
+                <FontAwesomeIcon className={true ? "backAll icon" : "backAll icon disabled"} icon={faStepBackward} onClick={() => this.goToFirstPage()} />
+                <FontAwesomeIcon className={true  ? "backOne icon" : "backOne icon disabled"} icon={faChevronLeft} onClick={() => this.goBackwardAPage()} />
+                Page: ({this.props.currentPageNumber + ' / ' + this.props.maxPageNumber})
+                <FontAwesomeIcon className={true  ? "forwardOne icon" : "forwardOne icon disabled"} icon={faChevronRight} onClick={() => this.goForwardAPage()} />
+                <FontAwesomeIcon className={true  ? "forwardAll icon" : "forwardAll icon disabled"} icon={faStepForward} onClick={() => this.goToLastPage()} />
+              </div>
+              : ''
+            }
+          </div>
         </div>
         {this.state.isWaiting ? (
           <div className="loadingBackdrop">
