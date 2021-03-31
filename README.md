@@ -1,3 +1,5 @@
+![Demo GIF Failed](docs/sphinx/_static/gifs/demo.gif)
+
 # User Documentation
 
 DataJoint LabBook is a graphical user interface built using React to facilitate working with DataJoint computational pipelines.
