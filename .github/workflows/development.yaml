@@ -103,9 +103,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Compile docs static artifacts
         run: |
-          export DJ_LABBOOK_VERSION=$(awk 'FNR==3' package.json | \
-            awk '{split($0,a,":"); print a[2]}' | \
-            awk -F'"' '{$0=$2}1)'
+          export DJ_LABBOOK_VERSION=$(awk 'FNR==3' package.json | awk '{split($0,a,":"); print a[2]}' | awk -F'"' '{$0=$2}1)'
           docker-compose -f docker-compose-docs.yaml up --exit-code-from docs-build --build
           echo "DJ_LABBOOK_VERSION=${DJ_LABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Add docs static artifacts
