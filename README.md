@@ -1,4 +1,4 @@
-![Demo GIF Failed](docs/sphinx/_static/images/demo.gif)
+![Demo GIF Failed](docs/sphinx/_static/images/walkthroughDemoOptimized.gif)
 
 # User Documentation
 

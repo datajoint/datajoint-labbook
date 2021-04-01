@@ -1,4 +1,4 @@
-.. image:: _static/images/demo.gif
+.. image:: _static/images/walkthroughDemoOptimized.gif
 
 .. mdinclude:: ../../README.md
     :start-line: 2
