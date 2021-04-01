@@ -129,6 +129,7 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
   render() {
     return(
       <div className="filterComponentDiv">
+        <h1 className="actionTitle">Filter</h1>
         <div className="filterCardsDiv">
           {this.state.restrictionsBuffer.map((restriction, index) => {
             return(<FilterCard key={restriction.id} index={index} restriction={restriction} tableAttributes={this.state.tableAttributes} updateRestriction={this.updateRestriction} deleteFilterCard={this.deleteFilterCard}></FilterCard>)

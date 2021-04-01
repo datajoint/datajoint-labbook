@@ -220,7 +220,7 @@ export default class InsertTuple extends React.Component<InsertTupleProps, Inser
   render() {
     return (
       <div>
-        <h1>Insert</h1>
+        <h1 className="actionTitle">Insert</h1>
         <form onSubmit={this.onSubmit}>
           <div className="inputRow">
             {
