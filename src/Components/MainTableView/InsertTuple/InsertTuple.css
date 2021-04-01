@@ -1,0 +1,60 @@
+form {
+  width: 100%;
+  position: relative;
+}
+
+.inputRow:hover {
+  overflow-x: auto;
+}
+
+.rowControls {
+  align-self: flex-end;
+  display: flex;
+}
+
+.rowControls .icon {
+  margin-right: 8px;
+  color: #505050;
+  cursor: pointer;
+}
+
+.rowControls .icon.deleteRow:hover {
+  color: #970000;
+}
+
+.rowControls .icon.addRow:hover {
+  color: #399E5A;
+}
+
+.copyOverPrompt {
+  display: flex;
+  align-items: center;
+}
+
+.copyOverPrompt button {
+  border: 2px solid #BD8A1C;
+  color: #BD8A1C;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background-color: #FBFBFB;
+}
+
+.copyOverPrompt button:hover {
+  background-color: #BD8A1C;
+  color: #FBFBFB;
+}
+
+.copyOverPrompt button:focus,
+.copyOverPrompt button:active {
+  outline: none;
+}
+
+.copyOverPrompt .icon {
+  color: #BD8A1C;
+}
+
+.copyOverPrompt span {
+  font-size: 0.9rem;
+  margin: 2px 4px 0 4px;
+}

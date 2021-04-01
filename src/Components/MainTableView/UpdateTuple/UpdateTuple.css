@@ -1,0 +1,56 @@
+form {
+  width: 100%;
+  position: relative;
+}
+
+.inputRow:hover {
+  overflow-x: auto;
+}
+
+.rowControls {
+  align-self: flex-end;
+  display: flex;
+}
+
+.rowControls .icon {
+  margin-right: 8px;
+  color: #505050;
+  cursor: pointer;
+}
+
+.rowControls .icon.deleteRow:hover {
+  color: #970000;
+}
+
+.rowControls .icon.addRow:hover {
+  color: #399E5A;
+}
+
+.fieldUnit.primary input {
+  color: #91938F;
+  cursor: not-allowed;
+}
+
+.confirmActionButton.update {
+  border: 2px solid #BD8A1C;
+  color: #BD8A1C;
+}
+
+.confirmActionButton.update:hover {
+  background-color: #BD8A1C;
+  color: #FBFBFB;
+}
+
+.updateActionContainer .errorMessage {
+  padding: 0;
+}
+
+.updateActionContainer button.dismiss {
+  margin-left: 8px;
+  border: 1px solid #91938F;
+  border-radius: 4px;
+}
+
+.updateActionContainer button.dismiss:hover {
+  background-color: #C8C9C7;
+}

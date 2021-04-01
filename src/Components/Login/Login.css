@@ -1,0 +1,92 @@
+.login-div {
+  background-color: #C8C9C7;
+  width: 100vw;
+  height: 94vh;
+  display: flex;
+  align-items: center;
+}
+
+.login-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  min-width: 600px;
+  max-width: 900px;
+  margin: 0 auto;
+  box-shadow: 3px 3px 6px #91938F;
+  background-color: #F1F1F1;
+  padding-top: 24px;
+  padding-bottom: 12px;
+}
+
+img.login-top-logo {
+  width: 50%;
+  margin-bottom: 24px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  margin: 0 auto;
+}
+
+.login-form label.login-input-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.login-form input.login-input {
+  background-color: #F7F7F7;
+  border: 0.5px solid #C8C9C7;
+  border-radius: 2px;
+  margin-bottom: 8px;
+  height: 1.4rem;
+}
+
+.login-interaction-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.remember-me-checkbox-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+button.login-input-button {
+  padding: 8px 32px;
+  width: fit-content;
+  align-self: flex-end;
+  color: #C8C9C7;
+  background-color: #91938F;
+  border-radius: 2px;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+button.login-input-button.ready {
+  background-color: #399E5A;
+  color: #F1F1F1;
+  box-shadow: 1px 1px 3px #91938F;
+  cursor: pointer;
+}
+
+button.login-input-button.ready:hover {
+  color: #F1F1F1;
+  box-shadow: 1px 1px 1px #91938F;
+  cursor: pointer;
+}
+
+.form-message {
+  align-self: flex-end;
+  color: #970000;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}

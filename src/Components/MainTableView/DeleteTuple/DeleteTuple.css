@@ -1,0 +1,68 @@
+div.tupleToDeleteCheck,
+div.dependencies,
+div.deleting {
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+}
+
+table.tupleToDelete {
+  text-align: left;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+table.tupleToDelete thead th,
+table.tupleToDelete tbody td {
+  border: 0.5px solid #91938F;
+  padding: 4px;
+  white-space: nowrap;
+  width: auto;
+  font-size: 0.9rem;
+  background-color: #FFF;
+}
+
+table.tupleToDelete thead th {
+  background-color: #F1F1F1;
+  font-size: 0.8rem;
+}
+
+table.tupleToDelete thead th.primaryKey {
+  color: #399E5A;
+  font-weight: bolder;
+}
+
+table.tupleToDelete thead th.secondaryKey {
+  font-weight: normal;
+}
+
+table.tupleToDelete thead,
+table.tupleToDelete tbody {
+  width: 100%;
+  overflow-x: auto;
+  line-height: 1rem;
+}
+
+.deleting .errorMessage {
+  padding: 0;
+}
+
+.deleting button.dismiss {
+  margin-left: 8px;
+  border: 1px solid #91938F;
+  border-radius: 4px;
+}
+
+.deleting button.dismiss:hover {
+  background-color: #C8C9C7;
+}
+
+.confirmActionButton.delete {
+  border: 2px solid #970000;
+  color: #970000;
+}
+
+.confirmActionButton.delete:hover {
+  background-color: #970000;
+  color: #F1F1F1;
+}

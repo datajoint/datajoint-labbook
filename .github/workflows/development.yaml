@@ -1,0 +1,209 @@
+name: Development
+on:
+  pull_request:
+  push:
+    tags:
+      - '*.*.*'
+jobs:
+  test-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get changelog entry
+        id: changelog_reader
+        uses: guzman-raphael/changelog-reader-action@v5
+        with:
+          path: ./CHANGELOG.md
+      - name: Verify changelog parsing
+        env:
+          TAG_NAME: ${{steps.changelog_reader.outputs.version}}
+          RELEASE_NAME: Release ${{steps.changelog_reader.outputs.version}}
+          BODY: ${{steps.changelog_reader.outputs.changes}}
+          PRERELEASE: ${{steps.changelog_reader.outputs.status == 'prereleased'}}
+          DRAFT: ${{steps.changelog_reader.outputs.status == 'unreleased'}}
+        run: |
+          echo "TAG_NAME=${TAG_NAME}"
+          echo "RELEASE_NAME=${RELEASE_NAME}"
+          echo "BODY=${BODY}"
+          echo "PRERELEASE=${PRERELEASE}"
+          echo "DRAFT=${DRAFT}"
+  build-docs:
+    needs: test-changelog
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CLIENT_TIMEOUT: "120"
+      COMPOSE_HTTP_TIMEOUT: "120"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Compile docs static artifacts
+        run: |
+          export DJ_LABBOOK_VERSION=$(awk 'FNR==3' package.json | \
+            awk '{split($0,a,":"); print a[2]}' | \
+            awk -F'"' '{$0=$2}1')
+          docker-compose -f docker-compose-docs.yaml up --exit-code-from docs-build --build
+          echo "DJ_LABBOOK_VERSION=${DJ_LABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Add docs static artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: docs-static-djlabbook-${{env.DJ_LABBOOK_VERSION}}
+          path: docs/build/html
+          retention-days: 1
+  build:
+    needs: test-changelog
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CLIENT_TIMEOUT: "120"
+      COMPOSE_HTTP_TIMEOUT: "120"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Compile static artifacts
+        run: |
+          export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
+            awk -F\" '{print $4}')
+          export HOST_UID=$(id -u)
+          mkdir build
+          docker-compose -f docker-compose-build.yaml up \
+            --exit-code-from datajoint-labbook --build
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Add static artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
+          path: build
+          retention-days: 1
+  test:
+    needs: test-changelog
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - py_ver: 3.8
+            distro: alpine
+            image: djbase
+    env:
+      PY_VER: ${{matrix.py_ver}}
+      DISTRO: ${{matrix.distro}}
+      IMAGE: ${{matrix.image}}
+      DOCKER_CLIENT_TIMEOUT: "120"
+      COMPOSE_HTTP_TIMEOUT: "120"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Determine package version
+        run: |
+          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Run primary tests
+        run: |
+          export PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | \
+            awk -F\' '{print $2}')
+          export HOST_UID=$(id -u)
+          docker-compose -f docker-compose-dev.yaml run -e CI=true datajoint-labbook \
+            npm test -- --coverage
+  publish-release:
+    if: github.event_name == 'push'
+    needs:
+      - build
+      - build-docs
+      - test
+    runs-on: ubuntu-latest
+    outputs:
+      release_upload_url: ${{steps.create_gh_release.outputs.upload_url}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Determine package version
+        run: |
+          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Get changelog entry
+        id: changelog_reader
+        uses: guzman-raphael/changelog-reader-action@v5
+        with:
+          path: ./CHANGELOG.md
+          version: ${{env.DJLABBOOK_VERSION}}
+      - name: Fetch static artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
+          path: build
+      - name: Compress static site artifacts
+        run: zip -r static-djlabbook-${DJLABBOOK_VERSION}.zip build
+      - name: Create GH release
+        id: create_gh_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{steps.changelog_reader.outputs.version}}
+          release_name: Release ${{steps.changelog_reader.outputs.version}}
+          body: ${{steps.changelog_reader.outputs.changes}}
+          prerelease: ${{steps.changelog_reader.outputs.status == 'prereleased'}}
+          draft: ${{steps.changelog_reader.outputs.status == 'unreleased'}}
+      - name: Upload static site to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_gh_release.outputs.upload_url}}
+          asset_path: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
+          asset_name: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
+          asset_content_type: application/zip
+      - name: Upload deploy docker environment
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_gh_release.outputs.upload_url}}
+          asset_path: docker-compose-deploy.yaml
+          asset_name: docker-compose-deploy.yaml
+          asset_content_type: application/yaml
+  publish-docs:
+    if: github.event_name == 'push'
+    needs: publish-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Determine package version
+        run: |
+          export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
+            awk -F\" '{print $4}')
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Fetch docs static artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}
+          path: docs/build/html
+      - name: Commit documentation changes
+        run: |
+          git clone https://github.com/${GITHUB_REPOSITORY}.git \
+              --branch gh-pages --single-branch gh-pages
+          rm -R gh-pages/*
+          cp -r docs/build/html/* gh-pages/
+          cp .gitignore gh-pages/
+          touch gh-pages/.nojekyll
+          cd gh-pages
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add . --all
+          git commit -m "Update documentation" -a || true
+          # The above command will fail if no changes were present, so we ignore
+          # the return code.
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: gh-pages
+          directory: gh-pages
+          github_token: ${{secrets.GITHUB_TOKEN}}
+      - name: Compress docs static site artifacts
+        run: zip -r docs-static-djlabbook-${DJLABBOOK_VERSION}.zip docs/build/html
+      - name: Upload docs static site to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{needs.publish-release.outputs.release_upload_url}}
+          asset_path: "docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip"
+          asset_name: "docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip"
+          asset_content_type: application/zip
+          # fail_on_unmatched_files: true

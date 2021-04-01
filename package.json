@@ -1,7 +1,13 @@
 {
-  "name": "dj-gui-react",
+  "name": "datajoint-labbook",
   "version": "0.1.0",
-  "private": true,
+  "description": "A frontend with graphical user interface for DataJoint pipelines built using React.",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datajoint/datajoint-labbook.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-brands-svg-icons": "^5.15.1",
@@ -11,23 +17,26 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.21",
     "@types/js-cookie": "^2.2.6",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^16.9.8",
+    "@types/react-helmet": "^6.1.0",
     "@types/react-router": "^5.1.10",
     "js-cookie": "^2.2.1",
     "python-shell": "^2.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "typedoc": "^0.20.32",
     "typescript": "^4.0.3",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "PORT=${DJLABBOOK_PORT} REACT_APP_DJLABBOOK_BACKEND_PREFIX=${DJLABBOOK_BACKEND_PREFIX} react-scripts start",
+    "build": "REACT_APP_DJLABBOOK_BACKEND_PREFIX=${DJLABBOOK_BACKEND_PREFIX} react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -50,8 +59,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^16.14.2",
+    "@types/react": "^16.14.5",
     "@types/react-router-dom": "^5.1.6"
-  },
-  "proxy": "http://dj-gui-api:5000"
+  }
 }

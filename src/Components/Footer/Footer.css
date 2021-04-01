@@ -1,0 +1,58 @@
+footer {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  background-color: #F1F1F1;
+  box-shadow: 0px -3px 3px #C8C9C7;
+  padding: 4px 0;
+}
+
+.footer-content {
+  position: relative;
+  height: 100%;
+  align-self: center;
+  width: 80%;
+}
+
+.footer-content p {
+  margin: 0 25% 0 55%;
+  width: fit-content;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.version-info-div {
+  position: absolute;
+  text-align: right;
+  right: 2%;
+  font-size: 0.75rem;
+  color: #399E5A;
+}
+
+.version-number {
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+@media only screen and (max-width: 1366px) {
+  .footer-content {
+    width: 70%;
+  }
+  
+  .footer-content p {
+    margin: 0 20% 0 50%;
+    font-size: 0.85rem;
+  }
+}
+
+@media only screen and (max-width: 960px) {
+  .footer-content {
+    width: 60%;
+  }
+  
+  .footer-content p {
+    margin-left: 2%;
+    font-size: 0.8rem;
+  }
+}

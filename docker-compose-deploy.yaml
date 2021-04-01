@@ -1,0 +1,51 @@
+# PHARUS_VERSION=0.1.0 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml pull
+# PHARUS_VERSION=0.1.0 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml up -d
+#
+# Intended for production deployment.
+# Note: You must run both commands above for minimal outage.
+# Make sure to add an entry into your /etc/hosts file as `127.0.0.1 fakeservices.datajoint.io`
+# This serves as an alias for the domain to resolve locally.
+# With this config and the configuration below in NGINX, you should be able to verify it is
+# running properly by navigating in your browser to `https://fakeservices.datajoint.io`.
+# If you don't update your hosts file, you will still have access at `https://localhost`
+# however it should simply display 'Not secure' since the cert will be invalid.
+version: "2.4"
+x-net: &net
+  networks:
+      - main
+services:
+  pharus:
+    <<: *net
+    image: datajoint/pharus:${PHARUS_VERSION}
+    environment:
+      - PHARUS_PORT=5000
+  fakeservices.datajoint.io:
+    <<: *net
+    image: datajoint/nginx:v0.0.16
+    environment:
+      - ADD_zlabbook_TYPE=STATIC
+      - ADD_zlabbook_PREFIX=/
+      - ADD_pharus_TYPE=REST
+      - ADD_pharus_ENDPOINT=pharus:5000
+      - ADD_pharus_PREFIX=/api
+      - HTTPS_PASSTHRU=TRUE
+    entrypoint: sh
+    command:
+      - -c
+      - |
+        rm -R /usr/share/nginx/html
+        curl -L $$(echo "https://github.com/datajoint/datajoint-labbook/releases/download/\
+        	${DJLABBOOK_VERSION}/static-djlabbook-${DJLABBOOK_VERSION}.zip" | tr -d '\n' | \
+        	tr -d '\t') -o static.zip
+        unzip static.zip -d /usr/share/nginx
+        mv /usr/share/nginx/build /usr/share/nginx/html
+        rm static.zip
+        /entrypoint.sh
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      pharus:
+        condition: service_healthy
+networks:
+  main:

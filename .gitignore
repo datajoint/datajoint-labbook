@@ -1,4 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# docs
+/docs/build
+/docs/sphinx/_static/typedocs
 
 # dependencies
 /node_modules
@@ -23,3 +26,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .eslintcache
+.env
+docker-compose.y*ml
+.vscode

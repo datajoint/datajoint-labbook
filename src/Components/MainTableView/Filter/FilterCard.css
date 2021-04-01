@@ -1,0 +1,27 @@
+.filterCardDiv{
+  box-shadow: 3px 3px 6px 3px #91938F;
+  padding: 1%;
+  margin: 0 0.7% 1.4% 0.7%;
+  background-color: #FBFBFB;
+  width: 180px;
+}
+
+.filterCardForm {
+  display: flex;
+  flex-direction: column;
+}
+
+button.filterCardDeleteButton {
+  margin-top: 4px;
+  padding: 4px;
+}
+
+.trashCard.icon {
+  color: #505050;
+  cursor: pointer;
+  width: 12px;
+}
+
+.trashCard.icon:hover {
+  color: #970000;
+}

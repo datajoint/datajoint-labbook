@@ -1,62 +1,74 @@
 import React from 'react';
-import SchemaList from './SchemaList'
-import {TableList} from './TableList'
-import TableType from '../TableTypeEnum/TableType'
+import SchemaList from './SchemaList';
+import TableList from './TableList';
+import TableType from '../TableTypeEnum/TableType';
 import './SideMenu.css';
+import TableListDict from './TableListDict';
+
+interface SideMenuProps {
+  token: string;
+  selectedSchema: string;
+  selectedTableName: string; 
+  selectedTableType: TableType; 
+  handleTableSelection: any;
+}
 
 /**
  * selectedSchemaBuffer: Buffer to temporarly stored the selected schema and wait until the user select a table to update the parent state which will update other views
  * tableDict: Dictonary containing all the tables type and name, please refer the API call to see what it returns.
  */
-type HomeSideMenuState = {
-  selectedSchemaBuffer: string
-  tableDict: any,
+ interface HomeSideMenuState {
+  selectedSchemaBuffer: string;
+  tableListDict?: TableListDict;
+  tableListIsLoading: boolean;
 }
 
 /**
  * SideMenu component that handles listing schemas and tables
  * 
  */
-class SideMenu extends React.Component<{token: string, selectedSchema: string, selectedTableName: string, selectedTableType: TableType, handleTableSelection: any}, HomeSideMenuState> {
-  constructor(props: any) {
+export default class SideMenu extends React.Component<SideMenuProps, HomeSideMenuState> {
+  constructor(props: SideMenuProps) {
     super(props);
     this.handleSchemaSelection = this.handleSchemaSelection.bind(this);
     this.handleTableSelection = this.handleTableSelection.bind(this);
     this.state = {
       selectedSchemaBuffer: '',
-      tableDict: {}
+      tableListDict: undefined,
+      tableListIsLoading: false
     }
   }
 
   /**
    * Handle when the user select a schema and store it in the selectedSchemaBuffer then
    * query the backend to get the update table dict 
-   * @param schema 
+   * @param schemaName 
    */
-  handleSchemaSelection(schema: string) {
+  handleSchemaSelection(schemaName: string) {
     // Update selectedSchemaBuffer
-    this.setState({selectedSchemaBuffer: schema})
+    this.setState({selectedSchemaBuffer: schemaName, tableListIsLoading: true})
     
     // Run api fetch for list tables and deal with result
-    fetch('/api/list_tables', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token },
-      body: JSON.stringify({schemaName: schema})
+    fetch(`${process.env.REACT_APP_DJLABBOOK_BACKEND_PREFIX}/schema/` + schemaName + '/table', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token }
     })
-      .then(result => {
-        // Check for error mesage 500, if so throw and error
-        if (result.status === 500) {
-          result.text().then(errorMessage => {throw new Error(errorMessage)});
-        }
-        
-        return result.json();
-      })
-      .then(result => {
-        this.setState({tableDict: result.tableTypeAndNames});
-      })
-      .catch((error) => {
-        console.error('Error: ', error);
-      })
+    .then(result => {
+      this.setState({tableListIsLoading: false})
+      // Check for error mesage 500, if so throw and error
+      if (result.status === 500) {
+        result.text().then(errorMessage => {throw new Error(errorMessage)});
+      }
+      
+      return result.json();
+    })
+    .then(result => {
+      this.setState({tableListDict: new TableListDict(result.tableTypes)});
+    })
+    .catch((error) => {
+      this.setState({tableListIsLoading: false})
+      console.error('Error: ', error);
+    })
   }
 
   /**
@@ -71,16 +83,16 @@ class SideMenu extends React.Component<{token: string, selectedSchema: string, s
   render() {
     return (
       <div className="side-full-menu">
-        <SchemaList token={this.props.token} handleSchemaSelection={(val: string) => this.handleSchemaSelection(val)} />
+        <SchemaList token={this.props.token} currentlySelectedSchema={this.state.selectedSchemaBuffer} handleSchemaSelection={(val: string) => this.handleSchemaSelection(val)} />
         <TableList
           token={this.props.token} 
-          tableListDict={this.state.tableDict} 
+          tableListDict={this.state.tableListDict} 
           selectedTableName={this.props.selectedTableName}
           selectedTableType = {this.props.selectedTableType}
           onTableSelection={(tableName: string, tableType: TableType) => {this.handleTableSelection(tableName, tableType)}}
+          tableListIsLoading={this.state.tableListIsLoading}
         />
       </div>
     )
   }
 }
-export default SideMenu;

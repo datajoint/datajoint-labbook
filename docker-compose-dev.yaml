@@ -1,0 +1,65 @@
+# PY_VER=3.8 IMAGE=djbase DISTRO=alpine PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | awk -F\' '{print $2}') DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}') HOST_UID=$(id -u) docker-compose -f docker-compose-dev.yaml up
+#
+# Intended for normal development. Supports hot/live reloading.
+# Note: If `package.json` dependencies or Dockerfile change, will need to add --build flag to
+# docker-compose. Make sure to add an entry into your /etc/hosts file as
+# `127.0.0.1 fakeservices.datajoint.io`. This serves as an alias for the domain to resolve
+# locally. With this config and the configuration below in NGINX, you should be able to verify
+# it is running properly by navigating in your browser to `https://fakeservices.datajoint.io`.
+# If you don't update your hosts file, you will still have access at `https://localhost`
+# however it should simply display 'Not secure' since the cert will be invalid.
+# Additionally, there is now a local-only database + account for development and testing. To
+# access it, connect using: database:local-db, user:root, password:labbook. Feel free to
+# alter any part of it as it will be reset between docker-compose down/up commands.
+version: "2.4"
+x-net: &net
+  networks:
+      - main
+services:
+  local-db:
+    <<: *net
+    image: datajoint/mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=labbook
+    volumes:
+      - ./tests/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+  pharus:
+    <<: *net
+    extends:
+      file: ./pharus/docker-compose-dev.yaml
+      service: pharus
+    environment:
+      - PHARUS_PORT=5000
+    depends_on:
+      local-db:
+        condition: service_healthy
+  datajoint-labbook:
+    <<: *net
+    extends:
+      file: ./docker-compose-build.yaml
+      service: datajoint-labbook
+    environment:
+      - DJLABBOOK_PORT=3000
+    command: npm start
+    depends_on:
+      pharus:
+        condition: service_healthy
+  fakeservices.datajoint.io:
+    <<: *net
+    image: datajoint/nginx:v0.0.16
+    environment:
+      - ADD_zlabbook_TYPE=REST
+      - ADD_zlabbook_ENDPOINT=datajoint-labbook:3000
+      - ADD_zlabbook_PREFIX=/
+      - ADD_pharus_TYPE=REST
+      - ADD_pharus_ENDPOINT=pharus:5000
+      - ADD_pharus_PREFIX=/api
+      - HTTPS_PASSTHRU=TRUE
+    ports:
+      - "443:443"
+      - "80:80"
+    depends_on:
+      datajoint-labbook:
+        condition: service_healthy
+networks:
+  main:

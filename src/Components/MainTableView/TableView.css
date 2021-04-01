@@ -1,6 +1,10 @@
 .table-view {
-  width: 96%;
-  margin: 12px 2% auto 1%;
+  width: 98%;
+  height: 97.8%;
+  max-height: 97.8%;
+  margin: 1% 1.5% auto 0.5%; /* Note: look into why 2% margin-top isn't lining up with the 2% for margin top for side-menu. */
+  display: flex;
+  flex-direction: column;
 }
 
 .table-view .nav-tabs {
@@ -9,38 +13,183 @@
 }
 
 .table-view .nav-tabs .tab {
-  box-sizing: border-box;
+  position: relative;
   padding: 8px 24px;
   text-align: center;
-  color: #F1f1f1;
+  color: #FBFBFB;
   background-color: #399E5A;
   font-weight: 600;
+  margin-top: -2px; /* Note: this is to adjust for the funky margin-top misalignment for .table-view */
   margin-right: 8px;
   border-radius: 2px 2px 0 0;
-  cursor: pointer;
-  box-shadow: -1px -1px 2px rgb(160, 160, 160);
+  box-shadow: -1px -1px 2px #91938F;
+  border: none;
 }
 
 .table-view .nav-tabs .tab:hover {
-  box-shadow: -1px -2px 3px rgb(160, 160, 160);
+  box-shadow: -1px -2px 3px #91938F;
   background-color: #82D088; /* light alternative green */
+}
+
+.table-view button {
+  cursor: pointer;
+}
+
+.table-view .nav-tabs .tab:disabled {
+  color: #C8C9C7;
+  background-color: #609b74; /* muted main green */
+  cursor: not-allowed;
 }
 
 .table-view .nav-tabs .tab.inView {
   color: #262A22;
-  background-color: #F1f1f1;
-  box-shadow: -1px -2px 3px rgb(160, 160, 160);
+  background-color: #FBFBFB;
+  box-shadow: -1px -2px 3px #91938F;
+}
+
+.actionMenuContainer {
+  min-height: 300px;
+  overflow: auto;
+  border-bottom: 1px solid #91938F;
+}
+
+h1.actionTitle {
+  font-size: 2.2rem;
+  margin: 8px 0 0;
 }
 
 .view-area {
   margin: 0 0 auto;
-  background-color: #F1f1f1;
+  background-color: #FBFBFB;
   width: 100%;
-  height: 85vh;
-  box-shadow: -1px 0px 3px rgb(160, 160, 160);
+  overflow-y: hidden;
+  flex-grow: 1;
+  box-shadow: -1px 0px 3px #91938F;
 }
 
-.errorMessage {
+.loadingArea {
+  position: relative;
+  height: 100%;
+}
+
+.errorMessage,
+.loadingArea .loadingMessage {
   padding-left: 24px;
   padding-top: 52px;
+}
+
+.fieldUnit {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  border: 1px solid #91938F;
+}
+
+.fieldUnit input,
+.fieldUnit input:focus,
+.fieldUnit input:active,
+.fieldUnit select,
+.fieldUnit select:focus,
+.fieldUnit select:active {
+  box-sizing: border-box;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid #91938F;
+  outline: none;
+  height: 100%;
+  padding: 4px;
+}
+
+.fieldUnit input:disabled {
+  color: #91938F;
+}
+
+.fieldUnit .dateTimeFields {
+  display: flex;
+}
+
+.fieldUnit .dateTimeFields input:first-of-type {
+  border-right: 1px solid #91938F;
+}
+
+.inputRow {
+  display: flex;
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+  margin-right: 0;
+  flex-direction: flex-end;
+  padding-bottom: 12px;
+}
+
+.primary-attribute-label {
+  color: #399E5A;
+  font-weight: bolder;
+}
+
+.attributeHead {
+  display: table-cell;
+  padding: 4px;
+  background-color: #F1F1F1;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  position: relative;
+  justify-content: space-between;
+}
+
+.nullableControls {
+  display: flex;
+  align-items: center;
+}
+
+.nullableTag {
+  color: #FBFBFB;
+  background-color: #505050;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  margin: 0 4px;
+  padding: 2px 4px 1px;
+}
+
+.nullableControls .resetIcon {
+  color: #505050;
+  cursor: pointer;
+}
+
+.nullableControls .resetIcon:hover {
+  color: #91938F;
+}
+
+/* change colors in each action css if necessary */
+.confirmActionButton {
+  margin-top: 16px;
+  border: 2px solid #399E5A;
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: #399E5A;
+  cursor: pointer;
+  background-color: #FBFBFB;
+}
+
+.confirmActionButton:hover {
+  background-color: #399E5A;
+  color: #FBFBFB;
+}
+
+.cancelActionButton {
+  margin-left: 8px;
+  margin-top: 16px;
+  border: 2px solid #505050;
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: #505050;
+  cursor: pointer;
+  background-color: #FBFBFB;
+}
+
+.cancelActionButton:hover {
+  background-color: #505050;
+  color: #FBFBFB;
 }
