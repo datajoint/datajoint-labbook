@@ -53,6 +53,11 @@
   border-bottom: 1px solid #91938F;
 }
 
+h1.actionTitle {
+  font-size: 2.2rem;
+  margin: 8px 0 0;
+}
+
 .view-area {
   margin: 0 0 auto;
   background-color: #FBFBFB;

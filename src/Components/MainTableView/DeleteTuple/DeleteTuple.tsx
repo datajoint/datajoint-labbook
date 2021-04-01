@@ -187,6 +187,7 @@ export default class DeleteTuple extends React.Component<DeleteTupleProps, Delet
   render() {
     return(
       <div className="deleteWorkZone">
+        <h1 className="actionTitle">Delete</h1>
       {this.props.selectedTableEntry ?
         <div>  
           <p>Are you sure you want to delete this entry?</p>
