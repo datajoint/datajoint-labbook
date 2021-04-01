@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>General Notes &mdash; datajoint-labbook 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Auto Docs by TypeDoc" href="dev_api_docs.html" />
+    <link rel="prev" title="Style Guide" href="dev_style_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> datajoint-labbook
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="developer.html">Developer Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dev_design.html">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_style_guide.html">Style Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">General Notes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-source">Working with Source</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#run-locally-w-docker">Run Locally w/ Docker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-tests-w-docker">Run Tests w/ Docker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#building-the-docs">Building the Docs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#working-with-git-submodule-dependency">Working with git submodule dependency</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dev_api_docs.html">Auto Docs by TypeDoc</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">datajoint-labbook</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="developer.html">Developer Documentation</a> &raquo;</li>
+        
+      <li>General Notes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/dev_notes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="general-notes">
+<h1>General Notes<a class="headerlink" href="#general-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.docker.com/get-docker/">Docker</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/compose/install/">Docker Compose</a></p></li>
+</ul>
+</div>
+<div class="section" id="working-with-source">
+<h2>Working with Source<a class="headerlink" href="#working-with-source" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="run-locally-w-docker">
+<h3>Run Locally w/ Docker<a class="headerlink" href="#run-locally-w-docker" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Copy a <code class="docutils literal notranslate"><span class="pre">*-docker-compose.yaml</span></code> file corresponding to your usage to <code class="docutils literal notranslate"><span class="pre">docker-compose.yaml</span></code>. This file is untracked so feel free to modify as necessary. Idea is to commit anything generic but system/setup dependent should go on ‘your’ version i.e. local UID/GID, etc.</p></li>
+<li><p>Check the first comment which will provide the best instruction on how to start the service; yes, it is a bit long. Note: Any of the keyword arguments prepended to the <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> command can be safely moved into a dedicated <code class="docutils literal notranslate"><span class="pre">.env</span></code> and read automatically if they are not evaluated i.e. <code class="docutils literal notranslate"><span class="pre">$(...)</span></code>. Below is a brief description of the non-evaluated environment variables:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">PY_VER</span><span class="o">=</span><span class="m">3</span>.8    <span class="c1"># (pharus) Python version: 3.6|3.7|3.8</span>
+<span class="nv">IMAGE</span><span class="o">=</span>djtest  <span class="c1"># (pharus) Image type:     djbase|djtest|djlab|djlabhub</span>
+<span class="nv">DISTRO</span><span class="o">=</span>alpine <span class="c1"># (pharus) Distribution:   alpine|debian</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="run-tests-w-docker">
+<h3>Run Tests w/ Docker<a class="headerlink" href="#run-tests-w-docker" title="Permalink to this headline">¶</a></h3>
+<p>To run the test watcher, perform the following:</p>
+<ol class="arabic simple">
+<li><p>In one terminal, start the <code class="docutils literal notranslate"><span class="pre">dev</span></code> Docker environment with the above instructions to start LabBook and Pharus with hot-reload support.</p></li>
+<li><p>In another terminal, you can run the watcher using:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker <span class="nb">exec</span> -it datajoint-labbook_datajoint-labbook_1 npm <span class="nb">test</span> -- --coverage
+<span class="c1"># OR to just run it once:</span>
+docker <span class="nb">exec</span> -ite <span class="nv">CI</span><span class="o">=</span><span class="nb">true</span> datajoint-labbook_datajoint-labbook_1 npm <span class="nb">test</span> -- --coverage
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="building-the-docs">
+<h3>Building the Docs<a class="headerlink" href="#building-the-docs" title="Permalink to this headline">¶</a></h3>
+<p>Docs are based on sphinx and typedocs where the latter is used for autodoc-ing the typescript code base.</p>
+<p>To build docs simply run: <code class="docutils literal notranslate"><span class="pre">docker-compose</span> <span class="pre">-f</span> <span class="pre">docker-compose-docs.yaml</span> <span class="pre">up</span></code>. The build docs should be located under <code class="docutils literal notranslate"><span class="pre">/docs/build/html/index.html</span></code>.</p>
+</div>
+<div class="section" id="working-with-git-submodule-dependency">
+<h3>Working with git submodule dependency<a class="headerlink" href="#working-with-git-submodule-dependency" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">pharus</span></code> is treated as a backend dependency managed by git’s builtin <code class="docutils literal notranslate"><span class="pre">submodules</span></code>. It allows us to nest entire git repos with separate history and easy access. Below are some helpful commands to be used after cloning the source repo.</p>
+<div class="section" id="first-time-git-submodule-initialization">
+<h4>First time git submodule initialization<a class="headerlink" href="#first-time-git-submodule-initialization" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">init`</span> <span class="pre">then</span> <span class="pre">`git</span> <span class="pre">submodule</span> <span class="pre">update</span></code></p>
+</div>
+<div class="section" id="update-submodules-to-latest-update-to-latest-master-version">
+<h4>Update submodules to latest (Update to latest master version)<a class="headerlink" href="#update-submodules-to-latest-update-to-latest-master-version" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">foreach</span> <span class="pre">git</span> <span class="pre">pull</span></code></p>
+</div>
+<div class="section" id="create-a-new-submodule">
+<h4>Create a new submodule<a class="headerlink" href="#create-a-new-submodule" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">add</span> <span class="pre">-b</span> <span class="pre">master</span> <span class="pre">git&#64;github.com:datajoint/pharus.git</span></code></p>
+</div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>DataJoint</p>
+<ul>
+<li><p><a class="reference external" href="https://datajoint.io">https://datajoint.io</a></p></li>
+</ul>
+</li>
+<li><p>Pharus (a DataJoint REST API backend):</p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/datajoint/pharus">https://github.com/datajoint/pharus</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="dev_api_docs.html" class="btn btn-neutral float-right" title="Auto Docs by TypeDoc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dev_style_guide.html" class="btn btn-neutral float-left" title="Style Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, DataJoint Contributors.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

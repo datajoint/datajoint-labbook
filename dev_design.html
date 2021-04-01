@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Design &mdash; datajoint-labbook 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Style Guide" href="dev_style_guide.html" />
+    <link rel="prev" title="Developer Documentation" href="developer.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> datajoint-labbook
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="developer.html">Developer Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#login-component">Login Component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#navigation-bar-component">Navigation Bar Component</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#side-menu-navigator-component">Side Menu Navigator Component</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#schema-list-component">Schema List Component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#table-list-component">Table List Component</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#table-view-component">Table View Component</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#table-content">Table Content</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dev_style_guide.html">Style Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_notes.html">General Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev_api_docs.html">Auto Docs by TypeDoc</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">datajoint-labbook</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="developer.html">Developer Documentation</a> &raquo;</li>
+        
+      <li>Design</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/dev_design.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="design">
+<h1>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h1>
+<p>This section is meant to give an overview of the design behind DataJoint LabBook for developers who are interested in contributing to the code base.</p>
+<p>The code is built using <code class="docutils literal notranslate"><span class="pre">react-cra</span></code> using <code class="docutils literal notranslate"><span class="pre">typescript</span></code> with the backend being built on <code class="docutils literal notranslate"><span class="pre">flask</span></code> and <code class="docutils literal notranslate"><span class="pre">datajoint</span></code>. Thus, it is highly recommended to get familiar with React’s components and typical architecture design.</p>
+<div class="section" id="architecture-overview">
+<h2>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">¶</a></h2>
+<p>All of the major app’s react components are stored under <code class="docutils literal notranslate"><span class="pre">./src/Components</span></code> and are comprised of the following parts:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#login-component"><span class="std std-ref">Login Component</span></a></p></li>
+<li><p><a class="reference internal" href="#navigation-bar-component"><span class="std std-ref">Navigation Bar Component</span></a></p></li>
+<li><dl class="simple">
+<dt><span class="xref std std-ref">Home Component</span> (Parent component to handle data passing between sub components)</dt><dd><ul>
+<li><p><a class="reference internal" href="#side-menu-navigator-component"><span class="std std-ref">Side Menu Navigator Component</span></a></p></li>
+<li><p><a class="reference internal" href="#table-view-component"><span class="std std-ref">Table View Component</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="login-component">
+<h2>Login Component<a class="headerlink" href="#login-component" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/Login.png" src="_images/Login.png" />
+<p>The login component’s only parent is <code class="docutils literal notranslate"><span class="pre">App.tsx</span></code> which is the parent component of the entire app.</p>
+<p>At the moment, the login process and authentication is done in the following steps:</p>
+<ul class="simple">
+<li><p>User supplies the database, username, and password.</p></li>
+<li><p>Front end sends the information to the back end <code class="docutils literal notranslate"><span class="pre">/api/login</span></code> route to authenticate.</p></li>
+<li><p>If authentication was successful, then front end will receive a JWT token containing the credential information in the payload (NOTE: See <a class="reference external" href="https://datajoint.github.io/pharus/pharus.html#pharus.server.login">Pharus Docs</a> for more details on this).</p></li>
+<li><p>Subsequent API requests will use the JWT for authentication. The active JWT is stored at the <code class="docutils literal notranslate"><span class="pre">App.tsx</span></code> level.</p></li>
+</ul>
+</div>
+<div class="section" id="navigation-bar-component">
+<h2>Navigation Bar Component<a class="headerlink" href="#navigation-bar-component" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/NavBarHighlight.png" src="_images/NavBarHighlight.png" />
+<p>The navigation bar handles getting the API versions for the frontend and backend along with displaying them. It also handles displaying the logo, login, and sign out.</p>
+</div>
+<div class="section" id="side-menu-navigator-component">
+<h2>Side Menu Navigator Component<a class="headerlink" href="#side-menu-navigator-component" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/SideMenuHighlight.png" src="_images/SideMenuHighlight.png" />
+<p>The side menu navigator consists of two sub components: the schema and table list view.</p>
+<p>It also stores a few buffer variables to keep track of what schema the user has selected so far and only reports back to the home component.</p>
+<div class="section" id="schema-list-component">
+<h3>Schema List Component<a class="headerlink" href="#schema-list-component" title="Permalink to this headline">¶</a></h3>
+<p>Schema List view is responsible for the following:
+- Upon being loaded, fetch all available schema under the given database connection.
+- Display all the schemas and restrict if the user types a non-empty string into the search box.
+- Upon selection of a schema, use the callback to send the selected schema back to <code class="docutils literal notranslate"><span class="pre">SideMenu</span></code> component.</p>
+</div>
+<div class="section" id="table-list-component">
+<h3>Table List Component<a class="headerlink" href="#table-list-component" title="Permalink to this headline">¶</a></h3>
+<p>Table List view is responsible for the following:
+- After the user selected a schema, fetch all the tables and its type from the backend.
+- Display all the tables and restrict if the user types a non-empty string into the search box.
+- Upon the selection of a table, use the callback to send the table info back to the <code class="docutils literal notranslate"><span class="pre">SideMenu</span></code> component where it will send the info back to the <code class="docutils literal notranslate"><span class="pre">Home</span></code> component.</p>
+</div>
+</div>
+<div class="section" id="table-view-component">
+<h2>Table View Component<a class="headerlink" href="#table-view-component" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/TableViewHighlight.png" src="_images/TableViewHighlight.png" />
+<p>Responsible for the handling of two sub components: the <code class="docutils literal notranslate"><span class="pre">TableContent</span></code> and <code class="docutils literal notranslate"><span class="pre">TableInfo</span></code>. It also fetches the data required by both of them once this component receives a valid table name.</p>
+<div class="section" id="table-content">
+<h3>Table Content<a class="headerlink" href="#table-content" title="Permalink to this headline">¶</a></h3>
+<img alt="_images/TableContentHighlight.png" src="_images/TableContentHighlight.png" />
+<p>Table Content is mainly responsible for viewing, filtering, inserting, updating, and deleting records of a given table. It is divided into 5 components:
+- Table Content View (Display the records of the table)
+- Filter Component (Filter the records of the table)
+- Insert Component (Insert a single record)
+- Update Component (Update a single record))
+- Deletion Component (Delete a single record at a time. Currently, the record must not have any child dependencies.)</p>
+<div class="section" id="table-content-view">
+<h4>Table Content View<a class="headerlink" href="#table-content-view" title="Permalink to this headline">¶</a></h4>
+<img alt="_images/TableViewHighlight.png" src="_images/TableViewHighlight.png" />
+<p>Table Content View is responsible for:
+- Fetch and display a record
+- Contain the <code class="docutils literal notranslate"><span class="pre">Filter</span></code>, <code class="docutils literal notranslate"><span class="pre">Insert</span></code>, <code class="docutils literal notranslate"><span class="pre">Update</span></code>, and <code class="docutils literal notranslate"><span class="pre">Delete</span></code> components.
+- Allow user to check a specific record to send one of the specific subcomponent (such as insert, update, and delete).</p>
+</div>
+<div class="section" id="filter-component">
+<h4>Filter Component<a class="headerlink" href="#filter-component" title="Permalink to this headline">¶</a></h4>
+<img alt="_images/FilterComponentHighlight.png" src="_images/FilterComponentHighlight.png" />
+<p>Filter Component Notes:
+- Allow the user to filter the records based on the available attributes (Currently, filtering by blob or longblob is not supported).
+- Upon each change, all the restrictions (represented by filter cards) are checked to see if they are valid. If so, a fetch is performed with the new restrictions.
+- There is a 1-second delay from the last change (such as typing) before the back end is queried and the view is updated.</p>
+</div>
+<div class="section" id="insert-component">
+<h4>Insert Component<a class="headerlink" href="#insert-component" title="Permalink to this headline">¶</a></h4>
+<img alt="_images/InsertComponentHighlight.png" src="_images/InsertComponentHighlight.png" />
+<p>Insert Components Notes:
+- Allow the users to insert a record using HTML inputs elements.
+- If there is a checked record in the content viewer, it will ask the user if they want to copy over the record to the view.</p>
+</div>
+<div class="section" id="update-component">
+<h4>Update Component<a class="headerlink" href="#update-component" title="Permalink to this headline">¶</a></h4>
+<img alt="_images/UpdateComponentHighlight.png" src="_images/UpdateComponentHighlight.png" />
+<p>Notes:
+- User must select a record from the table content viewer which will be copy over to this component to perform the update.
+- Only allows updates of non-primary and non-blob fields.</p>
+</div>
+<div class="section" id="delete-component">
+<h4>Delete Component<a class="headerlink" href="#delete-component" title="Permalink to this headline">¶</a></h4>
+<img alt="_images/DeleteComponentHighlight.png" src="_images/DeleteComponentHighlight.png" />
+<p>Notes:
+- User must select a record from a table content viewer which will be copied over to this component for deletion.
+- Currently, <code class="docutils literal notranslate"><span class="pre">Delete</span></code> uses a quick delete operation (you may find more details on this in the <code class="docutils literal notranslate"><span class="pre">datajoint</span></code> pip package in <code class="docutils literal notranslate"><span class="pre">datajoint.table.Table.delete_quick</span></code>). This means the record cannot have any child dependencies otherwise the delete will fail and return a message with additional details.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="dev_style_guide.html" class="btn btn-neutral float-right" title="Style Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="developer.html" class="btn btn-neutral float-left" title="Developer Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, DataJoint Contributors.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
