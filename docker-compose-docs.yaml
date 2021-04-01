@@ -12,7 +12,16 @@ services:
       - /bin/bash
       - -c
       - |
+        set -e
+        # make api docs
         npm install
         npx typedoc ./src --out ./docs/sphinx/_static/typedocs
+        # make main docs
         cd ./docs/sphinx
         make html
+        # adjust demo reference
+        cd ../..
+        rm docs/build/html/_static/typedocs/docs/sphinx/_static/images/demo.gif || echo
+        mkdir -p docs/build/html/_static/typedocs/docs/sphinx/_static/images
+        ln -s ../../../../../images/demo.gif \
+          docs/build/html/_static/typedocs/docs/sphinx/_static/images/demo.gif
