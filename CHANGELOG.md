@@ -4,7 +4,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 
 ## [Unreleased]
 ### Fixed
-- Fixed flexbox grow issues with safari by adding prefix. PR #142g
+- Fixed flexbox grow issues with safari by adding prefix. PR #142
 
 ## [0.1.0] - 2021-03-31
 ### Added
