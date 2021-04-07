@@ -273,8 +273,6 @@ input[type="checkbox"][disabled] {
   table.table {
     font-size: 0.8rem;
   }
-
-
 }
 
 @media only screen and (max-width: 960px) {
@@ -302,7 +300,6 @@ input[type="checkbox"][disabled] {
 }
 
 .hidden-action-menu-container {
-  visibility: hidden;
   display: none;
   height: 0px;
 }

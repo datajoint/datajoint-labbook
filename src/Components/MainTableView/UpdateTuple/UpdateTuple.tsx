@@ -227,6 +227,7 @@ export default class UpdateTuple extends React.Component<UpdateTupleProps, Updat
   render() {
     return (
       <div className="updateActionContainer">
+        <h1 className="actionTitle">Update</h1>
         {
             this.props.selectedTableEntry === undefined ?
               <p>Select a table entry from below to update</p>
