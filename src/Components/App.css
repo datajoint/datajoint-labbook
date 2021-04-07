@@ -19,5 +19,6 @@ html, body {
   justify-content: center;
   background-color: #C8C9C7;
   flex-grow: 1;
+  -webkit-flex: 1;
   width: 100%;
 }
