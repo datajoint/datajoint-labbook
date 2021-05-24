@@ -8,7 +8,7 @@ import './Filter.css'
 
 interface FilterProps {
   tableAttributesInfo?: TableAttributesInfo;
-  setRestrictions: (restrictions: Array<Restriction>) => void;
+  setRestrictions: (restrictions: Set<Restriction>) => void;
 }
 
 interface FilterState {
@@ -100,7 +100,7 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
 
     const restrictionChangeTimeout = setTimeout(() => {
       // Check if any of the restrictions are valid, if so then send them to TableView fetchTuples
-      let validRestrictions: Array<Restriction> = []
+      let validRestrictions: Set<Restriction> = new Set();
       for (let restriction of this.state.restrictionsBuffer) {
         if (restriction.tableAttribute !== undefined && restriction.restrictionType !== undefined && restriction.value !== undefined && restriction.isEnable === true) {
 
@@ -113,12 +113,12 @@ export default class Filter extends React.Component<FilterProps, FilterState> {
           }
 
           // Valid restriction, thus add it to the list
-          validRestrictions.push(restriction);
+          validRestrictions.add(restriction);
         }
       }
 
       // Call fetch content if there is at lesat one valid restriction
-      if (validRestrictions.length >= 0) {
+      if (validRestrictions.size >= 0) {
         this.props.setRestrictions(validRestrictions);
       }
     }, 1000);
