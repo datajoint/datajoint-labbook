@@ -64,6 +64,35 @@ Create a new submodule
 
 ``git submodule add -b master git@github.com:datajoint/pharus.git``
 
+
+Deploying behind an Apache proxy
+-------------------------------------
+
+Rather than serve the application directly, you may wish to place it behind a proxy server such as Apache or NginX.  For Apache, use a ``.conf`` file such as:
+
+ .. code-block:: bash
+
+  Listen YOUR_PORT
+  <VirtualHost YOUR_URL:YOUR_PORT>
+    ServerName YOUR_URL
+
+    # configure SSL                                                                                                                                                                  
+    SSLEngine on
+    SSLCertificateKeyFile /path/to/key_file
+    SSLCertificateFile /path/to/cert/file
+    SSLCertificateChainFile /path/to/chain/file
+    SSLProxyEngine on
+    SSLProxyVerify none
+    SSLProxyCheckPeerName off
+    SSLProxyCheckPeerCN off
+    SSLProxyCheckPeerExpire off
+
+    ProxyPass / https://127.0.0.1:50283/
+    ProxyPassReverse / https://127.0.0.1:50283/
+  </VirtualHost>
+
+Assuming that the application is served internally on port 50283, that you have replaced YOUR_URL and YOUR_PORT with the external URL and port you wish for users to use to connnect to it, and that you have replaced the SSL file locations above with the locations to your certficate files.  Your provided SSL certificates will then be used instead of the self-signed ones provided by the application.
+
 References
 ==========
 - DataJoint
