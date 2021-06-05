@@ -96,7 +96,8 @@ export default class TableList extends React.Component<TableListProps, TableList
     }
 
     this.onSearchStringChange = this.onSearchStringChange.bind(this);
-    this.flipTableOrder = this.flipTableOrder.bind(this);
+    this.restrictTableListBySeachString = this.restrictTableListBySeachString.bind(this);
+    this.changeTableSortMode = this.changeTableSortMode.bind(this);
   }
 
   /**
@@ -168,8 +169,117 @@ export default class TableList extends React.Component<TableListProps, TableList
     this.parseTableEntry(tableList, this.props.tableListDict.lookup_tables, TableType.LOOKUP, partTableDict);
     this.parseTableEntry(tableList, this.props.tableListDict.imported_tables, TableType.IMPORTED, partTableDict);
 
-     // Update the state and reset sort mode to ATOZ
-     this.setState({tableList: tableList, restrictedTableList: tableList, searchString: '', currentTableSortMode: TableSortMode.ATOZ});
+    console.log(tableList);
+    tableList = this.sortTableList(tableList, this.state.currentTableSortMode);
+    console.log(tableList);
+    // Update the state and reset sort mode to ATOZ
+    this.setState({tableList: tableList, restrictedTableList: tableList, searchString: ''});
+  }
+
+  sortTableList(tableList: Array<ParentTableListEntry>, sortMode: TableSortMode) {
+    let tableListsByTiers: any = []; // Dict to store an array for each tier of table
+
+    // Sort the tableList into tiers first
+    for (let parentTableListEntry of tableList) {
+      // Check if the array is initalized
+      if (tableListsByTiers[parentTableListEntry.tableType] === undefined) {
+        // Initalized with an empty array
+          tableListsByTiers[parentTableListEntry.tableType] = [];
+      }
+
+      // Throw the parentTableListEntry into their respective tier arrays
+      tableListsByTiers[parentTableListEntry.tableType].push(parentTableListEntry);
+    }
+
+    if (sortMode === TableSortMode.ATOZ) {
+      // Sort by name for each tier from A to Z
+      for (let tableTierKey of Object.keys(tableListsByTiers)) {
+        (tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>).sort(function(a: TableListEntry, b: TableListEntry) {
+          let aLowerCase = a.tableName.toLowerCase();
+          let bLowerCase = b.tableName.toLowerCase();
+
+          if (aLowerCase < bLowerCase) {
+            return -1;
+          }
+          else if (aLowerCase > bLowerCase) {
+            return 1;
+          }
+          else {
+            return 0;
+          }
+        })
+
+        // Check if the parentTableListEntry has part table, if so sort it also
+        for (let parentTableListEntry of tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>) {
+          if (parentTableListEntry.partTables.length > 0) {
+            parentTableListEntry.partTables.sort(function(a: TableListEntry, b: TableListEntry) {
+              let aLowerCase = a.tableName.toLowerCase();
+              let bLowerCase = b.tableName.toLowerCase();
+
+              if (aLowerCase < bLowerCase) {
+                return -1;
+              }
+              else if (aLowerCase > bLowerCase) {
+                return 1;
+              }
+              else {
+                return 0;
+              }
+            })
+          }
+        }
+      }
+    }
+    else if (sortMode === TableSortMode.ZTOA) {
+      // Basically exactly ATOZ but with the sort code flipped
+      for (let tableTierKey of Object.keys(tableListsByTiers)) {
+        (tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>).sort(function(a: TableListEntry, b: TableListEntry) {
+          let aLowerCase = a.tableName.toLowerCase();
+          let bLowerCase = b.tableName.toLowerCase();
+
+          if (aLowerCase < bLowerCase) {
+            return 1;
+          }
+          else if (aLowerCase > bLowerCase) {
+            return -1;
+          }
+          else {
+            return 0;
+          }
+        })
+
+        // Check if the parentTableListEntry has part table, if so sort it also
+        for (let parentTableListEntry of tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>) {
+          if (parentTableListEntry.partTables.length > 0) {
+            parentTableListEntry.partTables.sort(function(a: TableListEntry, b: TableListEntry) {
+              let aLowerCase = a.tableName.toLowerCase();
+              let bLowerCase = b.tableName.toLowerCase();
+
+              if (aLowerCase < bLowerCase) {
+                return 1;
+              }
+              else if (aLowerCase > bLowerCase) {
+                return -1;
+              }
+              else {
+                return 0;
+              }
+            })
+          }
+        }
+      }
+    }
+    else {
+      throw 'Unsupported Table List sort mode';
+    }
+
+    // Rebuild the tableList
+    let sortedTableList: Array<ParentTableListEntry> = [];
+    for (let tableTierKey of Object.keys(tableListsByTiers)) {
+      sortedTableList = sortedTableList.concat(tableListsByTiers[tableTierKey]);
+    }
+
+    return sortedTableList;
   }
 
   /**
@@ -197,26 +307,30 @@ export default class TableList extends React.Component<TableListProps, TableList
    * @param event 
    */
   onSearchStringChange(event: React.ChangeEvent<HTMLInputElement>) {
+    this.restrictTableListBySeachString(event.target.value);
+  }
+
+  restrictTableListBySeachString(searchString: string) {
     // Filter our the results based on the search string, assuming it is not empty
     let restrictedTableList: Array<ParentTableListEntry> = [];
 
-    if (event.target.value !== '') {
+    if (searchString !== '') {
       for (let parentTableListEntry of this.state.tableList) {
-        if (parentTableListEntry.tableName.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase())) {
+        if (parentTableListEntry.tableName.toLocaleLowerCase().includes(searchString.toLocaleLowerCase())) {
           restrictedTableList.push(parentTableListEntry);
         }
         else {
           for (let partTableListEntry of parentTableListEntry.partTables) {
-            if (partTableListEntry.tableName.toLocaleLowerCase().includes(event.target.value.toLocaleLowerCase())) {
+            if (partTableListEntry.tableName.toLocaleLowerCase().includes(searchString.toLocaleLowerCase())) {
               restrictedTableList.push(parentTableListEntry);
             }
           }
         }
       }
-      this.setState({searchString: event.target.value, restrictedTableList: restrictedTableList});
+      this.setState({searchString: searchString, restrictedTableList: restrictedTableList});
     }
     else {
-      this.setState({searchString: event.target.value, restrictedTableList: this.state.tableList});
+      this.setState({searchString: searchString, restrictedTableList: this.state.tableList});
     }
   }
 
@@ -225,16 +339,18 @@ export default class TableList extends React.Component<TableListProps, TableList
    * the list that is ascending and decensding with ascending by default, we can take advantage by this by just simply fliping the list when
    * the user change between the two sort mode. We also need to change the selected schema index accordingly which is simply just lengtOfArray - currentIndex - 1
    */
-  flipTableOrder(event: React.ChangeEvent<HTMLSelectElement>) {
-    var restrictedTableList: Array<ParentTableListEntry> = Object.assign([], this.state.restrictedTableList);
+  async changeTableSortMode(event: React.ChangeEvent<HTMLSelectElement>) {
+    
+    let requestedTableSortMode: TableSortMode = parseInt(event.target.value) as TableSortMode;
+    console.log(this.state.currentTableSortMode, requestedTableSortMode);
+    if (requestedTableSortMode !== this.state.currentTableSortMode) {
+      let tableList =  this.sortTableList(this.state.tableList, requestedTableSortMode);
+      // Update the tableList
+      await this.setState({tableList: this.sortTableList(this.state.tableList, requestedTableSortMode), currentTableSortMode: requestedTableSortMode});
 
-    // Flip all part tables first
-    for (let parentTableListEntry of restrictedTableList) {
-      parentTableListEntry.partTables.reverse();
+      // Reapply string restriction
+      this.restrictTableListBySeachString(this.state.searchString);
     }
-
-    // Flip all the parent tables
-    this.setState({restrictedTableList: this.state.restrictedTableList.reverse(), currentTableSortMode: parseInt(event.target.value)});
   }
 
   render() {
@@ -250,7 +366,7 @@ export default class TableList extends React.Component<TableListProps, TableList
               <FontAwesomeIcon className="sort-icon" icon={faSortAmountDown} />
               <label>Sort<br />Table</label>
             </div>
-            <select className="sort-table-options" onChange={this.flipTableOrder}>
+            <select className="sort-table-options" onChange={this.changeTableSortMode}>
               <option value={TableSortMode.ATOZ} selected={this.state.currentTableSortMode === TableSortMode.ATOZ}>Alphabetical (A-Z)</option>
               <option value={TableSortMode.ZTOA} selected={this.state.currentTableSortMode === TableSortMode.ZTOA}>Alphabetical (Z-A)</option>
               {/* <option value="tb">Topological (top-bottom)</option> */}
