@@ -340,15 +340,13 @@ export default class TableList extends React.Component<TableListProps, TableList
    * the user change between the two sort mode. We also need to change the selected schema index accordingly which is simply just lengtOfArray - currentIndex - 1
    */
   async changeTableSortMode(event: React.ChangeEvent<HTMLSelectElement>) {
-    
     let requestedTableSortMode: TableSortMode = parseInt(event.target.value) as TableSortMode;
-    console.log(this.state.currentTableSortMode, requestedTableSortMode);
     if (requestedTableSortMode !== this.state.currentTableSortMode) {
       let tableList =  this.sortTableList(this.state.tableList, requestedTableSortMode);
       // Update the tableList
       await this.setState({tableList: this.sortTableList(this.state.tableList, requestedTableSortMode), currentTableSortMode: requestedTableSortMode});
 
-      // Reapply string restriction
+      // Reapply search string restriction
       this.restrictTableListBySeachString(this.state.searchString);
     }
   }
