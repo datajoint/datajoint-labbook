@@ -1,4 +1,5 @@
 import React from 'react';
+import JSON5 from 'json5';
 import "./TableView.css";
 
 // Component imports
@@ -12,6 +13,8 @@ import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribut
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
 import BasicLoadingIcon from '../LoadingAnimation/BasicLoadingIcon';
+import { isEqualSet } from '../Utils';
+import json5 from 'json5';
 
 const NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT: number = 500;
 
@@ -41,7 +44,7 @@ interface TableViewState {
   tableInfoData: string; // Table description obtain from backend
   errorMessage: string; // Error message buffer
   isLoading: boolean; // Boolean for loading animation
-  restrictions: Array<Restriction>; // Storage for the last requested restrction to deal with case such as numberOfTuplesPerPage change
+  restrictions: Set<Restriction>; // Storage for the last requested restrction to deal with case such as numberOfTuplesPerPage change
 }
 
 /**
@@ -64,7 +67,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
       tableInfoData: '',
       errorMessage: '',
       isLoading: false,
-      restrictions: []
+      restrictions: new Set()
     }
 
     this.fetchTableAttributeAndContent = this.fetchTableAttributeAndContent.bind(this);
@@ -102,7 +105,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
    * Setter for valid restrictions to apply during table fetching
    * @param restrictions Array of vaild Restrictions
    */
-  setRestrictions(restrictions: Array<Restriction>) {
+  setRestrictions(restrictions: Set<Restriction>) {
     this.setState({restrictions: restrictions});
   }
 
@@ -131,12 +134,12 @@ export default class TableView extends React.Component<TableViewProps, TableView
       if (this.state.currentView === CurrentView.TABLE_CONTENT) {
         // User is on TableContent, fetch data related to that view and set tableInfoNeedRefresh to true
         this.fetchTableAttributeAndContent();
-        this.setState({tableContentNeedRefresh: false, tableDefinitionNeedRefresh: true, restrictions: []});
+        this.setState({tableContentNeedRefresh: false, tableDefinitionNeedRefresh: true, restrictions: new Set()});
       }
       else if (this.state.currentView === CurrentView.TABLE_INFO) {
         // User is on TableInfo, fetch data related to that view nad set tableContentNeedRefresh to true
         this.fetchTableDefinition();
-        this.setState({tableContentNeedRefresh: true, tableDefinitionNeedRefresh: false, restrictions: []});
+        this.setState({tableContentNeedRefresh: true, tableDefinitionNeedRefresh: false, restrictions: new Set()});
       }
     }
     else if (this.state.currentView !== prevState.currentView) {
@@ -163,7 +166,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
       }, NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT)
       this.setState({setNumberOFTuplesPerPageTimeout: setNumberOFTuplesPerPageTimeout});
     }
-    else if (this.state.restrictions !== prevState.restrictions) {
+    else if (!isEqualSet(this.state.restrictions, prevState.restrictions)) {
       this.fetchTableContent();
     }
   }
@@ -245,7 +248,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
     // Add page param
     urlParams.push('page=' + this.state.currentPageNumber);
 
-    if (this.state.restrictions.length !== 0) {
+    if (this.state.restrictions.size !== 0) {
       let restrictionsInAPIFormat = []
       for (let restriction of this.state.restrictions) {
         if (restriction.tableAttribute?.attributeType === TableAttributeType.DATETIME) {
@@ -287,6 +290,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
     })
     .then(result => {
+      console.log(result);
       if (!result.ok) {
         result.text()
         .then(errorMessage => {
@@ -296,8 +300,9 @@ export default class TableView extends React.Component<TableViewProps, TableView
           this.setState({tableContentData: [], errorMessage: 'Problem fetching table content: ' + error, isLoading: false})
         })
       }
-      return result.json();
+      return result.text();
     })
+    .then(result => JSON5.parse(result))
     .then(result => {
       // Deal with coverting time back to datajoint format
       let tableAttributes: Array<TableAttribute> = this.state.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;

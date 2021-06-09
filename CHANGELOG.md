@@ -2,8 +2,14 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
-## [Unreleased]
+## Unreleased
+### Added
+- Switch filter cards restrictions handling from array to set for performance boost PR #150
 ### Fixed
+- Fix redundant double fetch bug PR #150
+- Fixed issue with parsing NaNs and infinities (#147) PR #150
+- Fixed broken table sort (#151) PR #154
+- Fixed table search string reseting when user selects a new table PR #154
 - Fixed flexbox grow issues with safari by adding prefix. PR #142
 
 ## [0.1.0] - 2021-03-31

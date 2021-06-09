@@ -34,7 +34,7 @@ interface TableContentProps {
   setPageNumber: (pageNumber: number) => void;
   setNumberOfTuplesPerPage: (numberOfTuplesPerPage: number) => void;
   fetchTableContent: () => void; // Callback function to tell the parent component to update the contentData
-  setRestrictions: (restrictions: Array<Restriction>) => void;
+  setRestrictions: (restrictions: Set<Restriction>) => void;
 }
 
 interface TableContentState {
