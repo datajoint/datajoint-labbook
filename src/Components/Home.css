@@ -1,15 +1,19 @@
 .home-container {
   display: flex;
-  width: 100vw;
-  height: 92vh;
+  width: 100%;
+  margin: 1% 0%;
+  height: 97%;
 }
 
 .side-menu-container {
   height: 100%;
   width: 30%;
+  margin: 0% 0.5%;
+  background-color: red;
 }
 
 .table-view-container {
   height: 100%;
-  width: 70%;
+  width: 68%;
+  margin: 0% 0.5%;
 }
