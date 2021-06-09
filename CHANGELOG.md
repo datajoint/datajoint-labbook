@@ -6,6 +6,8 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 ### Fixed
 - Fix redundant double fetch bug PR #150
 - Fixed issue with parsing NaNs and infinities (#147) PR #150
+- Fixed broken table sort (#151)
+- Fixed table search string reseting when user selects a new table
 
 ## [0.1.0] - 2021-03-31
 ### Added

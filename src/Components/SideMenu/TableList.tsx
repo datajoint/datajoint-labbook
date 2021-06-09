@@ -7,8 +7,8 @@ import TableListLoading from '../LoadingAnimation/TableListLoading';
 import TableListDict from './TableListDict'
 
 enum TableSortMode {
-  ATOZ,
-  ZTOA,
+  A_TO_Z_BY_TIER,
+  Z_TO_A_BY_TIER,
 }
 
 /**
@@ -92,7 +92,7 @@ export default class TableList extends React.Component<TableListProps, TableList
       tableList: [],
       restrictedTableList: [],
       searchString: '',
-      currentTableSortMode: TableSortMode.ATOZ
+      currentTableSortMode: TableSortMode.A_TO_Z_BY_TIER
     }
 
     this.onSearchStringChange = this.onSearchStringChange.bind(this);
@@ -176,6 +176,12 @@ export default class TableList extends React.Component<TableListProps, TableList
     this.setState({tableList: tableList, restrictedTableList: tableList, searchString: ''});
   }
 
+  /**
+   * Sort the given the tableList by one one of the avaliable sortMode listed in TableSortMode
+   * @param tableList The array of ParentTableListEntry to be sorted
+   * @param sortMode One of the supported TableSortMode entry
+   * @returns A sorted table list
+   */
   sortTableList(tableList: Array<ParentTableListEntry>, sortMode: TableSortMode) {
     let tableListsByTiers: any = []; // Dict to store an array for each tier of table
 
@@ -191,7 +197,7 @@ export default class TableList extends React.Component<TableListProps, TableList
       tableListsByTiers[parentTableListEntry.tableType].push(parentTableListEntry);
     }
 
-    if (sortMode === TableSortMode.ATOZ) {
+    if (sortMode === TableSortMode.A_TO_Z_BY_TIER) {
       // Sort by name for each tier from A to Z
       for (let tableTierKey of Object.keys(tableListsByTiers)) {
         (tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>).sort(function(a: TableListEntry, b: TableListEntry) {
@@ -230,7 +236,7 @@ export default class TableList extends React.Component<TableListProps, TableList
         }
       }
     }
-    else if (sortMode === TableSortMode.ZTOA) {
+    else if (sortMode === TableSortMode.Z_TO_A_BY_TIER) {
       // Basically exactly ATOZ but with the sort code flipped
       for (let tableTierKey of Object.keys(tableListsByTiers)) {
         (tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>).sort(function(a: TableListEntry, b: TableListEntry) {
@@ -310,6 +316,10 @@ export default class TableList extends React.Component<TableListProps, TableList
     this.restrictTableListBySeachString(event.target.value);
   }
 
+  /**
+   * Apply the restriction string by looping through the table list and copying the entries that match the condition to restrictTableList
+   * @param searchString String to restrict the table's name by
+   */
   restrictTableListBySeachString(searchString: string) {
     // Filter our the results based on the search string, assuming it is not empty
     let restrictedTableList: Array<ParentTableListEntry> = [];
@@ -365,8 +375,8 @@ export default class TableList extends React.Component<TableListProps, TableList
               <label>Sort<br />Table</label>
             </div>
             <select className="sort-table-options" onChange={this.changeTableSortMode}>
-              <option value={TableSortMode.ATOZ} selected={this.state.currentTableSortMode === TableSortMode.ATOZ}>Alphabetical (A-Z)</option>
-              <option value={TableSortMode.ZTOA} selected={this.state.currentTableSortMode === TableSortMode.ZTOA}>Alphabetical (Z-A)</option>
+              <option value={TableSortMode.A_TO_Z_BY_TIER} selected={this.state.currentTableSortMode === TableSortMode.A_TO_Z_BY_TIER}>Alphabetical (A-Z)</option>
+              <option value={TableSortMode.Z_TO_A_BY_TIER} selected={this.state.currentTableSortMode === TableSortMode.Z_TO_A_BY_TIER}>Alphabetical (Z-A)</option>
               {/* <option value="tb">Topological (top-bottom)</option> */}
               {/* <option value="bt">Topological (bottom-top)</option> */}
             </select>
