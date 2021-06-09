@@ -1,5 +1,5 @@
 .loadingOverlay {
-  position: absolute;
+  position: relative;
   z-index: 900;
   left: 0;
   top: 0;

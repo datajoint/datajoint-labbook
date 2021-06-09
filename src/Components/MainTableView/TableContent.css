@@ -1,9 +1,10 @@
 .content-view-area {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  width: 100%;
 }
-
 .table-content-viewer {
-  position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -62,6 +63,17 @@
   display: flex;
   font-size: 0.8rem;
 }
+
+.view-area {
+  display: flex;
+  margin: 0 0 auto;
+  background-color: #FBFBFB;
+  width: 100%;
+  flex-grow: 1;
+  -webkit-flex: 1;
+  box-shadow: -1px 0px 3px #91938F;
+}
+
 
 .content-controllers button:hover {
   border-color: #399E5A;
@@ -128,20 +140,19 @@
   justify-content: center;
 }
 
-.content-view-area .table-container {
-  width: 100%;
-  height: auto;
-  max-height: 80%;
-  overflow-x: auto;
-  overflow-y: auto;
-}
-
 .table {
-  position: relative;
+  display: inline-block;
+  flex-grow: 1;
+  -webkit-flex: 1;
+  flex-basis: 1em;
   font-size: 0.85rem;
-  width: 100%;
+  overflow-y: scroll;
   border-collapse: collapse;
   text-align: left;
+}
+
+.paginator {
+  display: block
 }
 
 .table th {
