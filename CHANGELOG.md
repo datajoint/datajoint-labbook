@@ -3,6 +3,8 @@
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 
 ## Unreleased
+### Added
+- Switch filter cards restrictions handling from array to set for performance boost PR #150
 ### Fixed
 - Fix redundant double fetch bug PR #150
 - Fixed issue with parsing NaNs and infinities (#147) PR #150
