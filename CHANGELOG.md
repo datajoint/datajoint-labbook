@@ -1,6 +1,10 @@
 # Changelog
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
+## [0.1.1] - 2021-11-11
+### Fixed
+- fixed bug with the labbook dockerfile PR #164
+- updated pharus version to 0.2.2 PR #164
 
 ## [0.1.0] - 2021-03-31
 ### Added
