@@ -1,6 +1,6 @@
 # Temp image to create exec to allow UID/GID to be updated on boot
 FROM golang:alpine3.11 as go_tmp
-ADD https://raw.githubusercontent.com/datajoint/djbase-docker/master/utilities/startup.go /startup.go
+ADD https://raw.githubusercontent.com/datajoint/miniconda3-docker/master/utilities/startup.go /startup.go
 RUN cd / && go build startup.go
 # Main dev image
 FROM node:lts-buster-slim
