@@ -13,8 +13,7 @@ import SecondaryTableAttribute from './DataStorageClasses/SecondaryTableAttribut
 import TableAttribute from './DataStorageClasses/TableAttribute';
 import Restriction from './DataStorageClasses/Restriction';
 import BasicLoadingIcon from '../LoadingAnimation/BasicLoadingIcon';
-import { isEqualSet } from '../Utils';
-import json5 from 'json5';
+import { isEqualSet, reviver } from '../Utils';
 
 const NUMBER_OF_TUPLES_PER_PAGE_TIMEOUT: number = 500;
 
@@ -290,7 +289,6 @@ export default class TableView extends React.Component<TableViewProps, TableView
       headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + this.props.token},
     })
     .then(result => {
-      console.log(result);
       if (!result.ok) {
         result.text()
         .then(errorMessage => {
@@ -302,7 +300,10 @@ export default class TableView extends React.Component<TableViewProps, TableView
       }
       return result.text();
     })
-    .then(result => JSON5.parse(result))
+    .then(result => {
+      let tmp = result.replace(/(NaN|-?Infinity)/g, '"***$1***"' );
+      return JSON.parse(tmp, reviver)
+    })
     .then(result => {
       // Deal with coverting time back to datajoint format
       let tableAttributes: Array<TableAttribute> = this.state.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;

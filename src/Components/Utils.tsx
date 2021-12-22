@@ -12,4 +12,17 @@ function isEqualSet(a: Set<any>, b: Set<any>): boolean {
     return true;
 }
 
-export {isEqualSet};
+function reviver(key: any, value: string ) {
+    if ( value === '***NaN***' ) {
+        return NaN;
+    }
+    if ( value === '***Infinity***' ) {
+        return Infinity;
+    }
+    if ( value === '***-Infinity***' ) {
+        return -Infinity;
+    }
+    return value;
+  }
+
+export {isEqualSet, reviver};
