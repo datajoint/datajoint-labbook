@@ -37,15 +37,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: Compile docs static artifacts
         run: |
-          export DJ_LABBOOK_VERSION=$(awk 'FNR==3' package.json | \
+          export DJLABBOOK_VERSION=$(awk 'FNR==3' package.json | \
             awk '{split($0,a,":"); print a[2]}' | \
             awk -F'"' '{$0=$2}1')
           docker-compose -f docker-compose-docs.yaml up --exit-code-from docs-build --build
-          echo "DJ_LABBOOK_VERSION=${DJ_LABBOOK_VERSION}" >> $GITHUB_ENV
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Add docs static artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: docs-static-djlabbook-${{env.DJ_LABBOOK_VERSION}}
+          name: docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}
           path: docs/build/html
           retention-days: 1
   build:
@@ -58,28 +58,28 @@ jobs:
       - uses: actions/checkout@v2
       - name: Compile static artifacts
         run: |
-          # export DJ_LABBOOK_VERSION=$(cat package.json | grep \"version\" | \
+          # export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
           #   awk -F\" '{print $4}')
           export HOST_UID=$(id -u)
           mkdir build
           docker-compose -f docker-compose-build.yaml up \
             --exit-code-from datajoint-labbook --build
-          echo "DJ_LABBOOK_VERSION=${{env.DJ_LABBOOK_VERSION}}" >> $GITHUB_ENV
+          # echo "DJLABBOOK_VERSION=${{env.DJLABBOOK_VERSION}}" >> $GITHUB_ENV
           IMAGE=$(docker images --filter "reference=datajoint/datajoint-labbook*" \
             --format "{{.Repository}}")
           TAG=$(docker images --filter "reference=datajoint/datajoint-labbook*" --format "{{.Tag}}")
           docker save "${IMAGE}:${TAG}" | \
-            gzip > "image-datajoint-labbook-${{env.DJ_LABBOOK_VERSION}}.tar.gz"
+            gzip > "image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}.tar.gz"
       - name: Add image artifact
         uses: actions/upload-artifact@v2
         with:
-          name: image-datajoint-labbook-${{env.DJ_LABBOOK_VERSION}}
-          path: "image-datajoint-labbook-${{env.DJ_LABBOOK_VERSION}}.tar.gz"
+          name: image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}
+          path: "image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}.tar.gz"
           retention-days: 1
       - name: Add static artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: static-djlabbook-${{env.DJ_LABBOOK_VERSION}}
+          name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
           path: build
           retention-days: 1
   test:
@@ -132,14 +132,14 @@ jobs:
         uses: guzman-raphael/changelog-reader-action@v5
         with:
           path: ./CHANGELOG.md
-          version: ${{env.DJ_LABBOOK_VERSION}}
+          version: ${{env.DJLABBOOK_VERSION}}
       - name: Fetch static artifacts
         uses: actions/download-artifact@v2
         with:
-          name: static-djlabbook-${{env.DJ_LABBOOK_VERSION}}
+          name: static-djlabbook-${{env.DJLABBOOK_VERSION}}
           path: build
       - name: Compress static site artifacts
-        run: zip -r static-djlabbook-${DJ_LABBOOK_VERSION}.zip build
+        run: zip -r static-djlabbook-${DJLABBOOK_VERSION}.zip build
       - name: Create GH release
         id: create_gh_release
         uses: actions/create-release@v1
@@ -157,8 +157,8 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{steps.create_gh_release.outputs.upload_url}}
-          asset_path: static-djlabbook-${{env.DJ_LABBOOK_VERSION}}.zip
-          asset_name: static-djlabbook-${{env.DJ_LABBOOK_VERSION}}.zip
+          asset_path: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
+          asset_name: static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip
           asset_content_type: application/zip
       - name: Upload deploy docker environment
         uses: actions/upload-release-asset@v1
@@ -185,7 +185,7 @@ jobs:
       - name: Fetch image artifact
         uses: actions/download-artifact@v2
         with:
-          name: image-datajoint-labbook-${{env.DJ_LABBOOK_VERSION}}
+          name: image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}
       - name: Login to DockerHub
         uses: docker/login-action@v1 
         with:
@@ -193,7 +193,7 @@ jobs:
           password: ${{ secrets.docker_password }}
       - name: Publish image
         run: |
-          docker load < "image-datajoint-labbook-${{env.DJ_LABBOOK_VERSION}}.tar.gz"
+          docker load < "image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}.tar.gz"
           IMAGE=$(docker images --filter "reference=datajoint/*" --format "{{.Repository}}")
           TAG=$(docker images --filter "reference=datajoint/*" --format "{{.Tag}}")
           docker push "${IMAGE}:${TAG}"
@@ -209,8 +209,8 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{needs.publish-release.outputs.release_upload_url}}
-          asset_path: "image-datajoint-labbook-${{env.DJ_LABBOOK_VERSION}}.tar.gz"
-          asset_name: "image-datajoint-labbook-${{env.DJ_LABBOOK_VERSION}}.tar.gz"
+          asset_path: "image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}.tar.gz"
+          asset_name: "image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}.tar.gz"
           asset_content_type: application/gzip
   publish-docs:
     if: github.event_name == 'push'
@@ -226,7 +226,7 @@ jobs:
       - name: Fetch docs static artifacts
         uses: actions/download-artifact@v2
         with:
-          name: docs-static-djlabbook-${{env.DJ_LABBOOK_VERSION}}
+          name: docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}
           path: docs/build/html
       - name: Commit documentation changes
         run: |
@@ -250,14 +250,14 @@ jobs:
           directory: gh-pages
           github_token: ${{secrets.GITHUB_TOKEN}}
       - name: Compress docs static site artifacts
-        run: zip -r docs-static-djlabbook-${{env.DJ_LABBOOK_VERSION}}.zip docs/build/html
+        run: zip -r docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip docs/build/html
       - name: Upload docs static site to release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         with:
           upload_url: ${{needs.publish-release.outputs.release_upload_url}}
-          asset_path: "docs-static-djlabbook-${{env.DJ_LABBOOK_VERSION}}.zip"
-          asset_name: "docs-static-djlabbook-${{env.DJ_LABBOOK_VERSION}}.zip"
+          asset_path: "docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip"
+          asset_name: "docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip"
           asset_content_type: application/zip
           # fail_on_unmatched_files: true
