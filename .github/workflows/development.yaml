@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Compile static artifacts
         env:
-          DJLABBOOK_VERSION=${{env.DJLABBOOK_VERSION}}
+          DJLABBOOK_VERSION: ${{env.DJLABBOOK_VERSION}}
         run: |
           # export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
           #   awk -F\" '{print $4}')
@@ -109,7 +109,7 @@ jobs:
       #     echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Run primary tests
         env:
-          DJLABBOOK_VERSION=${{env.DJLABBOOK_VERSION}}
+          DJLABBOOK_VERSION: ${{env.DJLABBOOK_VERSION}}
         run: |
           # DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
           export PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | \
@@ -198,7 +198,7 @@ jobs:
           password: ${{ secrets.docker_password }}
       - name: Publish image
         env:
-          DJLABBOOK_VERSION=${{env.DJLABBOOK_VERSION}}
+          DJLABBOOK_VERSION: ${{env.DJLABBOOK_VERSION}}
         run: |
           # DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
           docker load < "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
@@ -258,7 +258,9 @@ jobs:
           directory: gh-pages
           github_token: ${{secrets.GITHUB_TOKEN}}
       - name: Compress docs static site artifacts
-        run: zip -r docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}.zip docs/build/html
+        env:
+          DJLABBOOK_VERSION: ${{env.DJLABBOOK_VERSION}}
+        run: zip -r docs-static-djlabbook-${DJLABBOOK_VERSION}.zip docs/build/html
       - name: Upload docs static site to release
         uses: actions/upload-release-asset@v1
         env:
