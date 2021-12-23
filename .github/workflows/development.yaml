@@ -65,6 +65,17 @@ jobs:
           docker-compose -f docker-compose-build.yaml up \
             --exit-code-from datajoint-labbook --build
           echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+          IMAGE=$(docker images --filter "reference=datajoint/datajoint-labbook*" \
+            --format "{{.Repository}}")
+          TAG=$(docker images --filter "reference=datajoint/datajoint-labbook*" --format "{{.Tag}}")
+          docker save "${IMAGE}:${TAG}" | \
+            gzip > "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
+      - name: Add image artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: image-datajoint-labbook-${DJLABBOOK_VERSION}
+          path: "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
+          retention-days: 1
       - name: Add static artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -158,6 +169,49 @@ jobs:
           asset_path: docker-compose-deploy.yaml
           asset_name: docker-compose-deploy.yaml
           asset_content_type: application/yaml
+  publish-images:
+    if: github.event_name == 'push'
+    needs: publish-release
+    runs-on: ubuntu-latest
+    # env:
+    #   DOCKER_USERNAME: ${{secrets.docker_username}}
+    #   DOCKER_PASSWORD: ${{secrets.docker_password}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Determine package version
+        run: |
+          DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
+          echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
+      - name: Fetch image artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: image-datajoint-labbook-${DJLABBOOK_VERSION}
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.docker_username }}
+          password: ${{ secrets.docker_password }}
+      - name: Publish image
+        run: |
+          docker load < "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
+          IMAGE=$(docker images --filter "reference=datajoint/*" --format "{{.Repository}}")
+          TAG=$(docker images --filter "reference=datajoint/*" --format "{{.Tag}}")
+          docker push "${IMAGE}:${TAG}"
+          docker tag "${IMAGE}:${TAG}" "${IMAGE}:${TAG}-${GITHUB_SHA:0:7}"
+          docker push "${IMAGE}:${TAG}-${GITHUB_SHA:0:7}"
+          [ "$PY_VER" == "3.8" ] && [ "$DISTRO" == "alpine" ] \
+                  && docker tag "${IMAGE}:${TAG}" "${IMAGE}:latest" \
+                  && docker push "${IMAGE}:latest" \
+              || echo "skipping 'latest' tag..."
+      - name: Upload image to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{needs.publish-release.outputs.release_upload_url}}
+          asset_path: "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
+          asset_name: "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
+          asset_content_type: application/gzip
   publish-docs:
     if: github.event_name == 'push'
     needs: publish-release
