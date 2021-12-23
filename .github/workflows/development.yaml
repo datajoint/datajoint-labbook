@@ -226,7 +226,7 @@ jobs:
       - name: Fetch docs static artifacts
         uses: actions/download-artifact@v2
         with:
-          name: docs-static-djlabbook-${{env.DJLABBOOK_VERSION}}
+          name: docs-static-djlabbook-${{env.DJ_LABBOOK_VERSION}}
           path: docs/build/html
       - name: Commit documentation changes
         run: |
