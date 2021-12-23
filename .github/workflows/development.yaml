@@ -57,6 +57,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Compile static artifacts
+        env:
+          DJLABBOOK_VERSION=${{env.DJLABBOOK_VERSION}}
         run: |
           # export DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | \
           #   awk -F\" '{print $4}')
@@ -69,7 +71,7 @@ jobs:
             --format "{{.Repository}}")
           TAG=$(docker images --filter "reference=datajoint/datajoint-labbook*" --format "{{.Tag}}")
           docker save "${IMAGE}:${TAG}" | \
-            gzip > "image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}.tar.gz"
+            gzip > "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
       - name: Add image artifact
         uses: actions/upload-artifact@v2
         with:
@@ -106,7 +108,10 @@ jobs:
       #     DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
       #     echo "DJLABBOOK_VERSION=${DJLABBOOK_VERSION}" >> $GITHUB_ENV
       - name: Run primary tests
+        env:
+          DJLABBOOK_VERSION=${{env.DJLABBOOK_VERSION}}
         run: |
+          # DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
           export PHARUS_VERSION=$(cat pharus/pharus/version.py | tail -1 | \
             awk -F\' '{print $2}')
           export HOST_UID=$(id -u)
@@ -192,8 +197,11 @@ jobs:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}
       - name: Publish image
+        env:
+          DJLABBOOK_VERSION=${{env.DJLABBOOK_VERSION}}
         run: |
-          docker load < "image-datajoint-labbook-${{env.DJLABBOOK_VERSION}}.tar.gz"
+          # DJLABBOOK_VERSION=$(cat package.json | grep \"version\" | awk -F\" '{print $4}')
+          docker load < "image-datajoint-labbook-${DJLABBOOK_VERSION}.tar.gz"
           IMAGE=$(docker images --filter "reference=datajoint/*" --format "{{.Repository}}")
           TAG=$(docker images --filter "reference=datajoint/*" --format "{{.Tag}}")
           docker push "${IMAGE}:${TAG}"
