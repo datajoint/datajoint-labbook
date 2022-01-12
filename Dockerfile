@@ -3,7 +3,7 @@ FROM golang:alpine3.11 as go_tmp
 ADD https://raw.githubusercontent.com/datajoint/miniconda3-docker/master/utilities/startup.go /startup.go
 RUN cd / && go build startup.go
 # Main dev image
-FROM node:lts-buster-slim
+FROM node:14-slim
 RUN apt-get update && apt-get install wget -y
 USER node
 WORKDIR /home/node

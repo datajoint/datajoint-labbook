@@ -1,6 +1,6 @@
 {
   "name": "datajoint-labbook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A frontend with graphical user interface for DataJoint pipelines built using React.",
   "private": false,
   "repository": {
