@@ -114,6 +114,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#unsafe_componentwillmount" class="tsd-kind-icon">UNSAFE_<wbr>component<wbr>Will<wbr>Mount</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#unsafe_componentwillreceiveprops" class="tsd-kind-icon">UNSAFE_<wbr>component<wbr>Will<wbr>Receive<wbr>Props</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#unsafe_componentwillupdate" class="tsd-kind-icon">UNSAFE_<wbr>component<wbr>Will<wbr>Update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#changetablesortmode" class="tsd-kind-icon">change<wbr>Table<wbr>Sort<wbr>Mode</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#componentdidcatch" class="tsd-kind-icon">component<wbr>Did<wbr>Catch</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#componentdidmount" class="tsd-kind-icon">component<wbr>Did<wbr>Mount</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="components_sidemenu_tablelist.default.html#componentdidupdate" class="tsd-kind-icon">component<wbr>Did<wbr>Update</a></li>
@@ -121,14 +122,15 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#componentwillreceiveprops" class="tsd-kind-icon">component<wbr>Will<wbr>Receive<wbr>Props</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#componentwillunmount" class="tsd-kind-icon">component<wbr>Will<wbr>Unmount</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#componentwillupdate" class="tsd-kind-icon">component<wbr>Will<wbr>Update</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#fliptableorder" class="tsd-kind-icon">flip<wbr>Table<wbr>Order</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#forceupdate" class="tsd-kind-icon">force<wbr>Update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#getsnapshotbeforeupdate" class="tsd-kind-icon">get<wbr>Snapshot<wbr>Before<wbr>Update</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#onsearchstringchange" class="tsd-kind-icon">on<wbr>Search<wbr>String<wbr>Change</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#parsetableentry" class="tsd-kind-icon">parse<wbr>Table<wbr>Entry</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="components_sidemenu_tablelist.default.html#render" class="tsd-kind-icon">render</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#restricttablelistbyseachstring" class="tsd-kind-icon">restrict<wbr>Table<wbr>List<wbr>BySeach<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#setstate" class="tsd-kind-icon">set<wbr>State</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external"><a href="components_sidemenu_tablelist.default.html#shouldcomponentupdate" class="tsd-kind-icon">should<wbr>Component<wbr>Update</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#sorttablelist" class="tsd-kind-icon">sort<wbr>Table<wbr>List</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#toggleallparttableview" class="tsd-kind-icon">toggle<wbr>All<wbr>Part<wbr>Table<wbr>View</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="components_sidemenu_tablelist.default.html#toggleeachparttableview" class="tsd-kind-icon">toggle<wbr>Each<wbr>Part<wbr>Table<wbr>View</a></li>
 							</ul>
@@ -415,6 +417,36 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="changetablesortmode" class="tsd-anchor"></a>
+					<h3>change<wbr>Table<wbr>Sort<wbr>Mode</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">change<wbr>Table<wbr>Sort<wbr>Mode<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ChangeEvent</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HTMLSelectElement</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:350</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Due to the assumtion that schemaList is initally in alphabetical ascending order and that there is only two option to sort
+										the list that is ascending and decensding with ascending by default, we can take advantage by this by just simply fliping the list when
+									the user change between the two sort mode. We also need to change the selected schema index accordingly which is simply just lengtOfArray - currentIndex - 1</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>event: <span class="tsd-signature-type">ChangeEvent</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HTMLSelectElement</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="componentdidcatch" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> component<wbr>Did<wbr>Catch</h3>
@@ -482,7 +514,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides React.Component.componentDidUpdate</p>
 								<ul>
-									<li>Defined in src/Components/SideMenu/TableList.tsx:137</li>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:138</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -663,36 +695,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="fliptableorder" class="tsd-anchor"></a>
-					<h3>flip<wbr>Table<wbr>Order</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">flip<wbr>Table<wbr>Order<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ChangeEvent</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HTMLSelectElement</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/Components/SideMenu/TableList.tsx:228</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Due to the assumtion that schemaList is initally in alphabetical ascending order and that there is only two option to sort
-										the list that is ascending and decensding with ascending by default, we can take advantage by this by just simply fliping the list when
-									the user change between the two sort mode. We also need to change the selected schema index accordingly which is simply just lengtOfArray - currentIndex - 1</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>event: <span class="tsd-signature-type">ChangeEvent</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HTMLSelectElement</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="forceupdate" class="tsd-anchor"></a>
 					<h3>force<wbr>Update</h3>
@@ -775,7 +777,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/Components/SideMenu/TableList.tsx:199</li>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:313</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -805,7 +807,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/Components/SideMenu/TableList.tsx:182</li>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:296</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -845,10 +847,41 @@
 							<aside class="tsd-sources">
 								<p>Overrides React.Component.render</p>
 								<ul>
-									<li>Defined in src/Components/SideMenu/TableList.tsx:240</li>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:362</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Element</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="restricttablelistbyseachstring" class="tsd-anchor"></a>
+					<h3>restrict<wbr>Table<wbr>List<wbr>BySeach<wbr>String</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">restrict<wbr>Table<wbr>List<wbr>BySeach<wbr>String<span class="tsd-signature-symbol">(</span>searchString<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:321</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Apply the restriction string by looping through the table list and copying the entries that match the condition to restrictTableList</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>searchString: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>String to restrict the table&#39;s name by</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -938,6 +971,44 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="sorttablelist" class="tsd-anchor"></a>
+					<h3>sort<wbr>Table<wbr>List</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">sort<wbr>Table<wbr>List<span class="tsd-signature-symbol">(</span>tableList<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ParentTableListEntry</span><span class="tsd-signature-symbol">[]</span>, sortMode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TableSortMode</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ParentTableListEntry</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:183</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sort the given the tableList by one one of the avaliable sortMode listed in TableSortMode</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>tableList: <span class="tsd-signature-type">ParentTableListEntry</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The array of ParentTableListEntry to be sorted</p>
+									</div>
+								</li>
+								<li>
+									<h5>sortMode: <span class="tsd-signature-type">TableSortMode</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>One of the supported TableSortMode entry</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ParentTableListEntry</span><span class="tsd-signature-symbol">[]</span></h4>
+							<p>A sorted table list</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="toggleallparttableview" class="tsd-anchor"></a>
 					<h3>toggle<wbr>All<wbr>Part<wbr>Table<wbr>View</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -947,7 +1018,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/Components/SideMenu/TableList.tsx:105</li>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:106</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -969,7 +1040,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/Components/SideMenu/TableList.tsx:118</li>
+									<li>Defined in src/Components/SideMenu/TableList.tsx:119</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1043,6 +1114,9 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="components_sidemenu_tablelist.default.html#unsafe_componentwillupdate" class="tsd-kind-icon">UNSAFE_<wbr>component<wbr>Will<wbr>Update</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="components_sidemenu_tablelist.default.html#changetablesortmode" class="tsd-kind-icon">change<wbr>Table<wbr>Sort<wbr>Mode</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="components_sidemenu_tablelist.default.html#componentdidcatch" class="tsd-kind-icon">component<wbr>Did<wbr>Catch</a>
 							</li>
@@ -1064,9 +1138,6 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="components_sidemenu_tablelist.default.html#componentwillupdate" class="tsd-kind-icon">component<wbr>Will<wbr>Update</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="components_sidemenu_tablelist.default.html#fliptableorder" class="tsd-kind-icon">flip<wbr>Table<wbr>Order</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="components_sidemenu_tablelist.default.html#forceupdate" class="tsd-kind-icon">force<wbr>Update</a>
 							</li>
@@ -1082,11 +1153,17 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 								<a href="components_sidemenu_tablelist.default.html#render" class="tsd-kind-icon">render</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="components_sidemenu_tablelist.default.html#restricttablelistbyseachstring" class="tsd-kind-icon">restrict<wbr>Table<wbr>List<wbr>BySeach<wbr>String</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
 								<a href="components_sidemenu_tablelist.default.html#setstate" class="tsd-kind-icon">set<wbr>State</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 								<a href="components_sidemenu_tablelist.default.html#shouldcomponentupdate" class="tsd-kind-icon">should<wbr>Component<wbr>Update</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="components_sidemenu_tablelist.default.html#sorttablelist" class="tsd-kind-icon">sort<wbr>Table<wbr>List</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="components_sidemenu_tablelist.default.html#toggleallparttableview" class="tsd-kind-icon">toggle<wbr>All<wbr>Part<wbr>Table<wbr>View</a>
