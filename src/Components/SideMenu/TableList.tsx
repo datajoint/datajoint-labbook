@@ -199,7 +199,7 @@ export default class TableList extends React.Component<TableListProps, TableList
 
     if (sortMode === TableSortMode.A_TO_Z_BY_TIER) {
       // Sort by name for each tier from A to Z
-      for (let tableTierKey of Object.keys(tableListsByTiers)) {
+      for (let tableTierKey of Object.keys(tableListsByTiers)) { 
         (tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>).sort(function(a: TableListEntry, b: TableListEntry) {
           let aLowerCase = a.tableName.toLowerCase();
           let bLowerCase = b.tableName.toLowerCase();

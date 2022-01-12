@@ -300,10 +300,7 @@ export default class TableView extends React.Component<TableViewProps, TableView
       }
       return result.text();
     })
-    .then(result => {
-      let tmp = result.replace(/(NaN|-?Infinity)/g, '"***$1***"' );
-      return JSON.parse(tmp, reviver)
-    })
+    .then(result => JSON.parse(result.replace(/(NaN|-?Infinity)/g, '"***$1***"'), reviver))
     .then(result => {
       // Deal with coverting time back to datajoint format
       let tableAttributes: Array<TableAttribute> = this.state.tableAttributesInfo?.primaryAttributes as Array<TableAttribute>;

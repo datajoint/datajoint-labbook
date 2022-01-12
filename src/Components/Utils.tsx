@@ -23,6 +23,6 @@ function reviver(key: any, value: string ) {
         return -Infinity;
     }
     return value;
-  }
+}
 
 export {isEqualSet, reviver};

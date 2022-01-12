@@ -2,11 +2,7 @@
 
 Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
 ## [Unreleased]
-### Fixed
-- fixed bug with the labbook dockerfile PR #164
-- updated pharus version to 0.2.2 PR #164
 
-## Unreleased
 ### Added
 - Switch filter cards restrictions handling from array to set for performance boost PR #150
 ### Fixed
@@ -15,6 +11,8 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Fixed broken table sort (#151) PR #154
 - Fixed table search string reseting when user selects a new table PR #154
 - Fixed flexbox grow issues with safari by adding prefix. PR #142
+- Fixed bug with the LabBook Dockerfile PR #164
+- Updated pharus version to 0.2.2 PR #164
 
 ## [0.1.0] - 2021-03-31
 ### Added
