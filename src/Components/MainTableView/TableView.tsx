@@ -1,5 +1,4 @@
 import React from 'react';
-import JSON5 from 'json5';
 import "./TableView.css";
 
 // Component imports

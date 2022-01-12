@@ -169,9 +169,7 @@ export default class TableList extends React.Component<TableListProps, TableList
     this.parseTableEntry(tableList, this.props.tableListDict.lookup_tables, TableType.LOOKUP, partTableDict);
     this.parseTableEntry(tableList, this.props.tableListDict.imported_tables, TableType.IMPORTED, partTableDict);
 
-    console.log(tableList);
     tableList = this.sortTableList(tableList, this.state.currentTableSortMode);
-    console.log(tableList);
     // Update the state and reset sort mode to ATOZ
     this.setState({tableList: tableList, restrictedTableList: tableList, searchString: ''});
   }
@@ -199,7 +197,7 @@ export default class TableList extends React.Component<TableListProps, TableList
 
     if (sortMode === TableSortMode.A_TO_Z_BY_TIER) {
       // Sort by name for each tier from A to Z
-      for (let tableTierKey of Object.keys(tableListsByTiers)) { 
+      for (let tableTierKey of Object.keys(tableListsByTiers)) {
         (tableListsByTiers[tableTierKey] as Array<ParentTableListEntry>).sort(function(a: TableListEntry, b: TableListEntry) {
           let aLowerCase = a.tableName.toLowerCase();
           let bLowerCase = b.tableName.toLowerCase();
