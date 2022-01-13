@@ -6,6 +6,7 @@
   align-items: center;
   width: 51%;
   margin-left: 2%;
+  margin-right: 2%;
   box-shadow: 2px 3px 3px #91938F;
   border-left: 1px solid #C8C9C7;
 }
@@ -92,10 +93,12 @@
 }
 
 .table-listing {
-  height: 96%;
+  flex-grow: 1;
+  flex-basis: 0em;
   width: 100%;
-  overflow: hidden;
+  overflow: scroll;
 }
+
 .table-listing:hover {
   overflow: auto;
 }

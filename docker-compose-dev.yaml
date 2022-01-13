@@ -34,6 +34,7 @@ services:
       local-db:
         condition: service_healthy
   datajoint-labbook:
+    platform: linux/amd64
     <<: *net
     extends:
       file: ./docker-compose-build.yaml
@@ -46,7 +47,7 @@ services:
         condition: service_healthy
   fakeservices.datajoint.io:
     <<: *net
-    image: datajoint/nginx:v0.0.16
+    image: datajoint/nginx:v0.0.19
     environment:
       - ADD_zlabbook_TYPE=REST
       - ADD_zlabbook_ENDPOINT=datajoint-labbook:3000
