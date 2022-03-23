@@ -25,13 +25,13 @@ Download the `docker-compose-deploy.yaml` docker environment from the release lo
 To start the application, use the command:
 
 ```bash
-PHARUS_VERSION=0.1.0 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml up -d
+PHARUS_VERSION=0.4.0 DJLABBOOK_VERSION=0.1.1 docker-compose -f docker-compose-deploy.yaml up -d
 ```
 
 To stop the application, use the command:
 
 ```bash
-PHARUS_VERSION=0.1.0 DJLABBOOK_VERSION=0.1.0 docker-compose -f docker-compose-deploy.yaml down
+PHARUS_VERSION=0.4.0 DJLABBOOK_VERSION=0.1.1 docker-compose -f docker-compose-deploy.yaml down
 ```
 
 ## References
