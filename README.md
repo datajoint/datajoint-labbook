@@ -37,6 +37,6 @@ PHARUS_VERSION=0.4.0 DJLABBOOK_VERSION=0.1.1 docker-compose -f docker-compose-de
 ## References
 
 - DataJoint
-  - https://datajoint.io
+  - https://datajoint.org
 - Pharus (a DataJoint REST API backend):
   - https://github.com/datajoint/pharus
