@@ -1,6 +1,12 @@
 # Changelog
 
-Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
+Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
+[Keep a Changelog](https://keepachangelog.com/en/1.0.0/) convention.
+
+## [0.1.2] - 2022-11-02
+### Added
+- Added mkdocs documentation
+
 ## [0.1.1] - 2022-01-12
 
 ### Fixed
@@ -115,6 +121,7 @@ Observes [Semantic Versioning](https://semver.org/spec/v2.0.0.html) standard and
 - Multi database server connections supported by opening new tabs.
 - Support of DJ NEURO - [Managed Database Hosting](https://djneuro.io/services/) users.
 
+[0.1.2]: https://github.com/datajoint/datajoint-labbook/releases/tag/0.1.2
 [Unreleased]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0...HEAD
 [0.1.0]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.2...0.1.0
 [0.1.0-beta.2]: https://github.com/datajoint/datajoint-labbook/compare/0.1.0-beta.1...0.1.0-beta.2
