@@ -131,3 +131,54 @@ this component for deletion. Currently, `delete` uses a quick delete operation
 which will raise an error if the record contains child dependencies. 
 
 ![Delete Component Image](./images/DeleteComponentHighlight.png)
+
+## General Notes
+
+### Working with Source
+
+#### Run Locally with Docker
+
++ Copy a `*-docker-compose.yaml` file corresponding to your usage to
+  `docker-compose.yaml`. This file is untracked, and thus, can be modified as
+  necessary. General commits can be made to `docker-compose.yaml` but system-
+  and setup-dependent items should remain on your local version. 
+
++ The first comment provides instructions on how to start the service. Any
+  keyword arguments prepended to the `docker-compose` command can be safely
+  moved to a dedicated `.env` and read automatically if they are not evaluated
+  i.e. `$(...)`. Non-evaluated environment variables include the following:
+
+```console
+PY_VER=3.8    # (pharus) Python version: 3.6|3.7|3.8
+IMAGE=djtest  # (pharus) Image type:     djbase|djtest|djlab|djlabhub
+DISTRO=alpine # (pharus) Distribution:   alpine|debian
+```
+
+#### Run Tests with Docker
+
+To run the test watcher, follow the steps below:
+
++ In one terminal, start the `dev` Docker environment using the instructions
+  above to start LabBook and Pharus with hot-reload support. 
+
++ In another terminal, you can run the watcher using: 
+
+```console
+docker exec -it datajoint-labbook_datajoint-labbook_1 npm test -- --coverage
+# OR to just run it once:
+docker exec -ite CI=true datajoint-labbook_datajoint-labbook_1 npm test -- --coverage
+```
+
+#### Working with git submodule dependency
+
+`pharus` is treated as a backend dependency managed by git's builtin
+`submodules`. It allows nesting entire git repositories with separate histories and
+easy access. The commands below should be used after cloning the source
+repository: 
+
++ First time git submodule initialization: `git submodule init` then `git
+  submodule update`.
+
++ Update submodules to latest version: `git submodule foreach git pull`
+
++ Create a new submodule: `git submodule add -b master git@github.com:datajoint/pharus.git`
