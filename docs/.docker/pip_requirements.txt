@@ -4,7 +4,6 @@ mkdocstrings
 mkdocstrings-python
 mike
 mdx-truly-sane-lists
-mkdocs-gen-files
 mkdocs-literate-nav
 mkdocs-exclude-search
 mkdocs-markdownextradata-plugin
