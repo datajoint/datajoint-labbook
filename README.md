@@ -1,3 +1,10 @@
+> [!WARNING]
+> **This repository is archived and no longer maintained** (November 2026).
+>
+> DataJoint LabBook was built for DataJoint 0.13 and 0.14, through the [Pharus](https://github.com/datajoint/pharus) REST API, and has not been updated for DataJoint 2.x. The source, the releases, the [documentation site](https://datajoint.github.io/datajoint-labbook/) and the `datajoint/datajoint-labbook` Docker images remain available as they are, but they will receive no further changes, including security fixes.
+>
+> To browse and edit DataJoint 2.x pipelines, use [DataJoint for Python](https://github.com/datajoint/datajoint-python) directly. See the [DataJoint documentation](https://docs.datajoint.com).
+
 ![Demo GIF Failed](docs/sphinx/_static/images/walkthroughDemoOptimized.gif)
 
 # User Documentation
